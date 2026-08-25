@@ -1,0 +1,883 @@
+/* 
+ * Ovarias Premium Parent Dashboard Stylesheet
+ * Integrated Design System matching the Ovarias Brand (Sage & Olive theme)
+ */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #7E8372;
+    --primary-hover: #676B5E;
+    --primary-light: #F1F3EE;
+    --accent: #C8CDBA;
+    --accent-light: #F4F6F2;
+    --bg-main: #FAFBF9;
+    --card-bg: #ffffff;
+    --text-title: #2C2E27;
+    --text-body: #555A4E;
+    --text-muted: #8A9181;
+    --border-color: #E2E5DF;
+    --border-focus: #7E8372;
+    
+    --shadow-sm: 0 4px 10px rgba(126, 131, 114, 0.04);
+    --shadow-md: 0 12px 36px rgba(126, 131, 114, 0.08);
+    --shadow-lg: 0 20px 50px rgba(126, 131, 114, 0.15);
+    
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 24px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.ovarias-parent-dashboard {
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-body);
+    background-color: var(--bg-main);
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 40px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+/* Alert Boxes / Toasts */
+.ovarias-alert {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 28px;
+    border-radius: var(--radius-md);
+    margin-bottom: 30px;
+    font-size: 15px;
+    line-height: 1.5;
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border-left: 5px solid transparent;
+}
+.ovarias-alert-success {
+    background: #F4F9F4;
+    border: 1px solid #D6ECD6;
+    border-left-color: #4CAF50;
+    color: #2E5A2E;
+}
+.ovarias-alert-warning {
+    background: #FFFBF0;
+    border: 1px solid #FFEBB8;
+    border-left-color: #FFB300;
+    color: #8A6D00;
+}
+.ovarias-alert-danger {
+    background: #FFF5F5;
+    border: 1px solid #FED7D7;
+    border-left-color: #E53E3E;
+    color: #9B1C1C;
+}
+.ovarias-alert-payment {
+    gap: 20px;
+    box-shadow: 0 10px 25px rgba(76, 175, 80, 0.08);
+}
+.ovarias-alert-payment strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A3E1A;
+    margin-bottom: 2px;
+}
+
+/* Tabs Navigation Menu */
+.ovarias-parent-tabs-nav {
+    display: flex;
+    gap: 8px;
+    background: #EAECE6;
+    padding: 6px;
+    border-radius: var(--radius-md);
+    margin-bottom: 35px;
+    width: fit-content;
+}
+.ovarias-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: calc(var(--radius-md) - 4px);
+    cursor: pointer;
+    transition: var(--transition);
+    outline: none;
+}
+.ovarias-tab-btn:hover {
+    color: var(--primary);
+}
+.ovarias-tab-btn.active {
+    background: var(--card-bg);
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+.ovarias-badge-lock {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: #ffffff;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    margin-left: 4px;
+}
+
+/* Tab Content Visibility */
+.ovarias-tab-content {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+.ovarias-tab-content.active {
+    display: block;
+}
+
+/* Top Dashboard Header */
+.ovarias-parent-header-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #F4F6F2 0%, #EAECE6 100%);
+    padding: 30px 40px;
+    border-radius: var(--radius-md);
+    margin-bottom: 35px;
+    border: 1px solid var(--border-color);
+}
+.ovarias-parent-header-title h2 {
+    margin: 0 0 6px 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-title);
+    letter-spacing: -0.5px;
+}
+.ovarias-parent-header-title p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+.ovarias-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: var(--shadow-sm);
+}
+.ovarias-status-badge.status-standard {
+    background: #EAECE6;
+    color: var(--text-muted);
+    border: 1px solid #DFE2DA;
+}
+.ovarias-status-badge.status-premium {
+    background: #E2EBD9;
+    color: #4D5842;
+    border: 1px solid #CDDCBF;
+}
+
+/* Form Styles */
+.ovarias-parent-form {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+.ovarias-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+.ovarias-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.ovarias-form-group.full-width {
+    grid-column: span 2;
+}
+.ovarias-form-group label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-title);
+    letter-spacing: 0.2px;
+}
+.ovarias-form-group input,
+.ovarias-form-group textarea {
+    padding: 14px 18px;
+    border: 1px solid #D6DADB;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    background: #FCFCFC;
+    outline: none;
+    color: var(--text-title);
+    font-family: inherit;
+    transition: var(--transition);
+}
+.ovarias-form-group input:focus,
+.ovarias-form-group textarea:focus {
+    background: #ffffff;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 4px rgba(126, 131, 114, 0.12);
+}
+.ovarias-form-group input.disabled-input {
+    background: #F5F5F5;
+    color: #888888;
+    cursor: not-allowed;
+    border-color: #E0E0E0;
+}
+.ovarias-form-actions {
+    margin-top: 35px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Button UI */
+.ovarias-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 36px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.ovarias-btn-submit {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(126, 131, 114, 0.2);
+}
+.ovarias-btn-submit:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(126, 131, 114, 0.3);
+}
+.ovarias-btn-submit:active {
+    transform: translateY(0);
+}
+
+/* Premium Paywall */
+.ovarias-paywall-card {
+    text-align: center;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 50px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    background: linear-gradient(180deg, #ffffff 0%, #FAFAF9 100%);
+    position: relative;
+    overflow: hidden;
+}
+.ovarias-paywall-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
+}
+.ovarias-paywall-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-light);
+    color: var(--primary);
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    margin-bottom: 28px;
+    box-shadow: inset 0 2px 10px rgba(126, 131, 114, 0.1);
+}
+.ovarias-paywall-card h2 {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0 0 14px 0;
+    color: var(--text-title);
+    letter-spacing: -0.5px;
+}
+.ovarias-paywall-card p {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0 0 35px 0;
+}
+.ovarias-price-box {
+    margin-bottom: 35px;
+    background: #F4F6F2;
+    padding: 20px;
+    border-radius: var(--radius-md);
+    display: inline-block;
+    min-width: 250px;
+    border: 1px solid #E4E7E0;
+}
+.ovarias-price-box .currency {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text-title);
+    vertical-align: top;
+    position: relative;
+    top: 6px;
+    right: 2px;
+}
+.ovarias-price-box .amount {
+    font-size: 60px;
+    font-weight: 800;
+    color: var(--text-title);
+    letter-spacing: -1.5px;
+    line-height: 1;
+}
+.ovarias-price-box .period {
+    display: block;
+    font-size: 12px;
+    color: var(--primary);
+    margin-top: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.ovarias-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 40px auto;
+    text-align: left;
+    display: table;
+}
+.ovarias-features-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 15px;
+    color: var(--text-body);
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+.ovarias-features-list li svg {
+    color: var(--primary);
+    flex-shrink: 0;
+}
+.ovarias-btn-checkout {
+    background: var(--primary);
+    color: #ffffff;
+    width: 100%;
+    padding: 18px;
+    font-size: 16px;
+    box-shadow: 0 6px 20px rgba(126, 131, 114, 0.25);
+}
+.ovarias-btn-checkout:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(126, 131, 114, 0.35);
+}
+
+/* Donor Directory layout */
+.ovarias-directory-header {
+    margin-bottom: 35px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+}
+.ovarias-directory-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-title);
+    letter-spacing: -0.5px;
+}
+.ovarias-directory-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 16px;
+}
+.ovarias-donors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 30px;
+}
+.ovarias-donor-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+.ovarias-donor-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent);
+}
+.ovarias-donor-card-image {
+    height: 240px;
+    background: #F1F3EE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-color);
+}
+.ovarias-donor-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+.ovarias-donor-card:hover .ovarias-donor-card-image img {
+    transform: scale(1.05);
+}
+.ovarias-donor-avatar-placeholder {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+.ovarias-donor-card-body {
+    padding: 24px;
+}
+.ovarias-donor-card-body h3 {
+    margin: 0 0 14px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-title);
+}
+.ovarias-donor-card-meta {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #F1F3EE;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+.ovarias-donor-card-meta strong {
+    color: var(--text-title);
+    font-weight: 600;
+}
+.ovarias-donor-card-specs {
+    font-size: 14px;
+    color: var(--text-body);
+    margin-bottom: 22px;
+    line-height: 1.6;
+}
+.ovarias-donor-card-specs p {
+    margin: 0 0 8px 0;
+}
+.ovarias-donor-card-specs strong {
+    color: var(--text-title);
+}
+.ovarias-btn-view-details {
+    width: 100%;
+    background: #FAFBF9;
+    color: var(--primary);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+.ovarias-btn-view-details:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(126, 131, 114, 0.15);
+}
+
+/* Empty Directory Page */
+.ovarias-empty-directory {
+    text-align: center;
+    padding: 80px 40px;
+    background: var(--card-bg);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+.ovarias-empty-directory svg {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    opacity: 0.7;
+}
+.ovarias-empty-directory h3 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    color: var(--text-title);
+    font-weight: 700;
+}
+.ovarias-empty-directory p {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin: 0;
+}
+
+/* Premium Details Modal Popup */
+.ovarias-parent-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.ovarias-parent-modal.active {
+    display: flex;
+}
+.ovarias-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(44, 46, 39, 0.5);
+    backdrop-filter: blur(8px);
+}
+.ovarias-modal-container {
+    position: relative;
+    background: var(--card-bg);
+    width: 92%;
+    max-width: 650px;
+    max-height: 85vh;
+    border-radius: var(--radius-lg);
+    overflow-y: auto;
+    z-index: 10;
+    padding: 40px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ovarias-modal-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: #FAFBF9;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.ovarias-modal-close:hover {
+    color: var(--text-title);
+    background: #EAECE6;
+    border-color: #D2D6CD;
+}
+.ovarias-modal-header-layout {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 28px;
+}
+.ovarias-modal-avatar {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #F1F3EE;
+    border: 2px solid var(--border-color);
+}
+.ovarias-modal-header-info h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-title);
+}
+.ovarias-modal-badges {
+    display: flex;
+    gap: 12px;
+}
+.ovarias-modal-badge {
+    background: var(--primary-light);
+    color: #4D5842;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid #CDDCBF;
+}
+.ovarias-modal-badge strong {
+    color: var(--text-title);
+    font-weight: 700;
+}
+.ovarias-modal-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px;
+    margin-bottom: 30px;
+    background: var(--bg-main);
+    padding: 24px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+.ovarias-modal-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.ovarias-modal-group.full-width {
+    grid-column: span 2;
+}
+.ovarias-modal-group label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.ovarias-modal-group span {
+    font-size: 15px;
+    color: var(--text-title);
+    font-weight: 600;
+}
+.ovarias-modal-sections {
+    border-top: 1px solid var(--border-color);
+    padding-top: 28px;
+}
+.ovarias-modal-section {
+    margin-bottom: 24px;
+}
+.ovarias-modal-section h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.ovarias-modal-section p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--text-body);
+    line-height: 1.6;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes scaleUp {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive UI Adjustments */
+@media(max-width: 650px) {
+    .ovarias-parent-dashboard {
+        padding: 20px;
+        margin: 20px auto;
+    }
+    .ovarias-form-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .ovarias-form-group.full-width {
+        grid-column: span 1;
+    }
+    .ovarias-modal-details-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 16px;
+    }
+    .ovarias-parent-header-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 20px;
+    }
+    .ovarias-modal-header-layout {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    .ovarias-modal-container {
+        padding: 24px;
+    }
+}
+
+/* Custom Professional Styling Overrides */
+.ovarias-parent-dashboard a {
+    color: var(--primary) !important;
+    text-decoration: none;
+    transition: var(--transition);
+}
+.ovarias-parent-dashboard a:hover {
+    color: var(--primary-hover) !important;
+    text-decoration: underline;
+}
+.ovarias-summary-card ul {
+    list-style-type: none !important;
+    padding-left: 0 !important;
+    margin: 0 !important;
+}
+.ovarias-summary-card ul li {
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+.ovarias-summary-card ul li::before {
+    content: "•";
+    color: var(--primary);
+    font-size: 20px;
+    position: absolute;
+    left: 4px;
+    top: -3px;
+}
+
+/* Tab Navigation Overrides */
+.ovarias-parent-tabs-nav {
+    display: flex !important;
+    gap: 8px !important;
+    background: #EAECE6 !important;
+    padding: 6px !important;
+    border-radius: var(--radius-md) !important;
+    margin-bottom: 35px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.ovarias-tab-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    background: none !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--text-muted) !important;
+    border-radius: calc(var(--radius-md) - 4px) !important;
+    cursor: pointer !important;
+    transition: var(--transition) !important;
+    outline: none !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    flex-wrap: nowrap !important;
+}
+
+.ovarias-tab-btn.active {
+    background: var(--card-bg) !important;
+    color: var(--primary) !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+/* Custom Select Dropdowns & Filter Arrows */
+.ovarias-directory-filters select {
+    padding-right: 38px !important;
+    background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23555A4E' d='M0 0h10L5 6z'/></svg>") no-repeat right 15px center !important;
+    background-size: 10px 6px !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-sm) !important;
+    font-family: inherit !important;
+    cursor: pointer !important;
+    height: 46px !important;
+}
+
+.ovarias-directory-filters input {
+    height: 46px !important;
+    box-sizing: border-box !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-sm) !important;
+}
+
+/* Mobile Filter Stack Response */
+@media (max-width: 768px) {
+    .ovarias-directory-filters {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    .ovarias-directory-filters input,
+    .ovarias-directory-filters select {
+        width: 100% !important;
+        flex: none !important;
+    }
+}
+
+/* Summary Cards Grid Layout */
+.ovarias-account-summary-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 30px !important;
+    margin-top: 30px !important;
+}
+
+.ovarias-summary-card {
+    background: var(--card-bg) !important;
+    padding: 30px !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-sm) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.ovarias-status-text-row {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    margin-bottom: 12px !important;
+    font-weight: bold !important;
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+}
+
+.ovarias-status-text-row svg {
+    margin-top: 2px !important;
+    flex-shrink: 0 !important;
+}
+
+.ovarias-status-text-row.text-success {
+    color: #2E5A2E !important;
+}
+.ovarias-status-text-row.text-success svg {
+    color: #2e7d32 !important;
+}
+
+.ovarias-status-text-row.text-danger {
+    color: #9B1C1C !important;
+}
+.ovarias-status-text-row.text-danger svg {
+    color: #c62828 !important;
+}
+
+/* Stack summary cards vertically on smaller devices */
+@media (max-width: 768px) {
+    .ovarias-account-summary-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+}
+
+
+

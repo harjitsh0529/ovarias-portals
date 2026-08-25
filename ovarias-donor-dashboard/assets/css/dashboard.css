@@ -1,0 +1,494 @@
+/* 
+   Ovarias Donor Dashboard - Stylesheet
+   Color Palette:
+   - Primary Light Sage: #C8CDBA (RGB: 200, 205, 186)
+   - Dark Accent Olive: #7E8372 (RGB: 126, 131, 114)
+   - Soft Cream Base: #FAFAF7
+   - Premium Dark Slate: #2C302E
+*/
+
+:root {
+    --ovarias-primary: #C8CDBA;
+    --ovarias-primary-dark: #7E8372;
+    --ovarias-bg-soft: #FAFAF7;
+    --ovarias-border: #DDE2D2;
+    --ovarias-text: #4E5248;
+    --ovarias-heading: #2C302E;
+    --ovarias-white: #ffffff;
+    
+    --ovarias-success: #6B8F71;
+    --ovarias-warning: #D9A05B;
+    --ovarias-danger: #C96464;
+    
+    --ovarias-shadow-sm: 0 2px 8px rgba(126, 131, 114, 0.05);
+    --ovarias-shadow-md: 0 8px 24px rgba(126, 131, 114, 0.08);
+    --ovarias-shadow-lg: 0 16px 40px rgba(126, 131, 114, 0.12);
+    --ovarias-radius-sm: 8px;
+    --ovarias-radius-md: 12px;
+    --ovarias-radius-lg: 18px;
+    --ovarias-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.ovarias-dashboard {
+    max-width: 1100px;
+    margin: 40px auto;
+    font-family: 'Outfit', sans-serif;
+    color: var(--ovarias-text);
+    background: var(--ovarias-white);
+    padding: 40px;
+    border-radius: var(--ovarias-radius-lg);
+    border: 1px solid var(--ovarias-border);
+    box-shadow: var(--ovarias-shadow-lg);
+    box-sizing: border-box;
+}
+
+/* Alert Notification Banners */
+.ovarias-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: var(--ovarias-radius-md);
+    font-weight: 500;
+    margin-bottom: 30px;
+    font-size: 15px;
+    animation: slideDown 0.4s ease;
+}
+
+.ovarias-alert-success {
+    background: #F0F6F1;
+    color: var(--ovarias-success);
+    border: 1px solid #D6E6D8;
+}
+
+.ovarias-alert-warning {
+    background: #FFF9F2;
+    color: var(--ovarias-warning);
+    border: 1px solid #F7EAD7;
+}
+
+.ovarias-alert-danger {
+    background: #FFF5F5;
+    color: var(--ovarias-danger);
+    border: 1px solid #F7D7D7;
+}
+
+/* Dashboard Header Section */
+.ovarias-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--ovarias-bg-soft);
+    border-radius: var(--ovarias-radius-md);
+    padding: 30px;
+    margin-bottom: 40px;
+    border: 1px solid var(--ovarias-border);
+    gap: 30px;
+}
+
+.ovarias-header-user {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.ovarias-avatar-wrapper {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--ovarias-primary);
+    border: 4px solid var(--ovarias-white);
+    box-shadow: var(--ovarias-shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ovarias-user-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ovarias-user-avatar-placeholder {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--ovarias-primary-dark);
+}
+
+.ovarias-user-info h2 {
+    color: var(--ovarias-heading);
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+}
+
+.ovarias-user-email {
+    color: var(--ovarias-primary-dark);
+    font-size: 15px;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Status & Progress Cards */
+.ovarias-header-status {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-width: 280px;
+}
+
+.ovarias-status-badge {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--ovarias-white);
+    padding: 10px 18px;
+    border-radius: var(--ovarias-radius-sm);
+    border: 1px solid var(--ovarias-border);
+    box-shadow: var(--ovarias-shadow-sm);
+}
+
+.ovarias-status-label {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ovarias-primary-dark);
+}
+
+.ovarias-status-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ovarias-heading);
+}
+
+.ovarias-progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ovarias-progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ovarias-progress-bar-bg {
+    height: 10px;
+    background: #E8EBE0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.ovarias-progress-bar-fill {
+    height: 100%;
+    background: var(--ovarias-primary-dark);
+    border-radius: 5px;
+    transition: width 0.8s ease-in-out;
+}
+
+/* Grid & Layout System */
+.ovarias-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.ovarias-form-section {
+    background: var(--ovarias-white);
+    border: 1px solid var(--ovarias-border);
+    border-radius: var(--ovarias-radius-md);
+    padding: 30px;
+    box-shadow: var(--ovarias-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ovarias-form-section h3,
+.ovarias-full-width-section h3 {
+    color: var(--ovarias-heading);
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--ovarias-bg-soft);
+    position: relative;
+}
+
+.ovarias-form-section h3::after,
+.ovarias-full-width-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: var(--ovarias-primary-dark);
+}
+
+/* Inputs & Form Fields */
+.ovarias-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.ovarias-input-row {
+    display: flex;
+    gap: 20px;
+}
+
+.ovarias-input-row .ovarias-input-group {
+    flex: 1;
+}
+
+.ovarias-dashboard label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ovarias-heading);
+}
+
+.ovarias-dashboard input[type="text"],
+.ovarias-dashboard input[type="email"],
+.ovarias-dashboard input[type="date"],
+.ovarias-dashboard select,
+.ovarias-dashboard textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--ovarias-border);
+    border-radius: var(--ovarias-radius-sm);
+    background: var(--ovarias-bg-soft);
+    color: var(--ovarias-heading);
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 450;
+    box-sizing: border-box;
+    transition: var(--ovarias-transition);
+}
+
+.ovarias-dashboard input:focus,
+.ovarias-dashboard select:focus,
+.ovarias-dashboard textarea:focus {
+    outline: none;
+    border-color: var(--ovarias-primary-dark);
+    background: var(--ovarias-white);
+    box-shadow: 0 0 0 4px rgba(126, 131, 114, 0.12);
+}
+
+.ovarias-dashboard textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+/* Dropzone Photo Uploader */
+.ovarias-photo-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 200px;
+}
+
+.ovarias-file-dropzone {
+    width: 100%;
+    border: 2px dashed var(--ovarias-primary);
+    border-radius: var(--ovarias-radius-md);
+    background: var(--ovarias-bg-soft);
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: var(--ovarias-transition);
+}
+
+.ovarias-file-dropzone:hover {
+    border-color: var(--ovarias-primary-dark);
+    background: #fbfbf9;
+}
+
+.ovarias-file-dropzone svg {
+    color: var(--ovarias-primary-dark);
+    margin-bottom: 12px;
+}
+
+.ovarias-file-dropzone p {
+    margin: 0 0 8px 0;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ovarias-heading);
+}
+
+.ovarias-file-formats {
+    font-size: 12px;
+    color: var(--ovarias-primary-dark);
+    font-weight: 500;
+}
+
+.ovarias-file-dropzone input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Full Width & Text Area Sections */
+.ovarias-full-width-section {
+    background: var(--ovarias-white);
+    border: 1px solid var(--ovarias-border);
+    border-radius: var(--ovarias-radius-md);
+    padding: 30px;
+    margin-top: 30px;
+    box-shadow: var(--ovarias-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Submit Actions Panel */
+.ovarias-form-submit {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 40px;
+}
+
+.ovarias-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--ovarias-primary-dark);
+    color: var(--ovarias-white);
+    border: none;
+    padding: 16px 40px;
+    border-radius: var(--ovarias-radius-md);
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--ovarias-shadow-md);
+    transition: var(--ovarias-transition);
+}
+
+.ovarias-submit-btn:hover {
+    background: #6e7363;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(126, 131, 114, 0.2);
+}
+
+.ovarias-submit-btn:active {
+    transform: translateY(0);
+}
+
+.ovarias-dashboard-login-notice {
+    max-width: 600px;
+    margin: 80px auto;
+    padding: 40px;
+    text-align: center;
+    background: var(--ovarias-bg-soft);
+    border-radius: var(--ovarias-radius-md);
+    border: 1px solid var(--ovarias-border);
+    box-shadow: var(--ovarias-shadow-sm);
+    font-family: 'Outfit', sans-serif;
+}
+
+.ovarias-dashboard-login-notice p {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ovarias-primary-dark);
+    margin: 0;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 900px) {
+    .ovarias-form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ovarias-dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .ovarias-header-status {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+@media (max-width: 600px) {
+    .ovarias-dashboard {
+        padding: 20px;
+        margin: 15px;
+    }
+    
+    .ovarias-header-user {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .ovarias-input-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .ovarias-submit-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Custom Select Arrow Polish */
+.ovarias-dashboard select {
+    padding-right: 38px !important;
+    background: var(--ovarias-bg-soft) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%237E8372' d='M0 0h10L5 6z'/></svg>") no-repeat right 15px center !important;
+    background-size: 10px 6px !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    cursor: pointer !important;
+}
+
+.ovarias-dashboard select:focus {
+    background-color: var(--ovarias-white) !important;
+}
+
+/* Upload Image Preview Box */
+.ovarias-uploaded-image-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 15px;
+    background: var(--ovarias-bg-soft);
+    border: 1px solid var(--ovarias-border);
+    border-radius: var(--ovarias-radius-md);
+    box-sizing: border-box;
+}
+
+#btn-toggle-edit {
+    transition: background 0.25s ease !important;
+}

@@ -1,0 +1,435 @@
+/*
+ * Ovarias Admin Console & Forms Stylesheet
+ * Sage & Olive Brand Styling
+ * High-End, Clean, and Professional Layout
+ */
+
+:root {
+    --primary: #7E8372;
+    --primary-dark: #676B5E;
+    --primary-light: #F1F3EE;
+    --bg-light: #FAFBF9;
+    --border-color: #E2E5DF;
+    --text-dark: #2C2E27;
+    --text-muted: #8A9181;
+    --accent-blue: #2b6cb0;
+    --accent-green: #2e7d32;
+    --accent-orange: #dd6b20;
+    --accent-red: #c62828;
+}
+
+.ovarias-admin-dashboard-wrapper {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    color: var(--text-dark);
+    margin: 25px 25px 0 0;
+    max-width: 1280px;
+}
+
+/* Header */
+.ovarias-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--primary);
+    color: #fff;
+    padding: 26px 35px;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+.ovarias-admin-logo-layout h2 {
+    color: #fff;
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+.ovarias-admin-logo-layout p {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.9;
+    font-weight: 400;
+}
+.ovarias-admin-version-tag {
+    font-size: 11px;
+    background: rgba(255, 255, 255, 0.18);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+/* Navigation Tabs */
+.ovarias-admin-tabs-nav {
+    display: flex;
+    background: var(--bg-light);
+    border-bottom: 2px solid var(--border-color);
+    padding: 0 25px;
+    gap: 5px;
+}
+.ovarias-admin-tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 4px solid transparent;
+    padding: 18px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555A4E;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    outline: none !important;
+}
+.ovarias-admin-tab-btn:hover {
+    color: var(--primary);
+}
+.ovarias-admin-tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* Tab Content Areas */
+.ovarias-admin-tab-content {
+    display: none;
+    background: #fff;
+    padding: 35px;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 10px 25px rgba(126, 131, 114, 0.05);
+}
+.ovarias-admin-tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(2px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Metrics Cards */
+.ovarias-admin-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+}
+.ovarias-metric-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 26px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.015);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ovarias-metric-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+.ovarias-metric-card.border-blue { border-top: 5px solid var(--accent-blue); }
+.ovarias-metric-card.border-green { border-top: 5px solid var(--primary); }
+.ovarias-metric-card.border-orange { border-top: 5px solid var(--accent-orange); }
+.ovarias-metric-card.border-red { border-top: 5px solid var(--accent-red); }
+
+.ovarias-metric-card .label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+}
+.ovarias-metric-card .value {
+    display: block;
+    font-size: 34px;
+    font-weight: 750;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+.ovarias-metric-card .subtext {
+    font-size: 12px;
+    color: #555A4E;
+}
+
+/* Tables Layout */
+.ovarias-admin-table-container {
+    overflow-x: auto;
+}
+.table-header-toolbar {
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.search-filter-input {
+    padding: 10px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    width: 320px;
+    font-size: 13px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.search-filter-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(126, 131, 114, 0.15);
+    outline: none;
+}
+.ovarias-admin-table {
+    width: 100% !important;
+    min-width: 900px !important;
+    border-collapse: collapse;
+    font-size: 14px;
+    text-align: left;
+    box-shadow: 0 0 0 1px var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.ovarias-admin-table th {
+    background: var(--primary-light);
+    color: var(--text-dark);
+    font-weight: 600;
+    padding: 16px 20px;
+    border-bottom: 2px solid var(--border-color);
+    font-size: 13px;
+    letter-spacing: 0.3px;
+}
+.ovarias-admin-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+.ovarias-admin-table tr:hover {
+    background: var(--bg-light);
+}
+.ovarias-admin-table tr.empty-row td {
+    text-align: center;
+    padding: 50px;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
+.muted-email {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.status-badge.active {
+    background: #e8f5e9;
+    color: var(--accent-green);
+}
+.status-badge.inactive {
+    background: #ffebee;
+    color: var(--accent-red);
+}
+
+/* Input Fields & Dropdowns */
+.table-inline-input, .form-input {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 13px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.table-inline-input:focus, .form-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(126, 131, 114, 0.15);
+    outline: none;
+}
+.table-inline-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 13px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+.table-inline-select:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+/* Buttons */
+.action-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 9px 15px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+.action-btn:hover {
+    background: var(--primary-dark);
+}
+.action-btn:active {
+    transform: scale(0.98);
+}
+.action-btn.btn-toggle-premium {
+    min-width: 120px;
+}
+
+/* -------------------------------------------------- */
+/* PUBLIC GENERAL INQUIRY FORM (Section 10) */
+/* -------------------------------------------------- */
+.ovarias-public-inquiry-card {
+    max-width: 520px;
+    margin: 40px auto;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 8px 26px rgba(126, 131, 114, 0.08);
+    font-family: inherit;
+}
+.ovarias-public-inquiry-card .form-title {
+    margin: 0 0 8px 0;
+    color: var(--text-dark);
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: -0.5px;
+}
+.ovarias-public-inquiry-card .form-subtitle {
+    margin: 0 0 30px 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    text-align: center;
+    line-height: 1.5;
+}
+.ovarias-public-inquiry-card .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-dark);
+}
+.ovarias-public-inquiry-card .required-star {
+    color: var(--accent-red);
+    margin-left: 2px;
+}
+
+/* Custom Select Dropdowns & Filter Arrows (Admin Portal) */
+.ovarias-admin-table select,
+.table-inline-select,
+.table-header-toolbar select {
+    padding-right: 30px !important;
+    background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23555A4E' d='M0 0h10L5 6z'/></svg>") no-repeat right 10px center !important;
+    background-size: 10px 6px !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    height: 38px !important;
+    box-sizing: border-box !important;
+}
+
+/* Navigation Tabs Scroll Response */
+.ovarias-admin-tabs-nav {
+    display: flex !important;
+    background: var(--bg-light) !important;
+    border-bottom: 2px solid var(--border-color) !important;
+    padding: 0 25px !important;
+    gap: 5px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.ovarias-admin-tab-btn {
+    background: none !important;
+    border: none !important;
+    border-bottom: 4px solid transparent !important;
+    padding: 18px 24px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #555A4E !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    outline: none !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    flex-wrap: nowrap !important;
+}
+
+.ovarias-admin-tab-btn.active {
+    color: var(--primary) !important;
+    border-bottom-color: var(--primary) !important;
+}
+
+/* Table Header Responsive Stack */
+.table-header-toolbar {
+    margin-bottom: 25px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 15px !important;
+}
+
+/* Table Scroll and Grid Stack overrides */
+.ovarias-admin-table-container {
+    overflow-x: auto !important;
+    width: 100% !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+@media (max-width: 768px) {
+    .table-header-toolbar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .table-header-toolbar .action-btn,
+    .table-header-toolbar .search-filter-input {
+        width: 100% !important;
+    }
+    .ovarias-admin-metrics-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    .ovarias-admin-tab-content {
+        padding: 15px !important;
+    }
+    .ovarias-admin-dashboard-wrapper {
+        margin: 10px 10px 0 10px !important;
+    }
+    .ovarias-admin-header {
+        padding: 15px 20px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+}
+
+/* Specific Column Width Tweaks for Egg Donors Table */
+#donors-table th:nth-child(5),
+#donors-table td:nth-child(5) {
+    min-width: 260px !important;
+}
+
+#donors-table th:nth-child(3),
+#donors-table td:nth-child(3),
+#donors-table th:nth-child(4),
+#donors-table td:nth-child(4) {
+    min-width: 170px !important;
+}
+
+
