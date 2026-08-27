@@ -112,7 +112,6 @@ $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
             </div>
             <div class="ovarias-user-info">
                 <h2>Welcome, <?php echo esc_html($first_name ?: $current_user->user_login); ?></h2>
-                <p class="ovarias-user-email"><?php echo esc_html($email); ?></p>
                 <div style="margin-top: 15px; display: flex; gap: 10px;">
                     <button type="button" class="ovarias-submit-btn" id="btn-toggle-edit" style="padding: 10px 20px; font-size: 13px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="14 2 18 6 7 17 3 17 3 13 14 2"></polygon></svg>
@@ -332,28 +331,42 @@ $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
             </div>
 
             <!-- Section: Profile Photo & Upload -->
-            <div class="ovarias-form-section">
-                <h3>Profile Photo</h3>
+            <div class="ovarias-form-section" style="grid-column: 1 / -1;">
+                <h3>Profile Gallery (Multiple Uploads Supported)</h3>
                 
+                <!-- Display Current Gallery Images -->
+                <?php 
+                $gallery_ids = get_user_meta($user_id, 'profile_images_gallery', true) ?: array();
+                if (!empty($avatar_id) && empty($gallery_ids)) {
+                    $gallery_ids = array($avatar_id);
+                }
+                ?>
+
+                <div class="ovarias-photo-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <?php foreach ($gallery_ids as $attachment_id): 
+                        $img_url = wp_get_attachment_image_url($attachment_id, 'large');
+                        if ($img_url): ?>
+                            <div class="ovarias-gallery-item-card" style="position: relative; border: 1px solid var(--ovarias-border); border-radius: var(--ovarias-radius-sm); overflow: hidden; background: #fff; padding: 10px; text-align: center;">
+                                <img src="<?php echo esc_url($img_url); ?>" style="width: 100%; height: 220px; object-fit: cover; border-radius: 4px; display: block; margin-bottom: 10px;">
+                                <!-- Delete Button (via query param redirection) -->
+                                <a href="<?php echo esc_url(add_query_arg('delete_gallery_image', $attachment_id)); ?>" class="ovarias-submit-btn" style="background: #c62828; color: #fff; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box; height: 36px; font-size: 12px; border-radius: var(--ovarias-radius-sm); font-weight: bold; margin: 0; padding: 0;">
+                                    Delete Photo
+                                </a>
+                            </div>
+                        <?php endif; 
+                    endforeach; ?>
+                </div>
+
                 <div class="ovarias-photo-upload-container">
-                    <?php if ($avatar_url): ?>
-                        <div class="ovarias-uploaded-image-preview">
-                            <img src="<?php echo esc_url($avatar_url); ?>" alt="Uploaded Profile Photo" id="profile-image-preview-element" style="max-width: 100%; max-height: 200px; border-radius: var(--ovarias-radius-sm); border: 1px solid var(--ovarias-border); object-fit: cover; display: block; margin-bottom: 15px;">
-                            <button type="button" class="ovarias-submit-btn ovarias-btn-change-photo" id="btn-trigger-upload" style="padding: 10px 18px; font-size: 13px; border-radius: 6px; display: none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                <span>Change Photo</span>
-                            </button>
-                            <input type="file" id="profile_image" name="profile_image" accept="image/*" style="display: none;">
-                        </div>
-                    <?php else: ?>
-                        <div class="ovarias-file-dropzone" id="dropzone-area" style="display: none;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                            <p>Drag your profile photo here or click to browse</p>
-                            <span class="ovarias-file-formats">JPEG, PNG or GIF (max. 5MB)</span>
-                            <input type="file" id="profile_image" name="profile_image" accept="image/*">
-                        </div>
+                    <div class="ovarias-file-dropzone" id="dropzone-area" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <p>Drag your photos here or click to browse (Select multiple files to upload a gallery)</p>
+                        <span class="ovarias-file-formats">JPEG, PNG or GIF (max. 5MB per file)</span>
+                        <input type="file" id="profile_image" name="profile_image[]" accept="image/*" multiple>
+                    </div>
+                    <?php if (empty($gallery_ids)): ?>
                         <div class="ovarias-no-photo-notice" id="no-photo-notice" style="color: var(--ovarias-text); text-align: center; padding: 40px 20px; font-style: italic; border: 1px dashed var(--ovarias-border); border-radius: var(--ovarias-radius-md); background: var(--ovarias-bg-soft);">
-                            No profile photo uploaded. Click "Edit Profile" to add one.
+                            No profile photos uploaded yet. Click "Edit Profile" to add them.
                         </div>
                     <?php endif; ?>
                 </div>

@@ -97,7 +97,6 @@ jQuery(document).ready(function($) {
         var firstName = $('#new-first-name').val();
         var lastName = $('#new-last-name').val();
         var username = $('#new-username').val();
-        var email = $('#new-email').val();
         var password = $('#new-password').val();
 
         $.ajax({
@@ -109,7 +108,6 @@ jQuery(document).ready(function($) {
                 first_name: firstName,
                 last_name: lastName,
                 username: username,
-                email: email,
                 password: password,
                 nonce: ovariasAdminParams.nonce
             },

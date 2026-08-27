@@ -125,22 +125,18 @@ function ovarias_admin_ajax_create_user() {
     }
 
     $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
-    $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+    $email = !empty($username) ? $username . '@ovarias.temp' : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
     $first_name = isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '';
     $last_name = isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '';
     $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : ''; // 'parent' or 'donor'
 
-    if (empty($username) || empty($email) || empty($password) || empty($type)) {
-        wp_send_json_error(array('message' => 'All mandatory fields (username, email, password, type) must be filled.'));
+    if (empty($username) || empty($password) || empty($type)) {
+        wp_send_json_error(array('message' => 'All mandatory fields (username, password, type) must be filled.'));
     }
 
     if (username_exists($username)) {
         wp_send_json_error(array('message' => 'This username already exists.'));
-    }
-
-    if (email_exists($email)) {
-        wp_send_json_error(array('message' => 'This email is already registered.'));
     }
 
     // Create the WordPress User

@@ -293,8 +293,7 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                         ?>
                             <tr class="parent-row">
                                 <td>
-                                    <strong><?php echo esc_html($f_name . ' ' . $l_name); ?></strong><br>
-                                    <a href="mailto:<?php echo esc_attr($p->user_email); ?>?subject=Ovarias%20Account%20Update" class="muted-email" style="text-decoration: underline; color: var(--primary); font-weight: bold;"><?php echo esc_html($p->user_email); ?></a>
+                                    <strong><?php echo esc_html($f_name . ' ' . $l_name); ?></strong>
                                 </td>
                                 <td>
                                     <span class="status-badge <?php echo $is_prem ? 'active' : 'inactive'; ?>">
@@ -376,6 +375,21 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                                 <td>
                                     <strong><?php echo esc_html($f_name . ' ' . $l_name); ?></strong><br>
                                     <span style="font-size: 11px; color: #8A9181;">Completion: <strong><?php echo $pct; ?></strong></span>
+                                    <?php 
+                                    $gallery_ids = get_user_meta($d_id, 'profile_images_gallery', true) ?: array();
+                                    if (!empty($gallery_ids) && is_array($gallery_ids)): ?>
+                                        <div class="donor-row-gallery" style="display: flex; gap: 4px; margin-top: 6px;">
+                                            <?php foreach ($gallery_ids as $attachment_id): 
+                                                $thumb_url = wp_get_attachment_image_url($attachment_id, 'thumbnail');
+                                                $full_url = wp_get_attachment_url($attachment_id);
+                                                if ($thumb_url): ?>
+                                                    <a href="<?php echo esc_url($full_url); ?>" target="_blank" style="display: block; line-height: 1;">
+                                                        <img src="<?php echo esc_url($thumb_url); ?>" style="width: 28px; height: 28px; object-fit: cover; border-radius: 4px; border: 1px solid #c2c7bd;" title="Click to view full image">
+                                                    </a>
+                                                <?php endif;
+                                            endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <input type="text" class="table-inline-input donor-id-val" value="<?php echo esc_attr($donor_unique_id); ?>" style="width: 100px;">
@@ -443,8 +457,7 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                         <?php foreach ($match_inquiries_sliced as $inq): ?>
                             <tr class="inquiry-row">
                                 <td>
-                                    <strong><?php echo esc_html($inq['parent_name']); ?></strong><br>
-                                    <a href="mailto:<?php echo esc_attr($inq['parent_email']); ?>?subject=Re:%20Ovarias%20Information%20Request%20-%20Donor%20<?php echo esc_attr($inq['donor_id']); ?>" class="muted-email" style="text-decoration: underline; color: var(--primary); font-weight: bold;"><?php echo esc_html($inq['parent_email']); ?></a>
+                                    <strong><?php echo esc_html($inq['parent_name']); ?></strong>
                                 </td>
                                 <td><strong><?php echo esc_html($inq['donor_id']); ?></strong></td>
                                 <td style="max-width: 300px; white-space: normal; line-height: 1.4; font-size: 13px;">
@@ -562,10 +575,6 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
             <div style="margin-bottom: 15px;">
                 <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Username</label>
                 <input type="text" id="new-username" class="table-inline-input" style="width: 100%; box-sizing: border-box;" required>
-            </div>
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Email Address</label>
-                <input type="email" id="new-email" class="table-inline-input" style="width: 100%; box-sizing: border-box;" required>
             </div>
             <div style="margin-bottom: 25px;">
                 <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Account Password</label>

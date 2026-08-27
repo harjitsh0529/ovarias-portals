@@ -525,15 +525,8 @@ $all_donors = function_exists('ovarias_parent_get_donors') ? ovarias_parent_get_
                         <input type="text" id="last_name" name="last_name" value="<?php echo esc_attr($last_name); ?>" required>
                     </div>
 
-                    <!-- Row 2 -->
-                    <div class="ovarias-form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" value="<?php echo esc_attr($email); ?>" disabled class="disabled-input" style="background: var(--primary-light); cursor: not-allowed; border: 1px solid var(--border-color);">
-                    </div>
-                    <div class="ovarias-form-group">
-                        <label for="phone_number">Phone Number</label>
-                        <input type="text" id="phone_number" name="phone_number" value="<?php echo esc_attr($phone); ?>" required>
-                    </div>
+                    <!-- Hidden fields to preserve credentials on save -->
+                    <input type="hidden" name="phone_number" value="<?php echo esc_attr($phone); ?>">
 
                     <!-- Row 3 -->
                     <div class="ovarias-form-group full-width">
@@ -572,11 +565,16 @@ $all_donors = function_exists('ovarias_parent_get_donors') ? ovarias_parent_get_
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
         <div class="ovarias-modal-content">
-            <div class="ovarias-modal-header-layout">
-                <img src="" alt="" class="ovarias-modal-avatar" id="modal-avatar">
-                <div class="ovarias-modal-header-info">
-                    <h2 id="modal-name"></h2>
-                    <div class="ovarias-modal-badges">
+            <div class="ovarias-modal-header-layout" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; align-items: center; width: 100%;">
+                <div class="ovarias-modal-image-wrapper" style="width: 100%; max-height: 450px; overflow: hidden; border-radius: 8px; border: 1px solid var(--border-color); background: #fcfcfc; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <img src="" alt="Donor Photo" class="ovarias-modal-avatar" id="modal-avatar" style="max-height: 450px; max-width: 100%; width: auto; height: auto; object-fit: contain; border-radius: 0; border: none; margin: 0 auto; display: block;">
+                </div>
+                <!-- Gallery Thumbnails Container -->
+                <div class="ovarias-modal-gallery" id="modal-gallery" style="display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; margin-top: 5px; justify-content: center; width: 100%;"></div>
+                
+                <div class="ovarias-modal-header-info" style="text-align: center; width: 100%;">
+                    <h2 id="modal-name" style="margin-top: 0; margin-bottom: 8px;"></h2>
+                    <div class="ovarias-modal-badges" style="justify-content: center;">
                         <span class="ovarias-modal-badge">Age: <strong id="modal-age"></strong></span>
                         <span class="ovarias-modal-badge">Blood: <strong id="modal-blood"></strong></span>
                     </div>
@@ -726,6 +724,21 @@ function render_donors_grid($donors, $current_tab, $user_id) {
                 $favorites = get_user_meta($user_id, 'ovarias_favorite_donors', true) ?: array();
                 $is_favorited = in_array($donor['id'], $favorites);
 
+                $gallery_ids = $wp_uid ? (get_user_meta($wp_uid, 'profile_images_gallery', true) ?: array()) : array();
+                if (!empty($avatar_id) && empty($gallery_ids)) {
+                    $gallery_ids = array($avatar_id);
+                }
+                $gallery_urls = array();
+                foreach ($gallery_ids as $att_id) {
+                    $url = wp_get_attachment_url($att_id);
+                    if ($url) {
+                        $gallery_urls[] = $url;
+                    }
+                }
+                if (empty($gallery_urls) && $avatar_url) {
+                    $gallery_urls[] = $avatar_url;
+                }
+
                 $detail_data = array(
                     'name' => $name,
                     'donor_id' => $donor_unique_id,
@@ -745,7 +758,8 @@ function render_donors_grid($donors, $current_tab, $user_id) {
                     'hobbies' => esc_html($donor['Hobbies'] ?? 'N/A'),
                     'about_me' => esc_html($donor['About_Me'] ?? 'N/A'),
                     'why_donate' => esc_html($donor['Why_Donate'] ?? 'N/A'),
-                    'avatar' => $avatar_url ?: OVARIAS_PARENT_URL . 'assets/images/placeholder.png'
+                    'avatar' => $avatar_url ?: OVARIAS_PARENT_URL . 'assets/images/placeholder.png',
+                    'gallery' => $gallery_urls
                 );
             ?>
                 <div class="ovarias-donor-card" data-donor-id="<?php echo esc_attr(strtolower($donor_unique_id)); ?>" data-blood="<?php echo esc_attr($blood_group); ?>" data-education="<?php echo esc_attr($education); ?>">

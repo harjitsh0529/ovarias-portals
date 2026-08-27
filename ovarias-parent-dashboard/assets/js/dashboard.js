@@ -16,6 +16,24 @@ jQuery(document).ready(function($) {
             $('#modal-age').text(donor.age);
             $('#modal-blood').text(donor.blood_group);
             
+            // Populate gallery thumbnails
+            var galleryContainer = $('#modal-gallery');
+            galleryContainer.empty();
+            if (donor.gallery && donor.gallery.length > 0) {
+                donor.gallery.forEach(function(imgUrl, index) {
+                    var imgHtml = $('<img src="' + imgUrl + '" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 2px solid ' + (index === 0 ? 'var(--primary)' : '#c2c7bd') + '; cursor: pointer; transition: 0.2s;">');
+                    imgHtml.on('click', function() {
+                        galleryContainer.find('img').css('border-color', '#c2c7bd');
+                        $(this).css('border-color', 'var(--primary)');
+                        $('#modal-avatar').attr('src', imgUrl);
+                    });
+                    galleryContainer.append(imgHtml);
+                });
+                galleryContainer.show();
+            } else {
+                galleryContainer.hide();
+            }
+            
             $('#modal-nationality').text(donor.nationality);
             $('#modal-education').text(donor.education);
             $('#modal-height').text(donor.height + ' cm');
