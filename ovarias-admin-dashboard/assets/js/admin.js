@@ -362,6 +362,58 @@ jQuery(document).ready(function($) {
         });
     });
 
+    // AJAX: Delete Match Inquiry
+    $('.btn-delete-inquiry').on('click', function(e) {
+        e.preventDefault();
+        var btn = $(this);
+        var parentId = btn.data('parent-id');
+        var inquiryId = btn.data('inquiry-id');
+        var tr = btn.closest('tr');
+
+        if (!confirm('Are you sure you want to permanently delete this match inquiry?')) {
+            return;
+        }
+
+        btn.prop('disabled', true).text('Deleting...');
+
+        $.ajax({
+            url: ovariasAdminParams.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'ovarias_admin_delete_inquiry',
+                parent_id: parentId,
+                inquiry_id: inquiryId,
+                nonce: ovariasAdminParams.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert('Inquiry deleted successfully.');
+                    tr.fadeOut(400, function() {
+                        var countEl = $('.count-match-inquiries').first();
+                        if (countEl.length) {
+                            var mCount = parseInt(countEl.text()) || 0;
+                            countEl.text(Math.max(0, mCount - 1));
+                        }
+                        
+                        var valEl = $('.val-pending-match').first();
+                        if (valEl.length) {
+                            var mVal = parseInt(valEl.text()) || 0;
+                            valEl.text(Math.max(0, mVal - 1));
+                        }
+                        tr.remove();
+                    });
+                } else {
+                    alert('Error: ' + response.data.message);
+                    btn.prop('disabled', false).text('Delete');
+                }
+            },
+            error: function() {
+                alert('Connection failure.');
+                btn.prop('disabled', false).text('Delete');
+            }
+        });
+    });
+
     // AJAX: Submit Public Contact General Inquiry Form
     $('#ovarias-public-inquiry-form').on('submit', function(e) {
         e.preventDefault();

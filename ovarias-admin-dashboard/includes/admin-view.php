@@ -507,9 +507,12 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                                         <option value="Closed" <?php selected($inq['status'], 'Closed'); ?>>Closed</option>
                                     </select>
                                 </td>
-                                <td style="text-align: right;">
+                                <td style="text-align: right; white-space: nowrap;">
                                     <button class="action-btn btn-save-inquiry" data-parent-id="<?php echo $inq['parent_id']; ?>" data-inquiry-id="<?php echo esc_attr($inq['id']); ?>">
                                         Update Status
+                                    </button>
+                                    <button class="action-btn btn-delete-inquiry" data-parent-id="<?php echo $inq['parent_id']; ?>" data-inquiry-id="<?php echo esc_attr($inq['id']); ?>" style="background: #c62828; margin-left: 5px;">
+                                        Delete
                                     </button>
                                 </td>
                             </tr>

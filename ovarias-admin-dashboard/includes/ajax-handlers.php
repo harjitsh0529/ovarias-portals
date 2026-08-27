@@ -414,4 +414,42 @@ function ovarias_admin_ajax_delete_general_inquiry() {
 }
 add_action('wp_ajax_ovarias_admin_delete_general_inquiry', 'ovarias_admin_ajax_delete_general_inquiry');
 
+/**
+ * AJAX Handler: Delete Match Inquiry
+ */
+function ovarias_admin_ajax_delete_inquiry() {
+    check_ajax_referer('ovarias_admin_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => 'Unauthorized action.'));
+    }
+
+    $parent_id = isset($_POST['parent_id']) ? (int)$_POST['parent_id'] : 0;
+    $inquiry_id = isset($_POST['inquiry_id']) ? sanitize_text_field($_POST['inquiry_id']) : '';
+
+    if (!$parent_id || empty($inquiry_id)) {
+        wp_send_json_error(array('message' => 'Invalid request identifiers.'));
+    }
+
+    $requests = get_user_meta($parent_id, 'ovarias_info_requests', true) ?: array();
+    $updated = false;
+    $new_requests = array();
+
+    foreach ($requests as $req) {
+        if ($req['id'] === $inquiry_id) {
+            $updated = true;
+            continue; // Skip the matching inquiry to delete it
+        }
+        $new_requests[] = $req;
+    }
+
+    if ($updated) {
+        update_user_meta($parent_id, 'ovarias_info_requests', $new_requests);
+        wp_send_json_success(array('message' => 'Match inquiry deleted successfully.'));
+    } else {
+        wp_send_json_error(array('message' => 'Inquiry record not found.'));
+    }
+}
+add_action('wp_ajax_ovarias_admin_delete_inquiry', 'ovarias_admin_ajax_delete_inquiry');
+
 
