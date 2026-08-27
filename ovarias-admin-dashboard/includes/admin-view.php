@@ -382,21 +382,49 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                                             $full_urls[] = $url;
                                         }
                                     }
-                                    if (empty($full_urls)) {
-                                        $avatar_id = get_user_meta($d_id, 'profile_image', true);
-                                        $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
-                                        if ($avatar_url) {
-                                            $full_urls[] = $avatar_url;
+                                    $avatar_id = get_user_meta($d_id, 'profile_image', true);
+                                    $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
+                                    if (empty($full_urls) && $avatar_url) {
+                                        $full_urls[] = $avatar_url;
+                                    }
+
+                                    $dob = get_user_meta($d_id, 'dob', true);
+                                    $age = 'N/A';
+                                    if ($dob) {
+                                        $dob_date = date_create($dob);
+                                        if ($dob_date) {
+                                            $age = date_diff($dob_date, date_create('today'))->y;
                                         }
                                     }
+
+                                    $detail_data = array(
+                                        'name' => $f_name . ' ' . $l_name,
+                                        'donor_id' => $donor_unique_id,
+                                        'age' => $age,
+                                        'nationality' => get_user_meta($d_id, 'nationality', true) ?: 'N/A',
+                                        'blood_group' => get_user_meta($d_id, 'blood_group', true) ?: 'N/A',
+                                        'education' => get_user_meta($d_id, 'education_level', true) ?: 'N/A',
+                                        'height' => get_user_meta($d_id, 'height', true) ?: 'N/A',
+                                        'weight' => get_user_meta($d_id, 'weight', true) ?: 'N/A',
+                                        'hair' => get_user_meta($d_id, 'hair_colour', true) ?: 'N/A',
+                                        'eyes' => get_user_meta($d_id, 'eye_colour', true) ?: 'N/A',
+                                        'num_donations' => get_user_meta($d_id, 'num_donations', true) ?: '0',
+                                        'egg_type' => get_user_meta($d_id, 'egg_type', true) ?: 'Fresh',
+                                        'num_eggs' => get_user_meta($d_id, 'num_eggs', true) ?: '0',
+                                        'storage_country' => get_user_meta($d_id, 'storage_country', true) ?: 'N/A',
+                                        'occupation' => get_user_meta($d_id, 'occupation', true) ?: 'N/A',
+                                        'hobbies' => get_user_meta($d_id, 'hobbies', true) ?: 'N/A',
+                                        'about_me' => get_user_meta($d_id, 'about_me', true) ?: 'N/A',
+                                        'why_donate' => get_user_meta($d_id, 'why_donate', true) ?: 'N/A',
+                                        'avatar' => $avatar_url ?: (OVARIAS_ADMIN_URL . 'assets/css/placeholder.png'),
+                                        'gallery' => $full_urls
+                                    );
                                     ?>
-                                    <strong class="btn-view-admin-photos" style="color: #7E8372; cursor: pointer; text-decoration: underline;" data-name="<?php echo esc_attr($f_name . ' ' . $l_name); ?>" data-gallery="<?php echo esc_attr(wp_json_encode($full_urls)); ?>">
+                                    <strong class="btn-view-admin-donor-profile" style="color: #7E8372; cursor: pointer; text-decoration: underline;" data-donor="<?php echo esc_attr(wp_json_encode($detail_data)); ?>">
                                         <?php echo esc_html($f_name . ' ' . $l_name); ?>
                                     </strong><br>
                                     <span style="font-size: 11px; color: #8A9181;">Completion: <strong><?php echo $pct; ?></strong></span>
-                                    <?php if (!empty($full_urls)): ?>
-                                        <br><span class="btn-view-admin-photos" style="font-size: 10px; color: #2e7d32; cursor: pointer; font-weight: bold; display: inline-block; margin-top: 4px;" data-name="<?php echo esc_attr($f_name . ' ' . $l_name); ?>" data-gallery="<?php echo esc_attr(wp_json_encode($full_urls)); ?>">👁 View Photos (<?php echo count($full_urls); ?>)</span>
-                                    <?php endif; ?>
+                                    <br><span class="btn-view-admin-donor-profile" style="font-size: 10px; color: #2e7d32; cursor: pointer; font-weight: bold; display: inline-block; margin-top: 4px;" data-donor="<?php echo esc_attr(wp_json_encode($detail_data)); ?>">👁 View Profile Profile</span>
                                 </td>
                                 <td>
                                     <input type="text" class="table-inline-input donor-id-val" value="<?php echo esc_attr($donor_unique_id); ?>" style="width: 100px;">
@@ -596,18 +624,96 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
     </div>
 </div>
 
-<!-- Modal Popup for Viewing Donor Photos -->
-<div id="ovarias-admin-photos-modal" class="ovarias-admin-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999; font-family: sans-serif;">
-    <div class="ovarias-admin-modal-box" style="background: #fff; border-radius: 8px; max-width: 600px; width: 90%; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; box-sizing: border-box;">
-        <h3 style="margin-top: 0; color: #7E8372; font-size: 18px; margin-bottom: 20px; border-bottom: 2px solid #C8CDBA; padding-bottom: 10px;">
-            Photos for <span id="photo-modal-donor-name"></span>
-        </h3>
-        <span class="btn-close-photos-modal-x" style="position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; line-height: 1;">&times;</span>
-        
-        <div id="photo-modal-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; padding: 5px;"></div>
-        
-        <div style="margin-top: 25px; text-align: right;">
-            <button type="button" class="action-btn btn-close-photos-modal-btn" style="background: #7E8372; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Close</button>
+<!-- Modal Dialog for Details (Donor Profile View for Admin) -->
+<div class="ovarias-parent-modal" id="donor-detail-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 99999; font-family: sans-serif;">
+    <div class="ovarias-modal-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+    <div class="ovarias-modal-container" style="position: relative; background: #fff; width: 92%; max-width: 650px; max-height: 85vh; border-radius: 12px; overflow-y: auto; z-index: 10; padding: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid var(--border-color); box-sizing: border-box;">
+        <button class="ovarias-modal-close" style="position: absolute; top: 24px; right: 24px; background: #FAFBF9; border: 1px solid var(--border-color); color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <div class="ovarias-modal-content">
+            <div class="ovarias-modal-header-layout" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; align-items: center; width: 100%; border-bottom: 1px solid var(--border-color); padding-bottom: 20px;">
+                <div class="ovarias-modal-image-wrapper" style="width: 100%; max-height: 450px; overflow: hidden; border-radius: 8px; border: 1px solid var(--border-color); background: #fcfcfc; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <img src="" alt="Donor Photo" class="ovarias-modal-avatar" id="modal-avatar" style="max-height: 450px; max-width: 100%; width: auto; height: auto; object-fit: contain; border-radius: 0; border: none; margin: 0 auto; display: block;">
+                </div>
+                <!-- Gallery Thumbnails Container -->
+                <div class="ovarias-modal-gallery" id="modal-gallery" style="display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; margin-top: 5px; justify-content: center; width: 100%;"></div>
+                
+                <div class="ovarias-modal-header-info" style="text-align: center; width: 100%;">
+                    <h2 id="modal-name" style="margin-top: 0; margin-bottom: 8px; color: var(--text-dark); font-size: 24px; font-weight: 800;"></h2>
+                    <div class="ovarias-modal-badges" style="display: flex; gap: 12px; justify-content: center;">
+                        <span class="ovarias-modal-badge" style="background: var(--primary-light); color: #4D5842; padding: 6px 14px; border-radius: 30px; font-size: 13px; font-weight: 600; border: 1px solid #CDDCBF;">Age: <strong id="modal-age"></strong></span>
+                        <span class="ovarias-modal-badge" style="background: var(--primary-light); color: #4D5842; padding: 6px 14px; border-radius: 30px; font-size: 13px; font-weight: 600; border: 1px solid #CDDCBF;">Blood: <strong id="modal-blood"></strong></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ovarias-modal-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px 30px; margin-bottom: 30px; background: var(--primary-light); padding: 24px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Donor ID</label>
+                    <span id="modal-donor-id" style="font-size: 15px; color: var(--primary); font-weight: bold;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Nationality</label>
+                    <span id="modal-nationality" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Education</label>
+                    <span id="modal-education" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Height</label>
+                    <span id="modal-height" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Weight</label>
+                    <span id="modal-weight" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Hair Colour</label>
+                    <span id="modal-hair" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Eye Colour</label>
+                    <span id="modal-eyes" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Previous Donations</label>
+                    <span id="modal-num-donations" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" id="modal-egg-type-container" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Egg Category</label>
+                    <span id="modal-egg-type" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" id="modal-num-eggs-container" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Eggs Available</label>
+                    <span id="modal-num-eggs" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" id="modal-storage-country-container" style="display: flex; flex-direction: column; gap: 6px; grid-column: span 2;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Storage Location</label>
+                    <span id="modal-storage-country" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+            </div>
+
+            <!-- Narrative details sections -->
+            <div class="ovarias-modal-sections" style="border-top: 1px solid var(--border-color); padding-top: 28px; display: flex; flex-direction: column; gap: 20px;">
+                <div class="ovarias-modal-section">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">About Me</h3>
+                    <p id="modal-about" style="margin: 0; font-size: 15px; color: var(--text-dark); line-height: 1.6;"></p>
+                </div>
+                <div class="ovarias-modal-section">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Hobbies & Interests</h3>
+                    <p id="modal-hobbies" style="margin: 0; font-size: 15px; color: var(--text-dark); line-height: 1.6;"></p>
+                </div>
+                <div class="ovarias-modal-section">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Why I Want to Donate</h3>
+                    <p id="modal-why" style="margin: 0; font-size: 15px; color: var(--text-dark); line-height: 1.6;"></p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 35px; text-align: right;">
+                <button type="button" class="action-btn btn-close-donor-modal" style="background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">Close Profile</button>
+            </div>
         </div>
     </div>
 </div>

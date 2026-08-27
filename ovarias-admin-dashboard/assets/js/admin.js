@@ -469,46 +469,81 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Admin: View Donor Photos Modal
-    $(document).on('click', '.btn-view-admin-photos', function(e) {
+    // Admin: View Donor Details/Profile Modal
+    $(document).on('click', '.btn-view-admin-donor-profile', function(e) {
         e.preventDefault();
-        var name = $(this).data('name');
-        var galleryStr = $(this).attr('data-gallery');
-        if (!galleryStr) return;
+        var donorStr = $(this).attr('data-donor');
+        if (!donorStr) return;
         
         try {
-            var gallery = JSON.parse(galleryStr);
-            $('#photo-modal-donor-name').text(name);
-            var grid = $('#photo-modal-gallery-grid');
-            grid.empty();
+            var donor = JSON.parse(donorStr);
             
-            if (gallery && gallery.length > 0) {
-                gallery.forEach(function(url) {
-                    var imgHtml = $('<div style="border: 1px solid #c2c7bd; border-radius: 4px; padding: 5px; background: #fafbf9; text-align: center;"><a href="' + url + '" target="_blank"><img src="' + url + '" style="width: 100%; height: 130px; object-fit: cover; border-radius: 2px;"></a></div>');
-                    grid.append(imgHtml);
+            // Set large profile image
+            $('#modal-avatar').attr('src', donor.avatar).attr('alt', donor.name + ' Photo');
+            $('#modal-name').text(donor.name);
+            $('#modal-age').text(donor.age);
+            $('#modal-blood').text(donor.blood_group);
+            
+            // Grid fields
+            $('#modal-donor-id').text(donor.donor_id);
+            $('#modal-nationality').text(donor.nationality);
+            $('#modal-education').text(donor.education);
+            $('#modal-height').text(donor.height ? donor.height + ' cm' : 'N/A');
+            $('#modal-weight').text(donor.weight ? donor.weight + ' kg' : 'N/A');
+            $('#modal-hair').text(donor.hair);
+            $('#modal-eyes').text(donor.eyes);
+            $('#modal-num-donations').text(donor.num_donations);
+            
+            // Category eggs fields
+            $('#modal-egg-type').text(donor.egg_type + ' Egg Donor');
+            $('#modal-num-eggs').text(donor.num_eggs);
+            $('#modal-storage-country').text(donor.storage_country);
+            
+            // Description sections
+            $('#modal-about').text(donor.about_me);
+            $('#modal-hobbies').text(donor.hobbies);
+            $('#modal-why').text(donor.why_donate);
+            
+            // Build gallery thumbnails
+            var galleryContainer = $('#modal-gallery');
+            galleryContainer.empty();
+            
+            if (donor.gallery && donor.gallery.length > 0) {
+                donor.gallery.forEach(function(imgUrl) {
+                    var activeClass = (imgUrl === donor.avatar) ? 'active' : '';
+                    var thumbHtml = $('<img src="' + imgUrl + '" class="ovarias-modal-thumb ' + activeClass + '" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 2px solid #CDDCBF; cursor: pointer; transition: 0.2s;">');
+                    
+                    thumbHtml.on('click', function() {
+                        $('.ovarias-modal-thumb').css('border-color', '#CDDCBF');
+                        $(this).css('border-color', 'var(--primary)');
+                        $('#modal-avatar').attr('src', imgUrl);
+                    });
+                    
+                    galleryContainer.append(thumbHtml);
                 });
+                galleryContainer.show();
             } else {
-                grid.append('<div style="grid-column: 1 / -1; text-align: center; color: #8A9181; padding: 20px; font-style: italic;">No photos uploaded for this donor.</div>');
+                galleryContainer.hide();
             }
             
-            $('#ovarias-admin-photos-modal').css('display', 'flex');
+            $('#donor-detail-modal').css('display', 'flex');
         } catch(err) {
-            console.error('Error parsing gallery data:', err);
+            console.error('Error parsing donor data:', err);
         }
     });
 
-    function closePhotosModal() {
-        $('#ovarias-admin-photos-modal').hide();
+    function closeDonorModal() {
+        $('#donor-detail-modal').hide();
     }
 
-    $(document).on('click', '.btn-close-photos-modal-x, .btn-close-photos-modal-btn', function(e) {
+    $(document).on('click', '.ovarias-modal-close, .btn-close-donor-modal', function(e) {
         e.preventDefault();
-        closePhotosModal();
+        closeDonorModal();
     });
 
     $(window).on('click', function(e) {
-        if ($(e.target).is('#ovarias-admin-photos-modal')) {
-            closePhotosModal();
+        if ($(e.target).is('#donor-detail-modal') || $(e.target).is('.ovarias-modal-overlay')) {
+            closeDonorModal();
         }
     });
 
