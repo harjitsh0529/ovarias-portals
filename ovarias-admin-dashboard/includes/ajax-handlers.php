@@ -158,12 +158,33 @@ function ovarias_admin_ajax_create_user() {
         $u->set_role('um_egg-donor');
         update_user_meta($user_id, 'role', 'um_egg-donor');
         update_user_meta($user_id, 'community_role', 'um_egg-donor');
-        update_user_meta($user_id, 'availability_status', 'Available');
-        update_user_meta($user_id, 'egg_type', 'Fresh');
+        
+        // Save donor profile meta fields
+        $donor_meta_fields = array(
+            'donor_id', 'dob', 'nationality', 'blood_group', 'height', 'weight',
+            'eye_colour', 'hair_colour', 'education_level', 'field_of_study',
+            'occupation', 'languages_spoken', 'availability_status', 'egg_type',
+            'num_eggs', 'storage_country', 'about_me', 'hobbies', 'why_donate'
+        );
+        foreach ($donor_meta_fields as $field) {
+            if (isset($_POST[$field])) {
+                update_user_meta($user_id, $field, sanitize_textarea_field($_POST[$field]));
+            }
+        }
     } else {
         $u->set_role('um_intended_parent');
         update_user_meta($user_id, 'role', 'um_intended_parent');
         update_user_meta($user_id, 'community_role', 'um_intended_parent');
+        
+        // Save parent profile meta fields
+        $parent_meta_fields = array(
+            'country', 'parent_preferences', 'parent_notes'
+        );
+        foreach ($parent_meta_fields as $field) {
+            if (isset($_POST[$field])) {
+                update_user_meta($user_id, $field, sanitize_textarea_field($_POST[$field]));
+            }
+        }
     }
 
     wp_send_json_success(array('message' => 'User created successfully.'));

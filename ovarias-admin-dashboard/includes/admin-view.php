@@ -591,29 +591,145 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
     </div>
 </div>
 
-<!-- Modal Popup for Creating a New User -->
 <div id="ovarias-create-user-modal" class="ovarias-admin-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999; font-family: sans-serif;">
-    <div class="ovarias-admin-modal-box" style="background: #fff; border-radius: 8px; max-width: 450px; width: 90%; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; box-sizing: border-box;">
+    <div class="ovarias-admin-modal-box" style="background: #fff; border-radius: 8px; max-width: 520px; width: 90%; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; box-sizing: border-box;">
         <h3 id="modal-title" style="margin-top: 0; color: #7E8372; font-size: 18px; margin-bottom: 20px;">Add New Account</h3>
         <span class="btn-close-modal-x" style="position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; line-height: 1;">&times;</span>
         <form id="ovarias-create-user-form">
             <input type="hidden" id="new-user-type" name="type" value="donor">
             
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">First Name</label>
-                <input type="text" id="new-first-name" class="table-inline-input" style="width: 100%; box-sizing: border-box;" required>
-            </div>
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Last Name</label>
-                <input type="text" id="new-last-name" class="table-inline-input" style="width: 100%; box-sizing: border-box;" required>
-            </div>
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Username</label>
-                <input type="text" id="new-username" class="table-inline-input" style="width: 100%; box-sizing: border-box;" required>
-            </div>
-            <div style="margin-bottom: 25px;">
-                <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Account Password</label>
-                <input type="password" id="new-password" class="table-inline-input" style="width: 100%; box-sizing: border-box;" required>
+            <div style="max-height: 55vh; overflow-y: auto; padding-right: 12px; margin-bottom: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">First Name</label>
+                    <input type="text" id="new-first-name" class="table-inline-input" style="width: 100%; box-sizing: border-box;" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Last Name</label>
+                    <input type="text" id="new-last-name" class="table-inline-input" style="width: 100%; box-sizing: border-box;" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Username</label>
+                    <input type="text" id="new-username" class="table-inline-input" style="width: 100%; box-sizing: border-box;" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Account Password</label>
+                    <input type="password" id="new-password" class="table-inline-input" style="width: 100%; box-sizing: border-box;" required>
+                </div>
+                
+                <!-- Donor Specific Profile Fields -->
+                <div id="donor-specific-fields" style="display: none;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Unique Donor ID</label>
+                        <input type="text" id="new-donor-id" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. OVARIAS-24">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Date of Birth</label>
+                        <input type="date" id="new-donor-dob" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Nationality</label>
+                        <input type="text" id="new-donor-nationality" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Blood Group</label>
+                        <select id="new-donor-blood" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Select Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Height (cm)</label>
+                        <input type="number" id="new-donor-height" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Weight (kg)</label>
+                        <input type="number" id="new-donor-weight" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Eye Colour</label>
+                        <input type="text" id="new-donor-eyes" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Hair Colour</label>
+                        <input type="text" id="new-donor-hair" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Level of Education</label>
+                        <input type="text" id="new-donor-education" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Field of Study</label>
+                        <input type="text" id="new-donor-study" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Occupation</label>
+                        <input type="text" id="new-donor-occupation" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Languages Spoken</label>
+                        <input type="text" id="new-donor-languages" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Availability Status</label>
+                        <select id="new-donor-avail" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="Available">Available</option>
+                            <option value="Reserved">Reserved</option>
+                            <option value="Temporarily Unavailable">Temporarily Unavailable</option>
+                            <option value="Not Available">Not Available</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Egg Category</label>
+                        <select id="new-donor-egg-type" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="Fresh">Fresh Egg Donor</option>
+                            <option value="Frozen">Frozen Egg Donor</option>
+                            <option value="Both">Both Category</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Number of Eggs</label>
+                        <input type="number" id="new-donor-num-eggs" class="table-inline-input" style="width: 100%; box-sizing: border-box;" value="0">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Storage Country / Location</label>
+                        <input type="text" id="new-donor-storage" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">About Me</label>
+                        <textarea id="new-donor-about" class="table-inline-input" style="width: 100%; box-sizing: border-box; min-height: 80px;"></textarea>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Hobbies & Interests</label>
+                        <textarea id="new-donor-hobbies" class="table-inline-input" style="width: 100%; box-sizing: border-box; min-height: 80px;"></textarea>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Why I Want to Donate</label>
+                        <textarea id="new-donor-why" class="table-inline-input" style="width: 100%; box-sizing: border-box; min-height: 80px;"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Intended Parent Specific Profile Fields -->
+                <div id="parent-specific-fields" style="display: none;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Country</label>
+                        <input type="text" id="new-parent-country" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Preferences & Requirements</label>
+                        <textarea id="new-parent-preferences" class="table-inline-input" style="width: 100%; box-sizing: border-box; min-height: 80px;"></textarea>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Internal Notes / History</label>
+                        <textarea id="new-parent-notes" class="table-inline-input" style="width: 100%; box-sizing: border-box; min-height: 80px;"></textarea>
+                    </div>
+                </div>
             </div>
             
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
