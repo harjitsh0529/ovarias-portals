@@ -339,19 +339,25 @@ $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
                         <?php if ($avatar_url): ?>
                             <div class="ovarias-uploaded-image-preview" style="text-align: center;">
                                 <img src="<?php echo esc_url($avatar_url); ?>" alt="Uploaded Profile Photo" id="profile-image-preview-element" style="max-width: 100%; max-height: 250px; border-radius: var(--ovarias-radius-sm); border: 1px solid var(--ovarias-border); object-fit: cover; display: block; margin: 0 auto 15px auto;">
-                                <a href="<?php echo esc_url(add_query_arg('delete_profile_photo', '1')); ?>" class="ovarias-submit-btn" style="background: #c62828; color: #fff; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 20px; font-size: 12px; border-radius: var(--ovarias-radius-sm); font-weight: bold; margin: 0;">
-                                    Delete Profile Photo
-                                </a>
+                                
+                                <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px;">
+                                    <button type="button" class="ovarias-submit-btn ovarias-btn-change-photo" id="btn-trigger-upload" style="padding: 10px 18px; font-size: 13px; border-radius: 6px; display: none;">
+                                        Change Photo
+                                    </button>
+                                    <a href="<?php echo esc_url(add_query_arg('delete_profile_photo', '1')); ?>" class="ovarias-submit-btn btn-delete-profile-photo" style="background: #c62828; color: #fff; text-decoration: none; display: none; align-items: center; justify-content: center; height: 38px; padding: 0 20px; font-size: 13px; border-radius: 6px; font-weight: bold; margin: 0;">
+                                        Delete Photo
+                                    </a>
+                                </div>
+                                <!-- Kept hidden inside the preview container -->
+                                <input type="file" id="profile_image" name="profile_image" accept="image/*" style="display: none;">
                             </div>
-                        <?php endif; ?>
-                        
-                        <div class="ovarias-file-dropzone" id="dropzone-area-profile" style="display: none; margin-top: 15px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                            <p>Drag your profile photo here or click to browse</p>
-                            <span class="ovarias-file-formats">JPEG, PNG or GIF (max. 5MB)</span>
-                            <input type="file" id="profile_image" name="profile_image" accept="image/*">
-                        </div>
-                        <?php if (empty($avatar_url)): ?>
+                        <?php else: ?>
+                            <div class="ovarias-file-dropzone" id="dropzone-area-profile" style="display: none; margin-top: 15px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                <p>Drag your profile photo here or click to browse</p>
+                                <span class="ovarias-file-formats">JPEG, PNG or GIF (max. 5MB)</span>
+                                <input type="file" id="profile_image" name="profile_image" accept="image/*">
+                            </div>
                             <div class="ovarias-no-photo-notice" id="no-photo-notice-profile" style="color: var(--ovarias-text); text-align: center; padding: 40px 20px; font-style: italic; border: 1px dashed var(--ovarias-border); border-radius: var(--ovarias-radius-md); background: var(--ovarias-bg-soft);">
                                 No profile photo uploaded. Click "Edit Profile" to add one.
                             </div>

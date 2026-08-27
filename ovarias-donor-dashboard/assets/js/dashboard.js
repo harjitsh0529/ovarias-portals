@@ -33,6 +33,7 @@ jQuery(document).ready(function($) {
             
             // Show upload controls
             $('.ovarias-btn-change-photo').show();
+            $('.btn-delete-profile-photo').css('display', 'inline-flex');
             $('#dropzone-area-profile, #dropzone-area-gallery').show();
             $('#no-photo-notice-profile, #no-photo-notice-gallery').hide();
             
@@ -44,6 +45,7 @@ jQuery(document).ready(function($) {
             
             // Hide upload controls
             $('.ovarias-btn-change-photo').hide();
+            $('.btn-delete-profile-photo').hide();
             $('#dropzone-area-profile, #dropzone-area-gallery').hide();
             $('#no-photo-notice-profile, #no-photo-notice-gallery').show();
             $('#gallery-temp-previews').remove(); // Clear previews on cancel
