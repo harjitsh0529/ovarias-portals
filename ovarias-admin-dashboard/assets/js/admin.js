@@ -103,46 +103,61 @@ jQuery(document).ready(function($) {
         var username = $('#new-username').val();
         var password = $('#new-password').val();
 
-        var dataPayload = {
-            action: 'ovarias_admin_create_user',
-            type: type,
-            first_name: firstName,
-            last_name: lastName,
-            username: username,
-            password: password,
-            nonce: ovariasAdminParams.nonce
-        };
+        var formData = new FormData();
+        formData.append('action', 'ovarias_admin_create_user');
+        formData.append('type', type);
+        formData.append('first_name', firstName);
+        formData.append('last_name', lastName);
+        formData.append('username', username);
+        formData.append('password', password);
+        formData.append('nonce', ovariasAdminParams.nonce);
 
         if (type === 'donor') {
-            dataPayload.donor_id = $('#new-donor-id').val();
-            dataPayload.dob = $('#new-donor-dob').val();
-            dataPayload.nationality = $('#new-donor-nationality').val();
-            dataPayload.blood_group = $('#new-donor-blood').val();
-            dataPayload.height = $('#new-donor-height').val();
-            dataPayload.weight = $('#new-donor-weight').val();
-            dataPayload.eye_colour = $('#new-donor-eyes').val();
-            dataPayload.hair_colour = $('#new-donor-hair').val();
-            dataPayload.education_level = $('#new-donor-education').val();
-            dataPayload.field_of_study = $('#new-donor-study').val();
-            dataPayload.occupation = $('#new-donor-occupation').val();
-            dataPayload.languages_spoken = $('#new-donor-languages').val();
-            dataPayload.availability_status = $('#new-donor-avail').val();
-            dataPayload.egg_type = $('#new-donor-egg-type').val();
-            dataPayload.num_eggs = $('#new-donor-num-eggs').val();
-            dataPayload.storage_country = $('#new-donor-storage').val();
-            dataPayload.about_me = $('#new-donor-about').val();
-            dataPayload.hobbies = $('#new-donor-hobbies').val();
-            dataPayload.why_donate = $('#new-donor-why').val();
+            formData.append('donor_id', $('#new-donor-id').val());
+            formData.append('dob', $('#new-donor-dob').val());
+            formData.append('nationality', $('#new-donor-nationality').val());
+            formData.append('blood_group', $('#new-donor-blood').val());
+            formData.append('height', $('#new-donor-height').val());
+            formData.append('weight', $('#new-donor-weight').val());
+            formData.append('eye_colour', $('#new-donor-eyes').val());
+            formData.append('hair_colour', $('#new-donor-hair').val());
+            formData.append('education_level', $('#new-donor-education').val());
+            formData.append('field_of_study', $('#new-donor-study').val());
+            formData.append('occupation', $('#new-donor-occupation').val());
+            formData.append('languages_spoken', $('#new-donor-languages').val());
+            formData.append('availability_status', $('#new-donor-avail').val());
+            formData.append('egg_type', $('#new-donor-egg-type').val());
+            formData.append('num_eggs', $('#new-donor-num-eggs').val());
+            formData.append('storage_country', $('#new-donor-storage').val());
+            formData.append('about_me', $('#new-donor-about').val());
+            formData.append('hobbies', $('#new-donor-hobbies').val());
+            formData.append('why_donate', $('#new-donor-why').val());
+            
+            // Append Profile Photo file
+            var profileFile = $('#new-donor-profile-image')[0].files[0];
+            if (profileFile) {
+                formData.append('profile_image', profileFile);
+            }
+            
+            // Append Gallery Photos files
+            var galleryFiles = $('#new-donor-gallery')[0].files;
+            if (galleryFiles && galleryFiles.length > 0) {
+                for (var i = 0; i < galleryFiles.length; i++) {
+                    formData.append('donor_gallery[]', galleryFiles[i]);
+                }
+            }
         } else {
-            dataPayload.country = $('#new-parent-country').val();
-            dataPayload.parent_preferences = $('#new-parent-preferences').val();
-            dataPayload.parent_notes = $('#new-parent-notes').val();
+            formData.append('country', $('#new-parent-country').val());
+            formData.append('parent_preferences', $('#new-parent-preferences').val());
+            formData.append('parent_notes', $('#new-parent-notes').val());
         }
 
         $.ajax({
             url: ovariasAdminParams.ajaxurl,
             type: 'POST',
-            data: dataPayload,
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function(response) {
                 if (response.success) {
                     alert('Success: Account created successfully!');

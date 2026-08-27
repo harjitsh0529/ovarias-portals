@@ -713,6 +713,14 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                         <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Why I Want to Donate</label>
                         <textarea id="new-donor-why" class="table-inline-input" style="width: 100%; box-sizing: border-box; min-height: 80px;"></textarea>
                     </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Primary Profile Picture</label>
+                        <input type="file" id="new-donor-profile-image" name="profile_image" accept="image/*" style="width: 100%; box-sizing: border-box; font-size: 12px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Additional Gallery Photos (Multiple)</label>
+                        <input type="file" id="new-donor-gallery" name="donor_gallery[]" accept="image/*" multiple style="width: 100%; box-sizing: border-box; font-size: 12px;">
+                    </div>
                 </div>
                 
                 <!-- Intended Parent Specific Profile Fields -->

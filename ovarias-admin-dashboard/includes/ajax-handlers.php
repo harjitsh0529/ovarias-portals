@@ -171,6 +171,58 @@ function ovarias_admin_ajax_create_user() {
                 update_user_meta($user_id, $field, sanitize_textarea_field($_POST[$field]));
             }
         }
+
+        // Handle Profile Image Upload (Single)
+        if (!empty($_FILES['profile_image']['name'])) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+            $attachment_id = media_handle_upload('profile_image', 0);
+            if (!is_wp_error($attachment_id)) {
+                update_user_meta($user_id, 'profile_image', $attachment_id);
+            }
+        }
+
+        // Handle Gallery Uploads (Multiple)
+        if (!empty($_FILES['donor_gallery']['name'][0])) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+            $files = $_FILES['donor_gallery'];
+            $uploaded_attachments = array();
+
+            foreach ($files['name'] as $key => $value) {
+                if ($files['name'][$key]) {
+                    $file = array(
+                        'name'     => $files['name'][$key],
+                        'type'     => $files['type'][$key],
+                        'tmp_name' => $files['tmp_name'][$key],
+                        'error'    => $files['error'][$key],
+                        'size'     => $files['size'][$key]
+                    );
+
+                    $temp_key = "temp_admin_upload_" . $key;
+                    $_FILES[$temp_key] = $file;
+
+                    $file_type = wp_check_filetype(basename($file['name']));
+                    $allowed_types = array('jpg', 'jpeg', 'png', 'gif');
+
+                    if (in_array(strtolower($file_type['ext']), $allowed_types)) {
+                        $attachment_id = media_handle_upload($temp_key, 0);
+
+                        if (!is_wp_error($attachment_id)) {
+                            $uploaded_attachments[] = $attachment_id;
+                        }
+                    }
+                    unset($_FILES[$temp_key]);
+                }
+            }
+            if (!empty($uploaded_attachments)) {
+                update_user_meta($user_id, 'profile_images_gallery', $uploaded_attachments);
+            }
+        }
     } else {
         $u->set_role('um_intended_parent');
         update_user_meta($user_id, 'role', 'um_intended_parent');
