@@ -469,4 +469,47 @@ jQuery(document).ready(function($) {
         });
     });
 
+    // Admin: View Donor Photos Modal
+    $(document).on('click', '.btn-view-admin-photos', function(e) {
+        e.preventDefault();
+        var name = $(this).data('name');
+        var galleryStr = $(this).attr('data-gallery');
+        if (!galleryStr) return;
+        
+        try {
+            var gallery = JSON.parse(galleryStr);
+            $('#photo-modal-donor-name').text(name);
+            var grid = $('#photo-modal-gallery-grid');
+            grid.empty();
+            
+            if (gallery && gallery.length > 0) {
+                gallery.forEach(function(url) {
+                    var imgHtml = $('<div style="border: 1px solid #c2c7bd; border-radius: 4px; padding: 5px; background: #fafbf9; text-align: center;"><a href="' + url + '" target="_blank"><img src="' + url + '" style="width: 100%; height: 130px; object-fit: cover; border-radius: 2px;"></a></div>');
+                    grid.append(imgHtml);
+                });
+            } else {
+                grid.append('<div style="grid-column: 1 / -1; text-align: center; color: #8A9181; padding: 20px; font-style: italic;">No photos uploaded for this donor.</div>');
+            }
+            
+            $('#ovarias-admin-photos-modal').css('display', 'flex');
+        } catch(err) {
+            console.error('Error parsing gallery data:', err);
+        }
+    });
+
+    function closePhotosModal() {
+        $('#ovarias-admin-photos-modal').hide();
+    }
+
+    $(document).on('click', '.btn-close-photos-modal-x, .btn-close-photos-modal-btn', function(e) {
+        e.preventDefault();
+        closePhotosModal();
+    });
+
+    $(window).on('click', function(e) {
+        if ($(e.target).is('#ovarias-admin-photos-modal')) {
+            closePhotosModal();
+        }
+    });
+
 });

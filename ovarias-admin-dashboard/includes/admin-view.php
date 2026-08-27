@@ -373,22 +373,29 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                         ?>
                             <tr class="donor-row" data-user-id="<?php echo $d_id; ?>">
                                 <td>
-                                    <strong><?php echo esc_html($f_name . ' ' . $l_name); ?></strong><br>
-                                    <span style="font-size: 11px; color: #8A9181;">Completion: <strong><?php echo $pct; ?></strong></span>
                                     <?php 
                                     $gallery_ids = get_user_meta($d_id, 'profile_images_gallery', true) ?: array();
-                                    if (!empty($gallery_ids) && is_array($gallery_ids)): ?>
-                                        <div class="donor-row-gallery" style="display: flex; gap: 4px; margin-top: 6px;">
-                                            <?php foreach ($gallery_ids as $attachment_id): 
-                                                $thumb_url = wp_get_attachment_image_url($attachment_id, 'thumbnail');
-                                                $full_url = wp_get_attachment_url($attachment_id);
-                                                if ($thumb_url): ?>
-                                                    <a href="<?php echo esc_url($full_url); ?>" target="_blank" style="display: block; line-height: 1;">
-                                                        <img src="<?php echo esc_url($thumb_url); ?>" style="width: 28px; height: 28px; object-fit: cover; border-radius: 4px; border: 1px solid #c2c7bd;" title="Click to view full image">
-                                                    </a>
-                                                <?php endif;
-                                            endforeach; ?>
-                                        </div>
+                                    $full_urls = array();
+                                    foreach ($gallery_ids as $att_id) {
+                                        $url = wp_get_attachment_url($att_id);
+                                        if ($url) {
+                                            $full_urls[] = $url;
+                                        }
+                                    }
+                                    if (empty($full_urls)) {
+                                        $avatar_id = get_user_meta($d_id, 'profile_image', true);
+                                        $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
+                                        if ($avatar_url) {
+                                            $full_urls[] = $avatar_url;
+                                        }
+                                    }
+                                    ?>
+                                    <strong class="btn-view-admin-photos" style="color: #7E8372; cursor: pointer; text-decoration: underline;" data-name="<?php echo esc_attr($f_name . ' ' . $l_name); ?>" data-gallery="<?php echo esc_attr(wp_json_encode($full_urls)); ?>">
+                                        <?php echo esc_html($f_name . ' ' . $l_name); ?>
+                                    </strong><br>
+                                    <span style="font-size: 11px; color: #8A9181;">Completion: <strong><?php echo $pct; ?></strong></span>
+                                    <?php if (!empty($full_urls)): ?>
+                                        <br><span class="btn-view-admin-photos" style="font-size: 10px; color: #2e7d32; cursor: pointer; font-weight: bold; display: inline-block; margin-top: 4px;" data-name="<?php echo esc_attr($f_name . ' ' . $l_name); ?>" data-gallery="<?php echo esc_attr(wp_json_encode($full_urls)); ?>">👁 View Photos (<?php echo count($full_urls); ?>)</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -586,5 +593,21 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                 <button type="submit" class="action-btn" style="background: #2e7d32;">Create User</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal Popup for Viewing Donor Photos -->
+<div id="ovarias-admin-photos-modal" class="ovarias-admin-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999; font-family: sans-serif;">
+    <div class="ovarias-admin-modal-box" style="background: #fff; border-radius: 8px; max-width: 600px; width: 90%; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; box-sizing: border-box;">
+        <h3 style="margin-top: 0; color: #7E8372; font-size: 18px; margin-bottom: 20px; border-bottom: 2px solid #C8CDBA; padding-bottom: 10px;">
+            Photos for <span id="photo-modal-donor-name"></span>
+        </h3>
+        <span class="btn-close-photos-modal-x" style="position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; line-height: 1;">&times;</span>
+        
+        <div id="photo-modal-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; padding: 5px;"></div>
+        
+        <div style="margin-top: 25px; text-align: right;">
+            <button type="button" class="action-btn btn-close-photos-modal-btn" style="background: #7E8372; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Close</button>
+        </div>
     </div>
 </div>
