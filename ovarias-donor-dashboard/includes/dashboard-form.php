@@ -43,6 +43,53 @@ $num_eggs = get_user_meta($user_id, 'num_eggs', true) ?: '';
 $storage_country = get_user_meta($user_id, 'storage_country', true) ?: '';
 $num_donations = get_user_meta($user_id, 'num_donations', true) ?: '';
 
+// New PDF fields variables
+$ethnic_origin = get_user_meta($user_id, 'ethnic_origin', true);
+$race = get_user_meta($user_id, 'race', true);
+$ethnicity = get_user_meta($user_id, 'ethnicity', true);
+$body_type = get_user_meta($user_id, 'body_type', true);
+$face_shape = get_user_meta($user_id, 'face_shape', true);
+$nose_shape = get_user_meta($user_id, 'nose_shape', true);
+$lips_shape = get_user_meta($user_id, 'lips_shape', true);
+$hair_type = get_user_meta($user_id, 'hair_type', true);
+$skin_tone = get_user_meta($user_id, 'skin_tone', true);
+$freckles = get_user_meta($user_id, 'freckles', true);
+$favourite_lessons = get_user_meta($user_id, 'favourite_lessons', true);
+$proven_fertility = get_user_meta($user_id, 'proven_fertility', true);
+$hearing = get_user_meta($user_id, 'hearing', true);
+$vision = get_user_meta($user_id, 'vision', true);
+$wearing_glasses = get_user_meta($user_id, 'wearing_glasses', true);
+$wearing_lenses = get_user_meta($user_id, 'wearing_lenses', true);
+$surgeries = get_user_meta($user_id, 'surgeries', true);
+$allergies = get_user_meta($user_id, 'allergies', true);
+$dental_history = get_user_meta($user_id, 'dental_history', true);
+$twins_history = get_user_meta($user_id, 'twins_history', true);
+$alcohol_use = get_user_meta($user_id, 'alcohol_use', true);
+$smoking_tobacco = get_user_meta($user_id, 'smoking_tobacco', true);
+$vaping = get_user_meta($user_id, 'vaping', true);
+$drug_use = get_user_meta($user_id, 'drug_use', true);
+$medications = get_user_meta($user_id, 'medications', true);
+$decl_anonymous = get_user_meta($user_id, 'decl_anonymous', true);
+$decl_genetic_tests = get_user_meta($user_id, 'decl_genetic_tests', true);
+$zodiac_sign = get_user_meta($user_id, 'zodiac_sign', true);
+$fav_colour = get_user_meta($user_id, 'fav_colour', true);
+$fav_dish = get_user_meta($user_id, 'fav_dish', true);
+$fav_season = get_user_meta($user_id, 'fav_season', true);
+$fav_holiday = get_user_meta($user_id, 'fav_holiday', true);
+$fav_sport = get_user_meta($user_id, 'fav_sport', true);
+$fav_music = get_user_meta($user_id, 'fav_music', true);
+$childhood_dream = get_user_meta($user_id, 'childhood_dream', true);
+$fav_author = get_user_meta($user_id, 'fav_author', true);
+$fav_movie = get_user_meta($user_id, 'fav_movie', true);
+$countries_visited = get_user_meta($user_id, 'countries_visited', true);
+$goals_in_life = get_user_meta($user_id, 'goals_in_life', true);
+$idols_heroes = get_user_meta($user_id, 'idols_heroes', true);
+$personality_words = get_user_meta($user_id, 'personality_words', true);
+$strong_side = get_user_meta($user_id, 'strong_side', true);
+$weak_side = get_user_meta($user_id, 'weak_side', true);
+
+$medical_history = get_user_meta($user_id, 'medical_history', true) ?: array();
+
 // Recalculate completion percentage
 $completion_pct = ovarias_profile_completion_percentage($user_id);
 
@@ -231,6 +278,61 @@ $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
                         </select>
                     </div>
                 </div>
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="ethnic_origin">Ethnic Origin</label>
+                        <input type="text" id="ethnic_origin" name="ethnic_origin" value="<?php echo esc_attr($ethnic_origin); ?>" placeholder="e.g. European">
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="race">Race</label>
+                        <input type="text" id="race" name="race" value="<?php echo esc_attr($race); ?>" placeholder="e.g. Caucasian">
+                    </div>
+                </div>
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="ethnicity">Ethnicity</label>
+                        <input type="text" id="ethnicity" name="ethnicity" value="<?php echo esc_attr($ethnicity); ?>" placeholder="e.g. Ukrainian">
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="body_type">Body Type</label>
+                        <input type="text" id="body_type" name="body_type" value="<?php echo esc_attr($body_type); ?>" placeholder="e.g. Middle, Slim">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Facial, Hair & Skin Features -->
+            <div class="ovarias-form-section">
+                <h3>Facial, Hair & Skin Features</h3>
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="face_shape">Face Shape</label>
+                        <input type="text" id="face_shape" name="face_shape" value="<?php echo esc_attr($face_shape); ?>" placeholder="e.g. Oval">
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="nose_shape">Nose Shape / Size</label>
+                        <input type="text" id="nose_shape" name="nose_shape" value="<?php echo esc_attr($nose_shape); ?>" placeholder="e.g. Normal Small Straight">
+                    </div>
+                </div>
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="lips_shape">Lips Shape</label>
+                        <input type="text" id="lips_shape" name="lips_shape" value="<?php echo esc_attr($lips_shape); ?>" placeholder="e.g. Thin Normal">
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="hair_type">Hair Type</label>
+                        <input type="text" id="hair_type" name="hair_type" value="<?php echo esc_attr($hair_type); ?>" placeholder="e.g. Straight, Wavy">
+                    </div>
+                </div>
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="skin_tone">Skin Tone</label>
+                        <input type="text" id="skin_tone" name="skin_tone" value="<?php echo esc_attr($skin_tone); ?>" placeholder="e.g. Tan, Fair">
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="freckles">Freckles</label>
+                        <input type="text" id="freckles" name="freckles" value="<?php echo esc_attr($freckles); ?>" placeholder="e.g. Few, None">
+                    </div>
+                </div>
             </div>
 
             <!-- Section: Education & Occupation -->
@@ -263,6 +365,11 @@ $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
                 <div class="ovarias-input-group">
                     <label for="languages_spoken">Languages Spoken</label>
                     <textarea id="languages_spoken" name="languages_spoken" placeholder="e.g. English, Spanish (conversational)"><?php echo esc_textarea($languages_spoken); ?></textarea>
+                </div>
+
+                <div class="ovarias-input-group">
+                    <label for="favourite_lessons">Favourite Lessons / Subjects</label>
+                    <input type="text" id="favourite_lessons" name="favourite_lessons" value="<?php echo esc_attr($favourite_lessons); ?>" placeholder="e.g. Nature studies, Biology">
                 </div>
             </div>
 
@@ -326,6 +433,136 @@ $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
                     <div class="ovarias-input-group">
                         <label for="storage_country">Storage Country</label>
                         <input type="text" id="storage_country" name="storage_country" value="<?php echo esc_attr($storage_country); ?>" placeholder="e.g. Spain">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Health, Lifestyle & Declarations -->
+            <div class="ovarias-form-section">
+                <h3>Health, Lifestyle & Declarations</h3>
+                
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="proven_fertility">Proven Fertility</label>
+                        <select id="proven_fertility" name="proven_fertility">
+                            <option value="">Select</option>
+                            <option value="Yes" <?php selected($proven_fertility, 'Yes'); ?>>Yes</option>
+                            <option value="No" <?php selected($proven_fertility, 'No'); ?>>No</option>
+                        </select>
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="hearing">Hearing</label>
+                        <input type="text" id="hearing" name="hearing" value="<?php echo esc_attr($hearing); ?>" placeholder="e.g. Great, Normal">
+                    </div>
+                </div>
+
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="vision">Vision</label>
+                        <input type="text" id="vision" name="vision" value="<?php echo esc_attr($vision); ?>" placeholder="e.g. Great, Normal">
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="wearing_glasses">Inclination to Wearing Glasses</label>
+                        <select id="wearing_glasses" name="wearing_glasses">
+                            <option value="">Select</option>
+                            <option value="Yes" <?php selected($wearing_glasses, 'Yes'); ?>>Yes</option>
+                            <option value="No" <?php selected($wearing_glasses, 'No'); ?>>No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="wearing_lenses">Wearing Contact Lenses</label>
+                        <select id="wearing_lenses" name="wearing_lenses">
+                            <option value="">Select</option>
+                            <option value="Yes" <?php selected($wearing_lenses, 'Yes'); ?>>Yes</option>
+                            <option value="No" <?php selected($wearing_lenses, 'No'); ?>>No</option>
+                        </select>
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="surgeries">History of Surgeries</label>
+                        <input type="text" id="surgeries" name="surgeries" value="<?php echo esc_attr($surgeries); ?>" placeholder="e.g. No, Appendix surgery (2018)">
+                    </div>
+                </div>
+
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="allergies">Allergies</label>
+                        <input type="text" id="allergies" name="allergies" value="<?php echo esc_attr($allergies); ?>" placeholder="e.g. No, Peanuts">
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="dental_history">Dental / Orthodontic History</label>
+                        <input type="text" id="dental_history" name="dental_history" value="<?php echo esc_attr($dental_history); ?>" placeholder="e.g. No, Braces in childhood">
+                    </div>
+                </div>
+
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="twins_history">Twins Family History</label>
+                        <input type="text" id="twins_history" name="twins_history" value="<?php echo esc_attr($twins_history); ?>" placeholder="e.g. No, Twins on maternal side">
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="alcohol_use">Alcohol Use</label>
+                        <select id="alcohol_use" name="alcohol_use">
+                            <option value="">Select</option>
+                            <option value="No" <?php selected($alcohol_use, 'No'); ?>>No</option>
+                            <option value="Socially" <?php selected($alcohol_use, 'Socially'); ?>>Socially</option>
+                            <option value="Yes" <?php selected($alcohol_use, 'Yes'); ?>>Yes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="smoking_tobacco">Smoking (Tobacco)</label>
+                        <select id="smoking_tobacco" name="smoking_tobacco">
+                            <option value="">Select</option>
+                            <option value="No" <?php selected($smoking_tobacco, 'No'); ?>>No</option>
+                            <option value="Yes" <?php selected($smoking_tobacco, 'Yes'); ?>>Yes</option>
+                        </select>
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="vaping">Vaping (Nicotine/THC)</label>
+                        <select id="vaping" name="vaping">
+                            <option value="">Select</option>
+                            <option value="No" <?php selected($vaping, 'No'); ?>>No</option>
+                            <option value="Yes" <?php selected($vaping, 'Yes'); ?>>Yes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="drug_use">Recreational Drug Use</label>
+                        <select id="drug_use" name="drug_use">
+                            <option value="">Select</option>
+                            <option value="No" <?php selected($drug_use, 'No'); ?>>No</option>
+                            <option value="Yes" <?php selected($drug_use, 'Yes'); ?>>Yes</option>
+                        </select>
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="medications">Medications</label>
+                        <input type="text" id="medications" name="medications" value="<?php echo esc_attr($medications); ?>" placeholder="e.g. No, Vitamin C">
+                    </div>
+                </div>
+
+                <div class="ovarias-input-row">
+                    <div class="ovarias-input-group">
+                        <label for="decl_anonymous">Do you understand you’re contributing genetic material while remaining anonymous?</label>
+                        <select id="decl_anonymous" name="decl_anonymous">
+                            <option value="">Select</option>
+                            <option value="YES" <?php selected($decl_anonymous, 'YES'); ?>>YES</option>
+                            <option value="NO" <?php selected($decl_anonymous, 'NO'); ?>>NO</option>
+                        </select>
+                    </div>
+                    <div class="ovarias-input-group">
+                        <label for="decl_genetic_tests">Are you open to taking a genetic test?</label>
+                        <select id="decl_genetic_tests" name="decl_genetic_tests">
+                            <option value="">Select</option>
+                            <option value="YES" <?php selected($decl_genetic_tests, 'YES'); ?>>YES</option>
+                            <option value="NO" <?php selected($decl_genetic_tests, 'NO'); ?>>NO</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -417,6 +654,76 @@ $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
             </div>
 
             <div class="ovarias-input-group">
+                <label style="font-weight: bold; margin-bottom: 10px; display: block; color: var(--ovarias-text-dark);">Preferences & Additional Details</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <label for="zodiac_sign" style="font-size: 13px; font-weight: normal; color: #555;">Sign of the Zodiac</label>
+                        <input type="text" id="zodiac_sign" name="zodiac_sign" value="<?php echo esc_attr($zodiac_sign); ?>" placeholder="e.g. Capricorn">
+                    </div>
+                    <div>
+                        <label for="fav_colour" style="font-size: 13px; font-weight: normal; color: #555;">Favourite Colour</label>
+                        <input type="text" id="fav_colour" name="fav_colour" value="<?php echo esc_attr($fav_colour); ?>" placeholder="e.g. Amber Gold">
+                    </div>
+                    <div>
+                        <label for="fav_dish" style="font-size: 13px; font-weight: normal; color: #555;">Favourite Dish</label>
+                        <input type="text" id="fav_dish" name="fav_dish" value="<?php echo esc_attr($fav_dish); ?>" placeholder="e.g. Varenyky">
+                    </div>
+                    <div>
+                        <label for="fav_season" style="font-size: 13px; font-weight: normal; color: #555;">Favourite Season</label>
+                        <input type="text" id="fav_season" name="fav_season" value="<?php echo esc_attr($fav_season); ?>" placeholder="e.g. Late Summer">
+                    </div>
+                    <div>
+                        <label for="fav_holiday" style="font-size: 13px; font-weight: normal; color: #555;">Favourite Holiday</label>
+                        <input type="text" id="fav_holiday" name="fav_holiday" value="<?php echo esc_attr($fav_holiday); ?>" placeholder="e.g. Christmas Eve">
+                    </div>
+                    <div>
+                        <label for="fav_sport" style="font-size: 13px; font-weight: normal; color: #555;">Favourite Kind of Sport</label>
+                        <input type="text" id="fav_sport" name="fav_sport" value="<?php echo esc_attr($fav_sport); ?>" placeholder="e.g. Rock climbing">
+                    </div>
+                    <div>
+                        <label for="fav_music" style="font-size: 13px; font-weight: normal; color: #555;">Favourite Musical Style</label>
+                        <input type="text" id="fav_music" name="fav_music" value="<?php echo esc_attr($fav_music); ?>" placeholder="e.g. Synthwave">
+                    </div>
+                    <div>
+                        <label for="childhood_dream" style="font-size: 13px; font-weight: normal; color: #555;">Childhood Dream</label>
+                        <input type="text" id="childhood_dream" name="childhood_dream" value="<?php echo esc_attr($childhood_dream); ?>" placeholder="e.g. To score soundtracks">
+                    </div>
+                    <div>
+                        <label for="fav_author" style="font-size: 13px; font-weight: normal; color: #555;">Favourite Author / Book</label>
+                        <input type="text" id="fav_author" name="fav_author" value="<?php echo esc_attr($fav_author); ?>" placeholder="e.g. Dune by Frank Herbert">
+                    </div>
+                    <div>
+                        <label for="fav_movie" style="font-size: 13px; font-weight: normal; color: #555;">Favourite Movie</label>
+                        <input type="text" id="fav_movie" name="fav_movie" value="<?php echo esc_attr($fav_movie); ?>" placeholder="e.g. Atmospheric sci-fi">
+                    </div>
+                    <div>
+                        <label for="countries_visited" style="font-size: 13px; font-weight: normal; color: #555;">Countries Visited</label>
+                        <input type="text" id="countries_visited" name="countries_visited" value="<?php echo esc_attr($countries_visited); ?>" placeholder="e.g. Austria, Norway">
+                    </div>
+                    <div>
+                        <label for="goals_in_life" style="font-size: 13px; font-weight: normal; color: #555;">Goals in Life</label>
+                        <input type="text" id="goals_in_life" name="goals_in_life" value="<?php echo esc_attr($goals_in_life); ?>" placeholder="e.g. To open an independent audio studio">
+                    </div>
+                    <div>
+                        <label for="idols_heroes" style="font-size: 13px; font-weight: normal; color: #555;">Idols / Heroes</label>
+                        <input type="text" id="idols_heroes" name="idols_heroes" value="<?php echo esc_attr($idols_heroes); ?>" placeholder="e.g. Electronic music composers">
+                    </div>
+                    <div>
+                        <label for="personality_words" style="font-size: 13px; font-weight: normal; color: #555;">Words Describing Personality</label>
+                        <input type="text" id="personality_words" name="personality_words" value="<?php echo esc_attr($personality_words); ?>" placeholder="e.g. Analytical, calm, curious">
+                    </div>
+                    <div>
+                        <label for="strong_side" style="font-size: 13px; font-weight: normal; color: #555;">Strong Side</label>
+                        <input type="text" id="strong_side" name="strong_side" value="<?php echo esc_attr($strong_side); ?>" placeholder="e.g. Deep focus">
+                    </div>
+                    <div>
+                        <label for="weak_side" style="font-size: 13px; font-weight: normal; color: #555;">Weak Side</label>
+                        <input type="text" id="weak_side" name="weak_side" value="<?php echo esc_attr($weak_side); ?>" placeholder="e.g. Getting overly lost">
+                    </div>
+                </div>
+            </div>
+
+            <div class="ovarias-input-group">
                 <label for="hobbies">Hobbies & Interests</label>
                 <textarea id="hobbies" name="hobbies" placeholder="What are your favorite activities, sports, reading, etc.?"><?php echo esc_textarea($hobbies); ?></textarea>
             </div>
@@ -424,6 +731,70 @@ $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
             <div class="ovarias-input-group">
                 <label for="why_donate">Why do you want to donate?</label>
                 <textarea id="why_donate" name="why_donate" placeholder="Share your motivation for becoming an egg donor..."><?php echo esc_textarea($why_donate); ?></textarea>
+            </div>
+        </div>
+
+        <!-- Section: Medical & Family History -->
+        <div class="ovarias-full-width-section" style="margin-top: 30px; border-top: 1px solid var(--ovarias-border); padding-top: 30px;">
+            <h3>Donor Medical & Family History</h3>
+            <p style="margin-bottom: 20px; font-size: 13px; color: #666; font-style: italic;">Please check the box next to any condition if you or anyone in your biological family has a history of it. Leave unchecked for "No".</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <?php
+                $conditions = array(
+                    'heart_disease_under40' => 'Heart Disease (under 40)',
+                    'heart_attack_under40' => 'Heart Attack (under 40)',
+                    'high_blood_pressure' => 'High Blood Pressure',
+                    'other_heart_conditions' => 'Other Heart Conditions',
+                    'hemophilia' => 'Hemophilia',
+                    'sickle_cell_anemia' => 'Sickle Cell Anemia',
+                    'lymphoma' => 'Lymphoma',
+                    'other_blood_disorders' => 'Other Blood Disorders',
+                    'emphysema_copd' => 'Emphysema / COPD',
+                    'lung_cancer' => 'Lung Cancer',
+                    'environmental_allergies' => 'Environmental Allergies',
+                    'neurofibromatosis' => 'Neurofibromatosis',
+                    'skin_cancer_melanoma' => 'Skin Cancer / Melanoma',
+                    'eczema' => 'Eczema',
+                    'pigmentation_disorders' => 'Pigmentation Disorders',
+                    'rectal_cancer' => 'Colo-Rectal Cancer',
+                    'crohns_disease' => "Crohn's Disease",
+                    'cystic_fibrosis' => 'Cystic Fibrosis',
+                    'liver_disease' => 'Liver Disease',
+                    'schizophrenia' => 'Schizophrenia',
+                    'bipolar_disorder' => 'Bipolar Disorder',
+                    'depression' => 'Depression',
+                    'suicide' => 'Suicide',
+                    'congenital_heart_malformation' => 'Congenital Heart Malformation',
+                    'arthritis' => 'Arthritis',
+                    'congenital_spine_malformation' => 'Congenital Spine Malformation',
+                    'dwarfism' => 'Dwarfism',
+                    'muscular_dystrophy' => 'Muscular Dystrophy',
+                    'osteoporosis' => 'Osteoporosis',
+                    'congenital_blindness' => 'Congenital Blindness',
+                    'cataracts_under50' => 'Cataracts (under 50)',
+                    'dyslexia' => 'Dyslexia',
+                    'retinoblastoma' => 'Retinoblastoma',
+                    'glaucoma' => 'Glaucoma',
+                    'congenital_deafness' => 'Congenital Deafness',
+                    'cleft_lip_palate' => 'Cleft Lip / Palate',
+                    'club_foot' => 'Club Foot',
+                    'turners_syndrome' => "Turner's Syndrome",
+                    'klinefelters_syndrome' => "Klinefelter's Syndrome",
+                    'fragile_x_syndrome' => 'Fragile X Syndrome',
+                    'other_disorders' => 'Other Disorders'
+                );
+
+                foreach ($conditions as $key => $label) {
+                    $checked = !empty($medical_history[$key]) && $medical_history[$key] === 'Yes' ? 'checked' : '';
+                    ?>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: normal; cursor: pointer; color: #555A4E; background: #fafbf9; padding: 10px; border-radius: 6px; border: 1px solid #eef0eb;">
+                        <input type="checkbox" name="medical_history[<?php echo esc_attr($key); ?>]" value="Yes" <?php echo $checked; ?> style="width: auto; margin: 0; cursor: pointer;">
+                        <span><?php echo esc_html($label); ?></span>
+                    </label>
+                    <?php
+                }
+                ?>
             </div>
         </div>
 

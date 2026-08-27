@@ -3,7 +3,7 @@
 Plugin Name: Ovarias Donor Dashboard
 Plugin URI: https://ovarias.com
 Description: Donor Dashboard with Zoho CRM Integration
-Version: 1.1.9
+Version: 1.2.0
 Author: Ovarias
 */
 
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('OVARIAS_DONOR_VERSION', '1.1.9');
+define('OVARIAS_DONOR_VERSION', '1.2.0');
 define('OVARIAS_DONOR_PATH', plugin_dir_path(__FILE__));
 define('OVARIAS_PARENT_VERSION_COMPAT', '1.0.1'); // Keep compat constants if any
 define('OVARIAS_DONOR_URL', plugin_dir_url(__FILE__));

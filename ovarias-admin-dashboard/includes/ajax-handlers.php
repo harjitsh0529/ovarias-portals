@@ -164,12 +164,35 @@ function ovarias_admin_ajax_create_user() {
             'donor_id', 'dob', 'nationality', 'blood_group', 'height', 'weight',
             'eye_colour', 'hair_colour', 'education_level', 'field_of_study',
             'occupation', 'languages_spoken', 'availability_status', 'egg_type',
-            'num_eggs', 'storage_country', 'about_me', 'hobbies', 'why_donate'
+            'num_eggs', 'storage_country', 'about_me', 'hobbies', 'why_donate',
+            
+            // New PDF Fields
+            'ethnic_origin', 'race', 'ethnicity', 'body_type',
+            'face_shape', 'nose_shape', 'lips_shape', 'hair_type',
+            'skin_tone', 'freckles', 'favourite_lessons',
+            'proven_fertility', 'hearing', 'vision', 'wearing_glasses', 'wearing_lenses',
+            'surgeries', 'allergies', 'dental_history', 'twins_history',
+            'alcohol_use', 'smoking_tobacco', 'vaping', 'drug_use', 'medications',
+            'decl_anonymous', 'decl_genetic_tests', 'zodiac_sign',
+            'fav_colour', 'fav_dish', 'fav_season', 'fav_holiday', 'fav_sport', 'fav_music',
+            'childhood_dream', 'fav_author', 'fav_movie', 'countries_visited',
+            'goals_in_life', 'idols_heroes', 'personality_words', 'strong_side', 'weak_side'
         );
         foreach ($donor_meta_fields as $field) {
             if (isset($_POST[$field])) {
                 update_user_meta($user_id, $field, sanitize_textarea_field($_POST[$field]));
             }
+        }
+
+        // Save Medical & Family History
+        if (isset($_POST['medical_history']) && is_array($_POST['medical_history'])) {
+            $med_history = array();
+            foreach ($_POST['medical_history'] as $key => $val) {
+                $med_history[sanitize_key($key)] = sanitize_text_field($val);
+            }
+            update_user_meta($user_id, 'medical_history', $med_history);
+        } else {
+            update_user_meta($user_id, 'medical_history', array());
         }
 
         // Handle Profile Image Upload (Single)

@@ -132,6 +132,57 @@ jQuery(document).ready(function($) {
             formData.append('about_me', $('#new-donor-about').val());
             formData.append('hobbies', $('#new-donor-hobbies').val());
             formData.append('why_donate', $('#new-donor-why').val());
+
+            // New PDF fields
+            formData.append('ethnic_origin', $('#new-donor-ethnic-origin').val());
+            formData.append('race', $('#new-donor-race').val());
+            formData.append('ethnicity', $('#new-donor-ethnicity').val());
+            formData.append('body_type', $('#new-donor-body-type').val());
+            formData.append('face_shape', $('#new-donor-face-shape').val());
+            formData.append('nose_shape', $('#new-donor-nose-shape').val());
+            formData.append('lips_shape', $('#new-donor-lips-shape').val());
+            formData.append('hair_type', $('#new-donor-hair-type').val());
+            formData.append('skin_tone', $('#new-donor-skin-tone').val());
+            formData.append('freckles', $('#new-donor-freckles').val());
+            formData.append('favourite_lessons', $('#new-donor-favourite-lessons').val());
+            formData.append('proven_fertility', $('#new-donor-proven-fertility').val());
+            formData.append('hearing', $('#new-donor-hearing').val());
+            formData.append('vision', $('#new-donor-vision').val());
+            formData.append('wearing_glasses', $('#new-donor-wearing-glasses').val());
+            formData.append('wearing_lenses', $('#new-donor-wearing-lenses').val());
+            formData.append('surgeries', $('#new-donor-surgeries').val());
+            formData.append('allergies', $('#new-donor-allergies').val());
+            formData.append('dental_history', $('#new-donor-dental-history').val());
+            formData.append('twins_history', $('#new-donor-twins-history').val());
+            formData.append('alcohol_use', $('#new-donor-alcohol-use').val());
+            formData.append('smoking_tobacco', $('#new-donor-smoking-tobacco').val());
+            formData.append('vaping', $('#new-donor-vaping').val());
+            formData.append('drug_use', $('#new-donor-drug-use').val());
+            formData.append('medications', $('#new-donor-medications').val());
+            formData.append('decl_anonymous', $('#new-donor-decl-anonymous').val());
+            formData.append('decl_genetic_tests', $('#new-donor-decl-genetic-tests').val());
+            formData.append('zodiac_sign', $('#new-donor-zodiac-sign').val());
+            formData.append('fav_colour', $('#new-donor-fav-colour').val());
+            formData.append('fav_dish', $('#new-donor-fav-dish').val());
+            formData.append('fav_season', $('#new-donor-fav-season').val());
+            formData.append('fav_holiday', $('#new-donor-fav-holiday').val());
+            formData.append('fav_sport', $('#new-donor-fav-sport').val());
+            formData.append('fav_music', $('#new-donor-fav-music').val());
+            formData.append('childhood_dream', $('#new-donor-childhood-dream').val());
+            formData.append('fav_author', $('#new-donor-fav-author').val());
+            formData.append('fav_movie', $('#new-donor-fav-movie').val());
+            formData.append('countries_visited', $('#new-donor-countries-visited').val());
+            formData.append('goals_in_life', $('#new-donor-goals-in-life').val());
+            formData.append('idols_heroes', $('#new-donor-idols-heroes').val());
+            formData.append('personality_words', $('#new-donor-personality-words').val());
+            formData.append('strong_side', $('#new-donor-strong-side').val());
+            formData.append('weak_side', $('#new-donor-weak-side').val());
+
+            // Medical History Checkboxes
+            $('.new-donor-med-checkbox:checked').each(function() {
+                var key = $(this).data('key');
+                formData.append('medical_history[' + key + ']', 'Yes');
+            });
             
             // Append Profile Photo file
             var profileFile = $('#new-donor-profile-image')[0].files[0];
@@ -597,6 +648,100 @@ jQuery(document).ready(function($) {
             $('#modal-egg-type').text(donor.egg_type + ' Egg Donor');
             $('#modal-num-eggs').text(donor.num_eggs);
             $('#modal-storage-country').text(donor.storage_country);
+
+            // New PDF grid fields
+            $('#modal-ethnic-origin').text(donor.ethnic_origin || 'N/A');
+            $('#modal-race-ethnicity').text((donor.race || 'N/A') + ' / ' + (donor.ethnicity || 'N/A'));
+            $('#modal-body-face').text((donor.body_type || 'N/A') + ' / ' + (donor.face_shape || 'N/A'));
+            $('#modal-nose-lips').text('Nose: ' + (donor.nose_shape || 'N/A') + ' / Lips: ' + (donor.lips_shape || 'N/A'));
+            $('#modal-hairtype-skin').text('Hair Type: ' + (donor.hair_type || 'N/A') + ' / Skin: ' + (donor.skin_tone || 'N/A'));
+            $('#modal-freckles').text(donor.freckles || 'N/A');
+
+            // Health & Lifestyle
+            $('#modal-proven-fertility').text(donor.proven_fertility || 'N/A');
+            $('#modal-hearing-vision').text('Hearing: ' + (donor.hearing || 'N/A') + ' / Vision: ' + (donor.vision || 'N/A'));
+            $('#modal-glasses-lenses').text('Glasses: ' + (donor.wearing_glasses || 'N/A') + ' / Lenses: ' + (donor.wearing_lenses || 'N/A'));
+            $('#modal-surgeries-allergies').text('Surgeries: ' + (donor.surgeries || 'N/A') + ' / Allergies: ' + (donor.allergies || 'N/A'));
+            $('#modal-dental-twins').text('Dental: ' + (donor.dental_history || 'N/A') + ' / Twins: ' + (donor.twins_history || 'N/A'));
+            $('#modal-smoking-alcohol-vaping').text('Smoker: ' + (donor.smoking_tobacco || 'N/A') + ' / Alcohol: ' + (donor.alcohol_use || 'N/A') + ' / Vaping: ' + (donor.vaping || 'N/A'));
+            $('#modal-drugs-meds').text('Drugs: ' + (donor.drug_use || 'N/A') + ' / Meds: ' + (donor.medications || 'N/A'));
+            $('#modal-anonymity-testing').text('Anonymous: ' + (donor.decl_anonymous || 'N/A') + ' / Open to Tests: ' + (donor.decl_genetic_tests || 'N/A'));
+
+            // Preferences
+            $('#modal-zodiac-sign').text(donor.zodiac_sign || 'N/A');
+            $('#modal-fav-colour').text(donor.fav_colour || 'N/A');
+            $('#modal-fav-dish-season').text('Dish: ' + (donor.fav_dish || 'N/A') + ' / Season: ' + (donor.fav_season || 'N/A'));
+            $('#modal-fav-holiday-sport').text('Holiday: ' + (donor.fav_holiday || 'N/A') + ' / Sport: ' + (donor.fav_sport || 'N/A'));
+            $('#modal-fav-music').text(donor.fav_music || 'N/A');
+            $('#modal-childhood-dream').text(donor.childhood_dream || 'N/A');
+            $('#modal-fav-book-movie').text('Book: ' + (donor.fav_author || 'N/A') + ' / Movie: ' + (donor.fav_movie || 'N/A'));
+            $('#modal-countries-visited').text(donor.countries_visited || 'N/A');
+            $('#modal-goals-in-life').text(donor.goals_in_life || 'N/A');
+            $('#modal-idols-heroes').text(donor.idols_heroes || 'N/A');
+            $('#modal-personality-words').text(donor.personality_words || 'N/A');
+            $('#modal-strong-weak').text('Strong: ' + (donor.strong_side || 'N/A') + ' / Weak: ' + (donor.weak_side || 'N/A'));
+            $('#modal-favourite-lessons-val').text(donor.favourite_lessons || 'N/A');
+
+            // Render Medical & Family History Display
+            var medicalContainer = $('#modal-medical-history-display');
+            medicalContainer.empty();
+            
+            var conditionsMap = {
+                'heart_disease_under40': 'Heart Disease (under 40)',
+                'heart_attack_under40': 'Heart Attack (under 40)',
+                'high_blood_pressure': 'High Blood Pressure',
+                'other_heart_conditions': 'Other Heart Conditions',
+                'hemophilia': 'Hemophilia',
+                'sickle_cell_anemia': 'Sickle Cell Anemia',
+                'lymphoma': 'Lymphoma',
+                'other_blood_disorders': 'Other Blood Disorders',
+                'emphysema_copd': 'Emphysema / COPD',
+                'lung_cancer': 'Lung Cancer',
+                'environmental_allergies': 'Environmental Allergies',
+                'neurofibromatosis': 'Neurofibromatosis',
+                'skin_cancer_melanoma': 'Skin Cancer / Melanoma',
+                'eczema': 'Eczema',
+                'pigmentation_disorders': 'Pigmentation Disorders',
+                'rectal_cancer': 'Colo-Rectal Cancer',
+                'crohns_disease': "Crohn's Disease",
+                'cystic_fibrosis': 'Cystic Fibrosis',
+                'liver_disease': 'Liver Disease',
+                'schizophrenia': 'Schizophrenia',
+                'bipolar_disorder': 'Bipolar Disorder',
+                'depression': 'Depression',
+                'suicide': 'Suicide',
+                'congenital_heart_malformation': 'Congenital Heart Malformation',
+                'arthritis': 'Arthritis',
+                'congenital_spine_malformation': 'Congenital Spine Malformation',
+                'dwarfism': 'Dwarfism',
+                'muscular_dystrophy': 'Muscular Dystrophy',
+                'osteoporosis': 'Osteoporosis',
+                'congenital_blindness': 'Congenital Blindness',
+                'cataracts_under50': 'Cataracts (under 50)',
+                'dyslexia': 'Dyslexia',
+                'retinoblastoma': 'Retinoblastoma',
+                'glaucoma': 'Glaucoma',
+                'congenital_deafness': 'Congenital Deafness',
+                'cleft_lip_palate': 'Cleft Lip / Palate',
+                'club_foot': 'Club Foot',
+                'turners_syndrome': "Turner's Syndrome",
+                'klinefelters_syndrome': "Klinefelter's Syndrome",
+                'fragile_x_syndrome': 'Fragile X Syndrome',
+                'other_disorders': 'Other Disorders'
+            };
+            
+            var hasMedicalHistory = false;
+            if (donor.medical_history) {
+                Object.keys(conditionsMap).forEach(function(key) {
+                    if (donor.medical_history[key] === 'Yes') {
+                        medicalContainer.append('<div style="color: #c62828; font-weight: 600; padding: 4px 8px; background: #ffebee; border-radius: 4px; border: 1px solid #ffcdd2;">✔ ' + conditionsMap[key] + '</div>');
+                        hasMedicalHistory = true;
+                    }
+                });
+            }
+            if (!hasMedicalHistory) {
+                medicalContainer.append('<div style="grid-column: 1 / -1; color: #8A9181; font-style: italic; text-align: center; padding: 10px;">No medical history reported (all clean).</div>');
+            }
             
             // Description sections
             $('#modal-about').text(donor.about_me);

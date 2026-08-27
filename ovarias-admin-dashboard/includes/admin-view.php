@@ -417,7 +417,53 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                                         'about_me' => get_user_meta($d_id, 'about_me', true) ?: 'N/A',
                                         'why_donate' => get_user_meta($d_id, 'why_donate', true) ?: 'N/A',
                                         'avatar' => $avatar_url ?: (OVARIAS_ADMIN_URL . 'assets/css/placeholder.png'),
-                                        'gallery' => $full_urls
+                                        'gallery' => $full_urls,
+                                        
+                                        // New PDF fields
+                                        'ethnic_origin' => get_user_meta($d_id, 'ethnic_origin', true) ?: 'N/A',
+                                        'race' => get_user_meta($d_id, 'race', true) ?: 'N/A',
+                                        'ethnicity' => get_user_meta($d_id, 'ethnicity', true) ?: 'N/A',
+                                        'body_type' => get_user_meta($d_id, 'body_type', true) ?: 'N/A',
+                                        'face_shape' => get_user_meta($d_id, 'face_shape', true) ?: 'N/A',
+                                        'nose_shape' => get_user_meta($d_id, 'nose_shape', true) ?: 'N/A',
+                                        'lips_shape' => get_user_meta($d_id, 'lips_shape', true) ?: 'N/A',
+                                        'hair_type' => get_user_meta($d_id, 'hair_type', true) ?: 'N/A',
+                                        'skin_tone' => get_user_meta($d_id, 'skin_tone', true) ?: 'N/A',
+                                        'freckles' => get_user_meta($d_id, 'freckles', true) ?: 'N/A',
+                                        'favourite_lessons' => get_user_meta($d_id, 'favourite_lessons', true) ?: 'N/A',
+                                        'proven_fertility' => get_user_meta($d_id, 'proven_fertility', true) ?: 'N/A',
+                                        'hearing' => get_user_meta($d_id, 'hearing', true) ?: 'N/A',
+                                        'vision' => get_user_meta($d_id, 'vision', true) ?: 'N/A',
+                                        'wearing_glasses' => get_user_meta($d_id, 'wearing_glasses', true) ?: 'N/A',
+                                        'wearing_lenses' => get_user_meta($d_id, 'wearing_lenses', true) ?: 'N/A',
+                                        'surgeries' => get_user_meta($d_id, 'surgeries', true) ?: 'N/A',
+                                        'allergies' => get_user_meta($d_id, 'allergies', true) ?: 'N/A',
+                                        'dental_history' => get_user_meta($d_id, 'dental_history', true) ?: 'N/A',
+                                        'twins_history' => get_user_meta($d_id, 'twins_history', true) ?: 'N/A',
+                                        'alcohol_use' => get_user_meta($d_id, 'alcohol_use', true) ?: 'N/A',
+                                        'smoking_tobacco' => get_user_meta($d_id, 'smoking_tobacco', true) ?: 'N/A',
+                                        'vaping' => get_user_meta($d_id, 'vaping', true) ?: 'N/A',
+                                        'drug_use' => get_user_meta($d_id, 'drug_use', true) ?: 'N/A',
+                                        'medications' => get_user_meta($d_id, 'medications', true) ?: 'N/A',
+                                        'decl_anonymous' => get_user_meta($d_id, 'decl_anonymous', true) ?: 'N/A',
+                                        'decl_genetic_tests' => get_user_meta($d_id, 'decl_genetic_tests', true) ?: 'N/A',
+                                        'zodiac_sign' => get_user_meta($d_id, 'zodiac_sign', true) ?: 'N/A',
+                                        'fav_colour' => get_user_meta($d_id, 'fav_colour', true) ?: 'N/A',
+                                        'fav_dish' => get_user_meta($d_id, 'fav_dish', true) ?: 'N/A',
+                                        'fav_season' => get_user_meta($d_id, 'fav_season', true) ?: 'N/A',
+                                        'fav_holiday' => get_user_meta($d_id, 'fav_holiday', true) ?: 'N/A',
+                                        'fav_sport' => get_user_meta($d_id, 'fav_sport', true) ?: 'N/A',
+                                        'fav_music' => get_user_meta($d_id, 'fav_music', true) ?: 'N/A',
+                                        'childhood_dream' => get_user_meta($d_id, 'childhood_dream', true) ?: 'N/A',
+                                        'fav_author' => get_user_meta($d_id, 'fav_author', true) ?: 'N/A',
+                                        'fav_movie' => get_user_meta($d_id, 'fav_movie', true) ?: 'N/A',
+                                        'countries_visited' => get_user_meta($d_id, 'countries_visited', true) ?: 'N/A',
+                                        'goals_in_life' => get_user_meta($d_id, 'goals_in_life', true) ?: 'N/A',
+                                        'idols_heroes' => get_user_meta($d_id, 'idols_heroes', true) ?: 'N/A',
+                                        'personality_words' => get_user_meta($d_id, 'personality_words', true) ?: 'N/A',
+                                        'strong_side' => get_user_meta($d_id, 'strong_side', true) ?: 'N/A',
+                                        'weak_side' => get_user_meta($d_id, 'weak_side', true) ?: 'N/A',
+                                        'medical_history' => get_user_meta($d_id, 'medical_history', true) ?: array()
                                     );
                                     ?>
                                     <strong class="btn-view-admin-donor-profile" style="color: #7E8372; cursor: pointer; text-decoration: underline;" data-donor="<?php echo esc_attr(wp_json_encode($detail_data)); ?>">
@@ -716,6 +762,286 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                         <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Why I Want to Donate</label>
                         <textarea id="new-donor-why" class="table-inline-input" style="width: 100%; box-sizing: border-box; min-height: 80px;"></textarea>
                     </div>
+
+                    <!-- Basic Origin Details -->
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Ethnic Origin</label>
+                        <input type="text" id="new-donor-ethnic-origin" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. European">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Race</label>
+                        <input type="text" id="new-donor-race" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Caucasian">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Ethnicity</label>
+                        <input type="text" id="new-donor-ethnicity" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Ukrainian">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Body Type</label>
+                        <input type="text" id="new-donor-body-type" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Middle, Slim">
+                    </div>
+
+                    <!-- Physical Features Details -->
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Face Shape</label>
+                        <input type="text" id="new-donor-face-shape" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Oval">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Nose Shape / Size</label>
+                        <input type="text" id="new-donor-nose-shape" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Normal Small Straight">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Lips Shape</label>
+                        <input type="text" id="new-donor-lips-shape" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Thin Normal">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Hair Type</label>
+                        <input type="text" id="new-donor-hair-type" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Straight, Curly">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Skin Tone</label>
+                        <input type="text" id="new-donor-skin-tone" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Tan, Fair">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Freckles</label>
+                        <input type="text" id="new-donor-freckles" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Few, None">
+                    </div>
+
+                    <!-- Education Detail -->
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Favourite Lessons</label>
+                        <input type="text" id="new-donor-favourite-lessons" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Nature studies">
+                    </div>
+
+                    <!-- Health & Lifestyle Details -->
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Proven Fertility</label>
+                        <select id="new-donor-proven-fertility" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Hearing</label>
+                        <input type="text" id="new-donor-hearing" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Great">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Vision</label>
+                        <input type="text" id="new-donor-vision" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Great">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Inclination to Wearing Glasses</label>
+                        <select id="new-donor-wearing-glasses" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Wearing Contact Lenses</label>
+                        <select id="new-donor-wearing-lenses" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">History of Surgeries</label>
+                        <input type="text" id="new-donor-surgeries" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. No">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Allergies</label>
+                        <input type="text" id="new-donor-allergies" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. No">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Dental / Orthodontic History</label>
+                        <input type="text" id="new-donor-dental-history" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. No">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Twins Family History</label>
+                        <input type="text" id="new-donor-twins-history" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. No">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Alcohol Use</label>
+                        <select id="new-donor-alcohol-use" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Select</option>
+                            <option value="No">No</option>
+                            <option value="Socially">Socially</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Smoking (Tobacco)</label>
+                        <select id="new-donor-smoking-tobacco" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Select</option>
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Vaping (Nicotine/THC)</label>
+                        <select id="new-donor-vaping" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Select</option>
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Recreational Drug Use</label>
+                        <select id="new-donor-drug-use" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Select</option>
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Medications</label>
+                        <input type="text" id="new-donor-medications" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. No">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Anonymity Confirmation Agreement</label>
+                        <select id="new-donor-decl-anonymous" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Select</option>
+                            <option value="YES">YES</option>
+                            <option value="NO">NO</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Open to Genetic Tests</label>
+                        <select id="new-donor-decl-genetic-tests" class="table-inline-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Select</option>
+                            <option value="YES">YES</option>
+                            <option value="NO">NO</option>
+                        </select>
+                    </div>
+
+                    <!-- Preferences & Personality Details -->
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Sign of the Zodiac</label>
+                        <input type="text" id="new-donor-zodiac-sign" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Capricorn">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Favourite Colour</label>
+                        <input type="text" id="new-donor-fav-colour" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Amber Gold">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Favourite Dish</label>
+                        <input type="text" id="new-donor-fav-dish" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Varenyky">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Favourite Season</label>
+                        <input type="text" id="new-donor-fav-season" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Late Summer">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Favourite Holiday</label>
+                        <input type="text" id="new-donor-fav-holiday" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Christmas Eve">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Favourite Kind of Sport</label>
+                        <input type="text" id="new-donor-fav-sport" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Rock climbing">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Favourite Musical Style</label>
+                        <input type="text" id="new-donor-fav-music" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Synthwave">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Childhood Dream</label>
+                        <input type="text" id="new-donor-childhood-dream" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. To score soundtracks">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Favourite Author / Book</label>
+                        <input type="text" id="new-donor-fav-author" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Dune">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Favourite Movie</label>
+                        <input type="text" id="new-donor-fav-movie" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Atmospheric sci-fi">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Countries Visited</label>
+                        <input type="text" id="new-donor-countries-visited" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Austria, Norway">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Goals in Life</label>
+                        <input type="text" id="new-donor-goals-in-life" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Open audio studio">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Idols / Heroes</label>
+                        <input type="text" id="new-donor-idols-heroes" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Pioneering composers">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Words Describing Personality</label>
+                        <input type="text" id="new-donor-personality-words" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Analytical, calm, curious">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Strong Side</label>
+                        <input type="text" id="new-donor-strong-side" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Deep focus">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Weak Side</label>
+                        <input type="text" id="new-donor-weak-side" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Getting overly lost">
+                    </div>
+
+                    <!-- Medical & Family History Checkbox Grid -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 10px; color: #555A4E;">Donor Medical & Family History Checklist</label>
+                        <div style="max-height: 250px; overflow-y: auto; background: #fafbf9; padding: 10px; border-radius: 6px; border: 1px solid #c2c7bd; display: grid; grid-template-columns: 1fr; gap: 8px;">
+                            <?php
+                            $admin_conditions = array(
+                                'heart_disease_under40' => 'Heart Disease (under 40)',
+                                'heart_attack_under40' => 'Heart Attack (under 40)',
+                                'high_blood_pressure' => 'High Blood Pressure',
+                                'other_heart_conditions' => 'Other Heart Conditions',
+                                'hemophilia' => 'Hemophilia',
+                                'sickle_cell_anemia' => 'Sickle Cell Anemia',
+                                'lymphoma' => 'Lymphoma',
+                                'other_blood_disorders' => 'Other Blood Disorders',
+                                'emphysema_copd' => 'Emphysema / COPD',
+                                'lung_cancer' => 'Lung Cancer',
+                                'environmental_allergies' => 'Environmental Allergies',
+                                'neurofibromatosis' => 'Neurofibromatosis',
+                                'skin_cancer_melanoma' => 'Skin Cancer / Melanoma',
+                                'eczema' => 'Eczema',
+                                'pigmentation_disorders' => 'Pigmentation Disorders',
+                                'rectal_cancer' => 'Colo-Rectal Cancer',
+                                'crohns_disease' => "Crohn's Disease",
+                                'cystic_fibrosis' => 'Cystic Fibrosis',
+                                'liver_disease' => 'Liver Disease',
+                                'schizophrenia' => 'Schizophrenia',
+                                'bipolar_disorder' => 'Bipolar Disorder',
+                                'depression' => 'Depression',
+                                'suicide' => 'Suicide',
+                                'congenital_heart_malformation' => 'Congenital Heart Malformation',
+                                'arthritis' => 'Arthritis',
+                                'congenital_spine_malformation' => 'Congenital Spine Malformation',
+                                'dwarfism' => 'Dwarfism',
+                                'muscular_dystrophy' => 'Muscular Dystrophy',
+                                'osteoporosis' => 'Osteoporosis',
+                                'congenital_blindness' => 'Congenital Blindness',
+                                'cataracts_under50' => 'Cataracts (under 50)',
+                                'dyslexia' => 'Dyslexia',
+                                'retinoblastoma' => 'Retinoblastoma',
+                                'glaucoma' => 'Glaucoma',
+                                'congenital_deafness' => 'Congenital Deafness',
+                                'cleft_lip_palate' => 'Cleft Lip / Palate',
+                                'club_foot' => 'Club Foot',
+                                'turners_syndrome' => "Turner's Syndrome",
+                                'klinefelters_syndrome' => "Klinefelter's Syndrome",
+                                'fragile_x_syndrome' => 'Fragile X Syndrome',
+                                'other_disorders' => 'Other Disorders'
+                            );
+                            foreach ($admin_conditions as $key => $label) {
+                                ?>
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: normal; cursor: pointer; color: #555A4E;">
+                                    <input type="checkbox" class="new-donor-med-checkbox" data-key="<?php echo esc_attr($key); ?>" value="Yes" style="width: auto; margin: 0; cursor: pointer;">
+                                    <span><?php echo esc_html($label); ?></span>
+                                </label>
+                                <?php
+                            }
+                            ?>
+                        </div>
+                    </div>
+
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Primary Profile Picture</label>
                         <input type="file" id="new-donor-profile-image" name="profile_image" accept="image/*" style="width: 100%; box-sizing: border-box; font-size: 12px;">
@@ -820,9 +1146,73 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                     <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Storage Location</label>
                     <span id="modal-storage-country" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
                 </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Ethnic Origin</label>
+                    <span id="modal-ethnic-origin" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Race & Ethnicity</label>
+                    <span id="modal-race-ethnicity" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Body & Face Shape</label>
+                    <span id="modal-body-face" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Nose & Lips</label>
+                    <span id="modal-nose-lips" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Hair Type & Skin</label>
+                    <span id="modal-hairtype-skin" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
+                <div class="ovarias-modal-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Freckles</label>
+                    <span id="modal-freckles" style="font-size: 15px; color: var(--text-dark); font-weight: 600;"></span>
+                </div>
             </div>
 
             <!-- Narrative details sections -->
+            <div class="ovarias-modal-sections" style="border-top: 1px solid var(--border-color); padding-top: 28px; display: flex; flex-direction: column; gap: 20px;">
+                <div class="ovarias-modal-section">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Health & Lifestyle</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px; color: var(--text-dark); line-height: 1.6;">
+                        <div><strong>Proven Fertility:</strong> <span id="modal-proven-fertility"></span></div>
+                        <div><strong>Hearing / Vision:</strong> <span id="modal-hearing-vision"></span></div>
+                        <div><strong>Glasses / Contact Lenses:</strong> <span id="modal-glasses-lenses"></span></div>
+                        <div><strong>Surgeries / Allergies:</strong> <span id="modal-surgeries-allergies"></span></div>
+                        <div><strong>Dental / Twins History:</strong> <span id="modal-dental-twins"></span></div>
+                        <div><strong>Smoking / Alcohol / Vaping:</strong> <span id="modal-smoking-alcohol-vaping"></span></div>
+                        <div><strong>Recreational Drugs / Meds:</strong> <span id="modal-drugs-meds"></span></div>
+                        <div><strong>Anonymity & Genetic Testing:</strong> <span id="modal-anonymity-testing"></span></div>
+                    </div>
+                </div>
+
+                <div class="ovarias-modal-section" style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Preferences & Personality</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px; color: var(--text-dark); line-height: 1.6;">
+                        <div><strong>Zodiac Sign:</strong> <span id="modal-zodiac-sign"></span></div>
+                        <div><strong>Favourite Colour:</strong> <span id="modal-fav-colour"></span></div>
+                        <div><strong>Favourite Dish / Season:</strong> <span id="modal-fav-dish-season"></span></div>
+                        <div><strong>Favourite Holiday / Sport:</strong> <span id="modal-fav-holiday-sport"></span></div>
+                        <div><strong>Favourite Music Style:</strong> <span id="modal-fav-music"></span></div>
+                        <div><strong>Childhood Dream:</strong> <span id="modal-childhood-dream"></span></div>
+                        <div><strong>Favourite Book / Movie:</strong> <span id="modal-fav-book-movie"></span></div>
+                        <div><strong>Countries Visited:</strong> <span id="modal-countries-visited"></span></div>
+                        <div><strong>Goals in Life:</strong> <span id="modal-goals-in-life"></span></div>
+                        <div><strong>Idols & Heroes:</strong> <span id="modal-idols-heroes"></span></div>
+                        <div><strong>Personality Words:</strong> <span id="modal-personality-words"></span></div>
+                        <div><strong>Strong / Weak Side:</strong> <span id="modal-strong-weak"></span></div>
+                        <div><strong>Favourite Lessons:</strong> <span id="modal-favourite-lessons-val"></span></div>
+                    </div>
+                </div>
+
+                <div class="ovarias-modal-section" style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Medical & Family History</h3>
+                    <div id="modal-medical-history-display" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; font-size: 12px; max-height: 200px; overflow-y: auto; background: #fafbf9; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                </div>
             <div class="ovarias-modal-sections" style="border-top: 1px solid var(--border-color); padding-top: 28px; display: flex; flex-direction: column; gap: 20px;">
                 <div class="ovarias-modal-section">
                     <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">About Me</h3>
