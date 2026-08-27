@@ -335,7 +335,7 @@ $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
                 <!-- Column 1: Primary Profile Picture -->
                 <div style="border-right: 1px solid var(--ovarias-border); padding-right: 30px;">
                     <h3>Primary Profile Picture</h3>
-                    <div class="ovarias-photo-upload-container">
+                    <div class="ovarias-photo-upload-container" id="profile-photo-upload-container">
                         <?php if ($avatar_url): ?>
                             <div class="ovarias-uploaded-image-preview" style="text-align: center;">
                                 <img src="<?php echo esc_url($avatar_url); ?>" alt="Uploaded Profile Photo" id="profile-image-preview-element" style="max-width: 100%; max-height: 250px; border-radius: var(--ovarias-radius-sm); border: 1px solid var(--ovarias-border); object-fit: cover; display: block; margin: 0 auto 15px auto;">
@@ -383,7 +383,7 @@ $avatar_url = $avatar_id ? wp_get_attachment_url($avatar_id) : '';
                         endforeach; ?>
                     </div>
 
-                    <div class="ovarias-photo-upload-container">
+                    <div class="ovarias-photo-upload-container" id="gallery-photo-upload-container">
                         <div class="ovarias-file-dropzone" id="dropzone-area-gallery" style="display: none;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                             <p>Drag additional photos here or click to browse</p>

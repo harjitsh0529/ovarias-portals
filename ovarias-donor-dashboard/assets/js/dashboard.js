@@ -100,7 +100,7 @@ jQuery(document).ready(function($) {
                             <input type="file" id="profile_image" name="profile_image" accept="image/*" style="display: none;">
                         </div>
                     `;
-                    $('.ovarias-photo-upload-container').html(previewHtml);
+                    $('#profile-photo-upload-container').html(previewHtml);
                 }
                 
                 // Live sync to top left header avatar preview
