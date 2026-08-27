@@ -5,6 +5,18 @@ if (!defined('ABSPATH')) {
 }
 
 function ovarias_save_donor_profile() {
+    if (is_user_logged_in() && isset($_GET['delete_profile_photo'])) {
+        $user_id = get_current_user_id();
+        $primary_id = get_user_meta($user_id, 'profile_image', true);
+        if ($primary_id) {
+            update_user_meta($user_id, 'profile_image', '');
+            wp_delete_attachment($primary_id, true);
+        }
+        $redirect_url = remove_query_arg('delete_profile_photo');
+        wp_safe_redirect($redirect_url);
+        exit;
+    }
+
     if (is_user_logged_in() && isset($_GET['delete_gallery_image'])) {
         $user_id = get_current_user_id();
         $img_id = (int)$_GET['delete_gallery_image'];
@@ -14,12 +26,6 @@ function ovarias_save_donor_profile() {
             unset($gallery[$key]);
             $gallery = array_values($gallery);
             update_user_meta($user_id, 'profile_images_gallery', $gallery);
-            
-            // If the deleted image was the primary one, update the primary to the next available, or empty
-            $primary = get_user_meta($user_id, 'profile_image', true);
-            if ($primary == $img_id) {
-                update_user_meta($user_id, 'profile_image', !empty($gallery) ? $gallery[0] : '');
-            }
             
             // Physically delete attachment from media library
             wp_delete_attachment($img_id, true);
@@ -86,14 +92,43 @@ function ovarias_save_donor_profile() {
         }
     }
 
-    // Handle Multiple Profile Images Upload
+    // Handle Primary Profile Image Upload (Single)
     $upload_error = false;
-    if (!empty($_FILES['profile_image']['name'][0])) {
+    if (!empty($_FILES['profile_image']['name'])) {
         require_once(ABSPATH . 'wp-admin/includes/file.php');
         require_once(ABSPATH . 'wp-admin/includes/image.php');
         require_once(ABSPATH . 'wp-admin/includes/media.php');
 
-        $files = $_FILES['profile_image'];
+        $file_type = wp_check_filetype(basename($_FILES['profile_image']['name']));
+        $allowed_types = array('jpg', 'jpeg', 'png', 'gif');
+
+        if (in_array(strtolower($file_type['ext']), $allowed_types)) {
+            $attachment_id = media_handle_upload('profile_image', 0);
+
+            if (!is_wp_error($attachment_id)) {
+                // Delete previous profile picture from media library if one exists
+                $old_avatar = get_user_meta($user_id, 'profile_image', true);
+                if ($old_avatar) {
+                    wp_delete_attachment($old_avatar, true);
+                }
+                update_user_meta($user_id, 'profile_image', $attachment_id);
+            } else {
+                $upload_error = true;
+                error_log('Ovarias Profile Photo Upload Error: ' . $attachment_id->get_error_message());
+            }
+        } else {
+            $upload_error = true;
+            error_log('Ovarias Profile Photo Upload Error: Invalid file type.');
+        }
+    }
+
+    // Handle Additional Photos Gallery Upload (Multiple)
+    if (!empty($_FILES['donor_gallery']['name'][0])) {
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+        $files = $_FILES['donor_gallery'];
         $uploaded_attachments = get_user_meta($user_id, 'profile_images_gallery', true) ?: array();
 
         foreach ($files['name'] as $key => $value) {
@@ -108,7 +143,6 @@ function ovarias_save_donor_profile() {
 
                 $_FILES['temp_upload_file'] = $file;
 
-                // Validate file type extension
                 $file_type = wp_check_filetype(basename($file['name']));
                 $allowed_types = array('jpg', 'jpeg', 'png', 'gif');
 
@@ -119,21 +153,15 @@ function ovarias_save_donor_profile() {
                         $uploaded_attachments[] = $attachment_id;
                     } else {
                         $upload_error = true;
-                        error_log('Ovarias Multi-Photo Upload Error: ' . $attachment_id->get_error_message());
+                        error_log('Ovarias Gallery Upload Error: ' . $attachment_id->get_error_message());
                     }
                 } else {
                     $upload_error = true;
-                    error_log('Ovarias Multi-Photo Upload Error: Invalid file type.');
+                    error_log('Ovarias Gallery Upload Error: Invalid file type.');
                 }
             }
         }
-
-        if (!empty($uploaded_attachments)) {
-            // Set the first image as the primary profile_image
-            update_user_meta($user_id, 'profile_image', $uploaded_attachments[0]);
-            // Save the full list as the gallery
-            update_user_meta($user_id, 'profile_images_gallery', $uploaded_attachments);
-        }
+        update_user_meta($user_id, 'profile_images_gallery', $uploaded_attachments);
     }
 
     // Recalculate and update completion metrics
