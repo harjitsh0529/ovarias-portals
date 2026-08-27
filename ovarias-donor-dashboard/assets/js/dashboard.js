@@ -130,7 +130,7 @@ jQuery(document).ready(function($) {
         $('#gallery-temp-previews').remove();
         if (files.length === 0) return;
         
-        var previewWrapper = $('<div id="gallery-temp-previews" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; padding: 10px; background: rgba(0,0,0,0.02); border: 1px dashed var(--ovarias-border); border-radius: 4px;"></div>');
+        var previewWrapper = $('<div id="gallery-temp-previews" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; padding: 10px; background: rgba(0,0,0,0.02); border: 1px dashed var(--ovarias-border); border-radius: 4px; width: 100%; box-sizing: border-box;"></div>');
         
         Array.from(files).forEach(function(file, index) {
             if (file.type.startsWith('image/')) {
