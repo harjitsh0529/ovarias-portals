@@ -49,6 +49,8 @@ jQuery(document).ready(function($) {
             $('#dropzone-area-profile, #dropzone-area-gallery').hide();
             $('#no-photo-notice-profile, #no-photo-notice-gallery').show();
             $('#gallery-temp-previews').remove(); // Clear previews on cancel
+            galleryDataTransfer = new DataTransfer(); // Reset accumulated files
+            $('#donor_gallery, #profile_image').val(''); // Clear input values
             
             $(this).html('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="14 2 18 6 7 17 3 17 3 13 14 2"></polygon></svg> <span>Edit Profile</span>').css('background', '');
         }
@@ -103,26 +105,64 @@ jQuery(document).ready(function($) {
             };
             reader.readAsDataURL(file);
         }
-    });    // Live preview selected gallery images
+    });
+
+    // Accumulate multiple selected gallery images via DataTransfer API
+    var galleryDataTransfer = new DataTransfer();
+
     $(document).on('change', '#donor_gallery', function(e) {
         var files = this.files;
         if (files && files.length > 0) {
-            $('#gallery-temp-previews').remove();
+            // Append newly selected files
+            for (var i = 0; i < files.length; i++) {
+                galleryDataTransfer.items.add(files[i]);
+            }
             
-            var previewWrapper = $('<div id="gallery-temp-previews" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; padding: 10px; background: rgba(0,0,0,0.02); border: 1px dashed var(--ovarias-border); border-radius: 4px;"></div>');
+            // Sync files back to input element
+            this.files = galleryDataTransfer.files;
             
-            Array.from(files).forEach(function(file) {
-                if (file.type.startsWith('image/')) {
-                    var reader = new FileReader();
-                    reader.onload = function(evt) {
-                        var imgCard = $('<div style="text-align: center;"><img src="' + evt.target.result + '" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid var(--ovarias-border);"><span style="display: block; font-size: 9px; color: #4caf50; font-weight: bold; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60px;">Selected</span></div>');
-                        previewWrapper.append(imgCard);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-            
-            $('#dropzone-area-gallery').after(previewWrapper);
+            // Render previews
+            renderGalleryPreviews(this.files);
         }
     });
+
+    function renderGalleryPreviews(files) {
+        $('#gallery-temp-previews').remove();
+        if (files.length === 0) return;
+        
+        var previewWrapper = $('<div id="gallery-temp-previews" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; padding: 10px; background: rgba(0,0,0,0.02); border: 1px dashed var(--ovarias-border); border-radius: 4px;"></div>');
+        
+        Array.from(files).forEach(function(file, index) {
+            if (file.type.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(evt) {
+                    var imgCard = $('<div style="text-align: center; position: relative;" data-index="' + index + '"></div>');
+                    var img = $('<img src="' + evt.target.result + '" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid var(--ovarias-border);">');
+                    var removeBtn = $('<span style="position: absolute; top: -5px; right: -5px; background: #c62828; color: #fff; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; line-height: 16px; text-align: center; cursor: pointer; font-weight: bold; user-select: none;">&times;</span>');
+                    
+                    removeBtn.on('click', function(event) {
+                        event.stopPropagation();
+                        var newDt = new DataTransfer();
+                        for (var j = 0; j < galleryDataTransfer.files.length; j++) {
+                            if (j !== index) {
+                                newDt.items.add(galleryDataTransfer.files[j]);
+                            }
+                        }
+                        galleryDataTransfer = newDt;
+                        var inputEl = document.getElementById('donor_gallery');
+                        if (inputEl) {
+                            inputEl.files = galleryDataTransfer.files;
+                        }
+                        renderGalleryPreviews(galleryDataTransfer.files);
+                    });
+                    
+                    imgCard.append(img).append(removeBtn);
+                    previewWrapper.append(imgCard);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        $('#dropzone-area-gallery').after(previewWrapper);
+    }
 });
