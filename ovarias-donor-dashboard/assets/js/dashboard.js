@@ -15,10 +15,11 @@ jQuery(document).ready(function($) {
 
     // Profile Edit Mode Toggle
     var isEditing = false;
-    var formFields = $('.ovarias-form').find('input, select, textarea').not('#profile_image');
+    var formFields = $('.ovarias-form').find('input, select, textarea').not('#profile_image, #donor_gallery');
     
     // Set initial Read Only state on load
     formFields.prop('disabled', true);
+    $('#profile_image, #donor_gallery').prop('disabled', true); // Keep file inputs disabled initially
     $('.ovarias-form-submit').hide();
     
     $('#btn-toggle-edit').on('click', function(e) {
@@ -27,6 +28,7 @@ jQuery(document).ready(function($) {
         
         if (isEditing) {
             formFields.prop('disabled', false);
+            $('#profile_image, #donor_gallery').prop('disabled', false);
             $('.ovarias-form-submit').fadeIn();
             
             // Show upload controls
@@ -37,12 +39,14 @@ jQuery(document).ready(function($) {
             $(this).html('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> <span>Cancel Edit</span>').css('background', '#C96464');
         } else {
             formFields.prop('disabled', true);
+            $('#profile_image, #donor_gallery').prop('disabled', true);
             $('.ovarias-form-submit').fadeOut();
             
             // Hide upload controls
             $('.ovarias-btn-change-photo').hide();
             $('#dropzone-area-profile, #dropzone-area-gallery').hide();
             $('#no-photo-notice-profile, #no-photo-notice-gallery').show();
+            $('#gallery-temp-previews').remove(); // Clear previews on cancel
             
             $(this).html('<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="14 2 18 6 7 17 3 17 3 13 14 2"></polygon></svg> <span>Edit Profile</span>').css('background', '');
         }
@@ -51,6 +55,7 @@ jQuery(document).ready(function($) {
     // Make sure fields are enabled on submit so they get posted!
     $('.ovarias-form').on('submit', function() {
         formFields.prop('disabled', false);
+        $('#profile_image, #donor_gallery').prop('disabled', false);
     });
 
     // Trigger file browser on "Change Photo" click
@@ -106,6 +111,29 @@ jQuery(document).ready(function($) {
                 }
             };
             reader.readAsDataURL(file);
+        }
+    });
+
+    // Live preview selected gallery images
+    $(document).on('change', '#donor_gallery', function(e) {
+        var files = this.files;
+        if (files && files.length > 0) {
+            $('#gallery-temp-previews').remove();
+            
+            var previewWrapper = $('<div id="gallery-temp-previews" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; padding: 10px; background: rgba(0,0,0,0.02); border: 1px dashed var(--ovarias-border); border-radius: 4px;"></div>');
+            
+            Array.from(files).forEach(function(file) {
+                if (file.type.startsWith('image/')) {
+                    var reader = new FileReader();
+                    reader.onload = function(evt) {
+                        var imgCard = $('<div style="text-align: center;"><img src="' + evt.target.result + '" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid var(--ovarias-border);"><span style="display: block; font-size: 9px; color: #4caf50; font-weight: bold; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60px;">Selected</span></div>');
+                        previewWrapper.append(imgCard);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            $('#dropzone-area-gallery').after(previewWrapper);
         }
     });
 });
