@@ -63,20 +63,18 @@ jQuery(document).ready(function($) {
         e.preventDefault();
         $('#profile_image').trigger('click');
     });
-
     // Live preview local image when selected
     $(document).on('change', '#profile_image', function(e) {
         var file = this.files[0];
         if (file) {
-            // Perform quick client-side file size and format validation
             var validFormats = ['image/jpeg', 'image/png', 'image/gif'];
             if (!validFormats.includes(file.type)) {
                 alert('Please select a valid image file (JPEG, PNG, or GIF).');
-                this.value = ''; // clear input
+                this.value = '';
                 return;
             }
             
-            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            if (file.size > 5 * 1024 * 1024) {
                 alert('Image size exceeds 5MB. Please choose a smaller image.');
                 this.value = '';
                 return;
@@ -84,25 +82,16 @@ jQuery(document).ready(function($) {
 
             var reader = new FileReader();
             reader.onload = function(evt) {
-                // If a preview image element exists, update it. Otherwise create it.
                 var previewImg = $('#profile-image-preview-element');
                 if (previewImg.length) {
-                    previewImg.attr('src', evt.target.result);
+                    previewImg.attr('src', evt.target.result).show();
                 } else {
-                    // Replace upload dropzone area with image preview card
-                    var previewHtml = `
-                        <div class="ovarias-uploaded-image-preview">
-                            <img src="${evt.target.result}" id="profile-image-preview-element" style="max-width: 100%; max-height: 200px; border-radius: var(--ovarias-radius-sm); border: 1px solid var(--ovarias-border); object-fit: cover; display: block; margin-bottom: 15px;">
-                            <button type="button" class="ovarias-submit-btn ovarias-btn-change-photo" id="btn-trigger-upload" style="padding: 10px 18px; font-size: 13px; border-radius: 6px; display: inline-flex;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                Change Photo
-                            </button>
-                            <input type="file" id="profile_image" name="profile_image" accept="image/*" style="display: none;">
-                        </div>
-                    `;
-                    $('#profile-photo-upload-container').html(previewHtml);
+                    var newPreview = $('<div class="ovarias-uploaded-image-preview" style="text-align: center; margin-bottom: 15px;"><img src="' + evt.target.result + '" id="profile-image-preview-element" style="max-width: 100%; max-height: 250px; border-radius: var(--ovarias-radius-sm); border: 1px solid var(--ovarias-border); object-fit: cover; display: block; margin: 0 auto 15px auto;"></div>');
+                    $('#profile-photo-upload-container').prepend(newPreview);
                 }
                 
+                $('#dropzone-area-profile').hide();
+
                 // Live sync to top left header avatar preview
                 $('#avatar-preview').attr('src', evt.target.result);
                 var placeholder = $('#avatar-preview-placeholder');
@@ -112,9 +101,7 @@ jQuery(document).ready(function($) {
             };
             reader.readAsDataURL(file);
         }
-    });
-
-    // Live preview selected gallery images
+    });    // Live preview selected gallery images
     $(document).on('change', '#donor_gallery', function(e) {
         var files = this.files;
         if (files && files.length > 0) {

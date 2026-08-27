@@ -141,13 +141,14 @@ function ovarias_save_donor_profile() {
                     'size'     => $files['size'][$key]
                 );
 
-                $_FILES['temp_upload_file'] = $file;
+                $temp_key = "temp_upload_file_" . $key;
+                $_FILES[$temp_key] = $file;
 
                 $file_type = wp_check_filetype(basename($file['name']));
                 $allowed_types = array('jpg', 'jpeg', 'png', 'gif');
 
                 if (in_array(strtolower($file_type['ext']), $allowed_types)) {
-                    $attachment_id = media_handle_upload('temp_upload_file', 0);
+                    $attachment_id = media_handle_upload($temp_key, 0);
 
                     if (!is_wp_error($attachment_id)) {
                         $uploaded_attachments[] = $attachment_id;
@@ -159,6 +160,7 @@ function ovarias_save_donor_profile() {
                     $upload_error = true;
                     error_log('Ovarias Gallery Upload Error: Invalid file type.');
                 }
+                unset($_FILES[$temp_key]);
             }
         }
         update_user_meta($user_id, 'profile_images_gallery', $uploaded_attachments);
