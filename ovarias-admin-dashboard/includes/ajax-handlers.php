@@ -339,7 +339,7 @@ function ovarias_public_ajax_submit_inquiry() {
 
     // Prepare email headers
     $site_name = get_bloginfo('name') ?: 'Ovarias';
-    $admin_email = get_option('admin_email');
+    $admin_email = 'harjit.singh@bharatlogic.in';
     $from_email = 'no-reply@' . preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME'] ?? 'ovarias.com'));
 
     $headers_admin = array(
