@@ -337,9 +337,13 @@ function ovarias_public_ajax_submit_inquiry() {
     $inquiries[] = $new_inquiry;
     update_option('ovarias_general_inquiries', $inquiries);
 
-    // Prepare email headers
+    // Prepare email recipients and headers
     $site_name = get_bloginfo('name') ?: 'Ovarias';
-    $admin_email = 'harjit.singh@bharatlogic.in';
+    $notification_recipients = array(
+        'nanka@globalnestfamily.com',
+        'kristine@globalnestfamily.com',
+        'Ovariasegg@gmail.com'
+    );
     $from_email = 'no-reply@' . preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME'] ?? 'ovarias.com'));
 
     $headers_admin = array(
@@ -374,8 +378,8 @@ function ovarias_public_ajax_submit_inquiry() {
     $admin_body .= '<div style="background: #f7f7f7; padding: 12px 24px; text-align: center; font-size: 12px; color: #999;">This inquiry was recorded in your Ovarias Admin Dashboard.</div>';
     $admin_body .= '</div>';
 
-    // Dispatch Admin Notification
-    wp_mail($admin_email, $admin_subject, $admin_body, $headers_admin);
+    // Dispatch Admin Notification to all designated team members
+    wp_mail($notification_recipients, $admin_subject, $admin_body, $headers_admin);
 
     // Send confirmation receipt to visitor
     if (!empty($email)) {
