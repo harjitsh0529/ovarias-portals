@@ -649,20 +649,20 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
             
             <div style="max-height: 55vh; overflow-y: auto; padding-right: 12px; margin-bottom: 20px;">
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">First Name <span style="font-weight: normal; color: #888;">(Optional)</span></label>
-                    <input type="text" id="new-first-name" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="Optional">
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">First Name</label>
+                    <input type="text" id="new-first-name" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Last Name <span style="font-weight: normal; color: #888;">(Optional)</span></label>
-                    <input type="text" id="new-last-name" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="Optional">
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Last Name</label>
+                    <input type="text" id="new-last-name" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Username <span style="font-weight: normal; color: #888;">(Optional)</span></label>
-                    <input type="text" id="new-username" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="Optional - auto-generated if blank">
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Username</label>
+                    <input type="text" id="new-username" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Account Password <span style="font-weight: normal; color: #888;">(Optional)</span></label>
-                    <input type="password" id="new-password" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="Optional - auto-generated if blank">
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Account Password</label>
+                    <input type="password" id="new-password" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
                 </div>
                 
                 <!-- Donor Specific Profile Fields -->
