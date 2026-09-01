@@ -288,6 +288,123 @@ function ovarias_admin_ajax_create_user() {
 add_action('wp_ajax_ovarias_admin_create_user', 'ovarias_admin_ajax_create_user');
 
 /**
+ * AJAX Handler: Save/Update Full Donor Profile from Admin
+ */
+function ovarias_admin_ajax_save_donor_full_profile() {
+    check_ajax_referer('ovarias_admin_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => 'Unauthorized action.'));
+    }
+
+    $user_id = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
+    if (!$user_id || !get_userdata($user_id)) {
+        wp_send_json_error(array('message' => 'Invalid user ID.'));
+    }
+
+    $first_name = isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '';
+    $last_name = isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '';
+
+    // Update names on WP_User
+    wp_update_user(array(
+        'ID' => $user_id,
+        'first_name' => $first_name,
+        'last_name' => $last_name
+    ));
+
+    // Save donor profile meta fields
+    $donor_meta_fields = array(
+        'donor_id', 'dob', 'nationality', 'blood_group', 'height', 'weight',
+        'eye_colour', 'hair_colour', 'education_level', 'field_of_study',
+        'occupation', 'languages_spoken', 'availability_status', 'egg_type',
+        'num_eggs', 'storage_country', 'about_me', 'hobbies', 'why_donate',
+        
+        // Extended PDF Fields
+        'ethnic_origin', 'race', 'ethnicity', 'body_type',
+        'face_shape', 'nose_shape', 'lips_shape', 'hair_type',
+        'skin_tone', 'freckles', 'favourite_lessons',
+        'proven_fertility', 'hearing', 'vision', 'wearing_glasses', 'wearing_lenses',
+        'surgeries', 'allergies', 'dental_history', 'twins_history',
+        'alcohol_use', 'smoking_tobacco', 'vaping', 'drug_use', 'medications',
+        'decl_anonymous', 'decl_genetic_tests', 'zodiac_sign',
+        'fav_colour', 'fav_dish', 'fav_season', 'fav_holiday', 'fav_sport', 'fav_music',
+        'childhood_dream', 'fav_author', 'fav_movie', 'countries_visited',
+        'goals_in_life', 'idols_heroes', 'personality_words', 'strong_side', 'weak_side'
+    );
+    foreach ($donor_meta_fields as $field) {
+        if (isset($_POST[$field])) {
+            update_user_meta($user_id, $field, sanitize_textarea_field($_POST[$field]));
+        }
+    }
+
+    // Save Medical & Family History
+    if (isset($_POST['medical_history']) && is_array($_POST['medical_history'])) {
+        $med_history = array();
+        foreach ($_POST['medical_history'] as $key => $val) {
+            $med_history[sanitize_key($key)] = sanitize_text_field($val);
+        }
+        update_user_meta($user_id, 'medical_history', $med_history);
+    } else {
+        update_user_meta($user_id, 'medical_history', array());
+    }
+
+    // Handle Profile Image Upload (Single)
+    if (!empty($_FILES['profile_image']['name'])) {
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+        $attachment_id = media_handle_upload('profile_image', 0);
+        if (!is_wp_error($attachment_id)) {
+            update_user_meta($user_id, 'profile_image', $attachment_id);
+        }
+    }
+
+    // Handle Gallery Uploads (Multiple)
+    if (!empty($_FILES['donor_gallery']['name'][0])) {
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+        $files = $_FILES['donor_gallery'];
+        $uploaded_attachments = get_user_meta($user_id, 'profile_images_gallery', true) ?: array();
+
+        foreach ($files['name'] as $key => $value) {
+            if ($files['name'][$key]) {
+                $file = array(
+                    'name'     => $files['name'][$key],
+                    'type'     => $files['type'][$key],
+                    'tmp_name' => $files['tmp_name'][$key],
+                    'error'    => $files['error'][$key],
+                    'size'     => $files['size'][$key]
+                );
+
+                $temp_key = "temp_admin_edit_upload_" . $key;
+                $_FILES[$temp_key] = $file;
+
+                $file_type = wp_check_filetype(basename($file['name']));
+                $allowed_types = array('jpg', 'jpeg', 'png', 'gif');
+
+                if (in_array(strtolower($file_type['ext']), $allowed_types)) {
+                    $attachment_id = media_handle_upload($temp_key, 0);
+
+                    if (!is_wp_error($attachment_id)) {
+                        $uploaded_attachments[] = $attachment_id;
+                    }
+                }
+                unset($_FILES[$temp_key]);
+            }
+        }
+        if (!empty($uploaded_attachments)) {
+            update_user_meta($user_id, 'profile_images_gallery', array_unique($uploaded_attachments));
+        }
+    }
+
+    wp_send_json_success(array('message' => 'Donor profile updated successfully!'));
+}
+add_action('wp_ajax_ovarias_admin_save_donor_full_profile', 'ovarias_admin_ajax_save_donor_full_profile');
+
+/**
  * AJAX Handler: Delete a Parent or Donor User permanently
  */
 function ovarias_admin_ajax_delete_user() {

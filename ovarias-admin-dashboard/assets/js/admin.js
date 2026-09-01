@@ -770,11 +770,14 @@ jQuery(document).ready(function($) {
                 galleryContainer.hide();
             }
             
+            currentViewedDonor = donor;
             $('#donor-detail-modal').css('display', 'flex');
         } catch(err) {
             console.error('Error parsing donor data:', err);
         }
     });
+
+    var currentViewedDonor = null;
 
     function closeDonorModal() {
         $('#donor-detail-modal').hide();
@@ -785,9 +788,166 @@ jQuery(document).ready(function($) {
         closeDonorModal();
     });
 
+    // Trigger edit from inside view profile modal
+    $(document).on('click', '.btn-trigger-edit-from-view', function(e) {
+        e.preventDefault();
+        closeDonorModal();
+        if (currentViewedDonor) {
+            openEditDonorModal(currentViewedDonor);
+        }
+    });
+
+    // Edit Donor Button in Table Row
+    $(document).on('click', '.btn-edit-admin-donor-profile', function(e) {
+        e.preventDefault();
+        var donorStr = $(this).attr('data-donor');
+        if (!donorStr) return;
+        try {
+            var donor = JSON.parse(donorStr);
+            openEditDonorModal(donor);
+        } catch(err) {
+            console.error('Error parsing donor edit data:', err);
+        }
+    });
+
+    function openEditDonorModal(donor) {
+        if (!donor) return;
+
+        $('#edit-donor-user-id').val(donor.user_id || '');
+        $('#edit-first-name').val(donor.first_name || '');
+        $('#edit-last-name').val(donor.last_name || '');
+        $('#edit-donor-id').val(donor.donor_id || '');
+        $('#edit-donor-avail').val(donor.availability || 'Available');
+        $('#edit-donor-egg-type').val(donor.egg_type || 'Fresh');
+        $('#edit-donor-num-eggs').val(donor.num_eggs || 0);
+        $('#edit-donor-storage').val(donor.storage_country || '');
+        $('#edit-donor-dob').val(donor.dob || '');
+        $('#edit-donor-nationality').val(donor.nationality !== 'N/A' ? donor.nationality : '');
+        $('#edit-donor-blood').val(donor.blood_group !== 'N/A' ? donor.blood_group : '');
+        $('#edit-donor-height').val(donor.height !== 'N/A' ? donor.height : '');
+        $('#edit-donor-weight').val(donor.weight !== 'N/A' ? donor.weight : '');
+        $('#edit-donor-eyes').val(donor.eyes !== 'N/A' ? donor.eyes : '');
+        $('#edit-donor-hair').val(donor.hair !== 'N/A' ? donor.hair : '');
+        $('#edit-donor-education').val(donor.education !== 'N/A' ? donor.education : '');
+        $('#edit-donor-study').val(donor.study !== 'N/A' ? donor.study : '');
+        $('#edit-donor-occupation').val(donor.occupation !== 'N/A' ? donor.occupation : '');
+        $('#edit-donor-languages').val(donor.languages !== 'N/A' ? donor.languages : '');
+
+        // Physical
+        $('#edit-donor-ethnic-origin').val(donor.ethnic_origin !== 'N/A' ? donor.ethnic_origin : '');
+        $('#edit-donor-race').val(donor.race !== 'N/A' ? donor.race : '');
+        $('#edit-donor-ethnicity').val(donor.ethnicity !== 'N/A' ? donor.ethnicity : '');
+        $('#edit-donor-body-type').val(donor.body_type !== 'N/A' ? donor.body_type : '');
+        $('#edit-donor-face-shape').val(donor.face_shape !== 'N/A' ? donor.face_shape : '');
+        $('#edit-donor-nose-shape').val(donor.nose_shape !== 'N/A' ? donor.nose_shape : '');
+        $('#edit-donor-lips-shape').val(donor.lips_shape !== 'N/A' ? donor.lips_shape : '');
+        $('#edit-donor-hair-type').val(donor.hair_type !== 'N/A' ? donor.hair_type : '');
+        $('#edit-donor-skin-tone').val(donor.skin_tone !== 'N/A' ? donor.skin_tone : '');
+        $('#edit-donor-freckles').val(donor.freckles !== 'N/A' ? donor.freckles : '');
+
+        // Health & Lifestyle
+        $('#edit-donor-proven-fertility').val(donor.proven_fertility !== 'N/A' ? donor.proven_fertility : '');
+        $('#edit-donor-hearing').val(donor.hearing !== 'N/A' ? donor.hearing : '');
+        $('#edit-donor-vision').val(donor.vision !== 'N/A' ? donor.vision : '');
+        $('#edit-donor-wearing-glasses').val(donor.wearing_glasses !== 'N/A' ? donor.wearing_glasses : '');
+        $('#edit-donor-wearing-lenses').val(donor.wearing_lenses !== 'N/A' ? donor.wearing_lenses : '');
+        $('#edit-donor-surgeries').val(donor.surgeries !== 'N/A' ? donor.surgeries : '');
+        $('#edit-donor-allergies').val(donor.allergies !== 'N/A' ? donor.allergies : '');
+        $('#edit-donor-dental-history').val(donor.dental_history !== 'N/A' ? donor.dental_history : '');
+        $('#edit-donor-twins-history').val(donor.twins_history !== 'N/A' ? donor.twins_history : '');
+        $('#edit-donor-alcohol-use').val(donor.alcohol_use !== 'N/A' ? donor.alcohol_use : '');
+        $('#edit-donor-smoking-tobacco').val(donor.smoking_tobacco !== 'N/A' ? donor.smoking_tobacco : '');
+        $('#edit-donor-vaping').val(donor.vaping !== 'N/A' ? donor.vaping : '');
+        $('#edit-donor-drug-use').val(donor.drug_use !== 'N/A' ? donor.drug_use : '');
+        $('#edit-donor-medications').val(donor.medications !== 'N/A' ? donor.medications : '');
+
+        // Preferences & Personality
+        $('#edit-donor-zodiac-sign').val(donor.zodiac_sign !== 'N/A' ? donor.zodiac_sign : '');
+        $('#edit-donor-fav-colour').val(donor.fav_colour !== 'N/A' ? donor.fav_colour : '');
+        $('#edit-donor-fav-dish').val(donor.fav_dish !== 'N/A' ? donor.fav_dish : '');
+        $('#edit-donor-fav-season').val(donor.fav_season !== 'N/A' ? donor.fav_season : '');
+        $('#edit-donor-fav-holiday').val(donor.fav_holiday !== 'N/A' ? donor.fav_holiday : '');
+        $('#edit-donor-fav-sport').val(donor.fav_sport !== 'N/A' ? donor.fav_sport : '');
+        $('#edit-donor-fav-music').val(donor.fav_music !== 'N/A' ? donor.fav_music : '');
+        $('#edit-donor-childhood-dream').val(donor.childhood_dream !== 'N/A' ? donor.childhood_dream : '');
+        $('#edit-donor-fav-author').val(donor.fav_author !== 'N/A' ? donor.fav_author : '');
+        $('#edit-donor-fav-movie').val(donor.fav_movie !== 'N/A' ? donor.fav_movie : '');
+        $('#edit-donor-countries-visited').val(donor.countries_visited !== 'N/A' ? donor.countries_visited : '');
+        $('#edit-donor-goals-in-life').val(donor.goals_in_life !== 'N/A' ? donor.goals_in_life : '');
+        $('#edit-donor-idols-heroes').val(donor.idols_heroes !== 'N/A' ? donor.idols_heroes : '');
+        $('#edit-donor-personality-words').val(donor.personality_words !== 'N/A' ? donor.personality_words : '');
+        $('#edit-donor-strong-side').val(donor.strong_side !== 'N/A' ? donor.strong_side : '');
+        $('#edit-donor-weak-side').val(donor.weak_side !== 'N/A' ? donor.weak_side : '');
+
+        // Narrative
+        $('#edit-donor-about').val(donor.about_me !== 'N/A' ? donor.about_me : '');
+        $('#edit-donor-hobbies').val(donor.hobbies !== 'N/A' ? donor.hobbies : '');
+        $('#edit-donor-why').val(donor.why_donate !== 'N/A' ? donor.why_donate : '');
+
+        // Medical History Checkboxes
+        $('.edit-med-checkbox').prop('checked', false);
+        if (donor.medical_history) {
+            $('.edit-med-checkbox').each(function() {
+                var key = $(this).data('key');
+                if (donor.medical_history[key] === 'Yes') {
+                    $(this).prop('checked', true);
+                }
+            });
+        }
+
+        // Reset file inputs
+        $('#edit-donor-avatar').val('');
+        $('#edit-donor-gallery').val('');
+
+        $('#ovarias-edit-donor-modal').css('display', 'flex');
+    }
+
+    // Save Full Donor Profile AJAX
+    $('#ovarias-edit-donor-form').on('submit', function(e) {
+        e.preventDefault();
+        var submitBtn = $('#btn-submit-edit-donor');
+        submitBtn.prop('disabled', true).text('Saving Changes...');
+
+        var formElement = document.getElementById('ovarias-edit-donor-form');
+        var formData = new FormData(formElement);
+        formData.append('action', 'ovarias_admin_save_donor_full_profile');
+        formData.append('nonce', ovariasAdminParams.nonce);
+
+        $.ajax({
+            url: ovariasAdminParams.ajaxurl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    submitBtn.text('Profile Saved ✔').css('background', '#2e7d32');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 800);
+                } else {
+                    alert('Error: ' + (response.data ? response.data.message : 'Could not save profile.'));
+                    submitBtn.prop('disabled', false).text('Save Profile Changes');
+                }
+            },
+            error: function() {
+                alert('Server connection error. Please try again.');
+                submitBtn.prop('disabled', false).text('Save Profile Changes');
+            }
+        });
+    });
+
+    $(document).on('click', '.btn-close-edit-modal, .btn-close-edit-modal-x', function(e) {
+        e.preventDefault();
+        $('#ovarias-edit-donor-modal').hide();
+    });
+
     $(window).on('click', function(e) {
-        if ($(e.target).is('#donor-detail-modal') || $(e.target).is('.ovarias-modal-overlay')) {
+        if ($(e.target).is('#donor-detail-modal')) {
             closeDonorModal();
+        }
+        if ($(e.target).is('#ovarias-edit-donor-modal')) {
+            $('#ovarias-edit-donor-modal').hide();
         }
     });
 
