@@ -124,20 +124,41 @@ function ovarias_admin_ajax_create_user() {
         wp_send_json_error(array('message' => 'Unauthorized action.'));
     }
 
-    $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
-    $email = !empty($username) ? $username . '@ovarias.temp' : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
     $first_name = isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '';
     $last_name = isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '';
-    $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : ''; // 'parent' or 'donor'
+    $donor_id = isset($_POST['donor_id']) ? sanitize_text_field($_POST['donor_id']) : '';
+    $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : 'donor';
+    $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-    if (empty($username) || empty($password) || empty($type)) {
-        wp_send_json_error(array('message' => 'All mandatory fields (username, password, type) must be filled.'));
+    // Auto-generate username if blank (so nothing is required for donor)
+    if (empty($username)) {
+        if (!empty($donor_id)) {
+            $base_user = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '', $donor_id));
+            $username = $base_user ?: 'donor_' . wp_rand(1000, 9999);
+        } elseif (!empty($first_name)) {
+            $username = strtolower(sanitize_user($first_name)) . '_' . wp_rand(100, 999);
+        } else {
+            $username = ($type === 'donor' ? 'donor_' : 'parent_') . wp_rand(1000, 9999);
+        }
+        $orig_user = $username;
+        $counter = 1;
+        while (username_exists($username)) {
+            $username = $orig_user . '_' . $counter;
+            $counter++;
+        }
+    } else {
+        if (username_exists($username)) {
+            wp_send_json_error(array('message' => 'This username already exists. Please choose a different one.'));
+        }
     }
 
-    if (username_exists($username)) {
-        wp_send_json_error(array('message' => 'This username already exists.'));
+    // Auto-generate password if blank
+    if (empty($password)) {
+        $password = 'Ovarias!' . wp_rand(1000, 9999);
     }
+
+    $email = $username . '@ovarias.temp';
 
     // Create the WordPress User
     $user_id = wp_create_user($username, $password, $email);
