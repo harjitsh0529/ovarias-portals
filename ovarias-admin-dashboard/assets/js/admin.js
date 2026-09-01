@@ -788,8 +788,6 @@ jQuery(document).ready(function($) {
     function switchToViewMode() {
         $('#donor-modal-edit-panel').hide();
         $('#donor-modal-view-panel').show();
-        $('#donor-modal-tab-view').css({ 'background': '#555A4E', 'color': '#fff', 'border': 'none' });
-        $('#donor-modal-tab-edit').css({ 'background': '#f0f0f0', 'color': '#444', 'border': '1px solid #ccc' });
         $('#donor-detail-modal .ovarias-modal-container').scrollTop(0);
     }
 
@@ -799,18 +797,11 @@ jQuery(document).ready(function($) {
         }
         $('#donor-modal-view-panel').hide();
         $('#donor-modal-edit-panel').show();
-        $('#donor-modal-tab-edit').css({ 'background': '#2e7d32', 'color': '#fff', 'border': 'none' });
-        $('#donor-modal-tab-view').css({ 'background': '#f0f0f0', 'color': '#444', 'border': '1px solid #ccc' });
         $('#donor-detail-modal .ovarias-modal-container').scrollTop(0);
     }
 
-    // Modal Tabs and Action Buttons
-    $(document).on('click', '#donor-modal-tab-view', function(e) {
-        e.preventDefault();
-        switchToViewMode();
-    });
-
-    $(document).on('click', '#donor-modal-tab-edit, .btn-trigger-edit-from-view', function(e) {
+    // Modal Action Buttons
+    $(document).on('click', '.btn-trigger-edit-from-view', function(e) {
         e.preventDefault();
         switchToEditMode();
     });
@@ -902,12 +893,22 @@ jQuery(document).ready(function($) {
         // Medical History Checkboxes
         $('.edit-med-checkbox').prop('checked', false);
         if (donor.medical_history) {
-            $('.edit-med-checkbox').each(function() {
-                var key = $(this).data('key');
-                if (donor.medical_history[key] === 'Yes') {
-                    $(this).prop('checked', true);
+            var medHist = donor.medical_history;
+            if (typeof medHist === 'string') {
+                try {
+                    medHist = JSON.parse(medHist);
+                } catch(e) {
+                    medHist = {};
                 }
-            });
+            }
+            if (typeof medHist === 'object' && medHist !== null) {
+                $('.edit-med-checkbox').each(function() {
+                    var key = $(this).data('key');
+                    if (medHist[key] === 'Yes') {
+                        $(this).prop('checked', true);
+                    }
+                });
+            }
         }
 
         // Reset file inputs
@@ -934,7 +935,7 @@ jQuery(document).ready(function($) {
             contentType: false,
             success: function(response) {
                 if (response.success) {
-                    submitBtn.text('Profile Saved ✔').css('background', '#2e7d32');
+                    submitBtn.text('Profile Saved').css('background', '#2e7d32');
                     setTimeout(function() {
                         location.reload();
                     }, 600);
