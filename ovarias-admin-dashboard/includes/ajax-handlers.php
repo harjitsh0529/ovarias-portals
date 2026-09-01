@@ -405,6 +405,43 @@ function ovarias_admin_ajax_save_donor_full_profile() {
 add_action('wp_ajax_ovarias_admin_save_donor_full_profile', 'ovarias_admin_ajax_save_donor_full_profile');
 
 /**
+ * AJAX Handler: Delete Single Gallery Image from Donor Profile
+ */
+function ovarias_admin_ajax_delete_donor_gallery_image() {
+    check_ajax_referer('ovarias_admin_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => 'Unauthorized action.'));
+    }
+
+    $user_id = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
+    $att_id = isset($_POST['attachment_id']) ? (int)$_POST['attachment_id'] : 0;
+
+    if (!$user_id || !$att_id) {
+        wp_send_json_error(array('message' => 'Invalid parameters.'));
+    }
+
+    $gallery = get_user_meta($user_id, 'profile_images_gallery', true) ?: array();
+    if (is_array($gallery)) {
+        $updated_gallery = array();
+        foreach ($gallery as $id) {
+            if ((int)$id !== $att_id) {
+                $updated_gallery[] = (int)$id;
+            }
+        }
+        update_user_meta($user_id, 'profile_images_gallery', $updated_gallery);
+        
+        // Delete attachment from media library
+        wp_delete_attachment($att_id, true);
+
+        wp_send_json_success(array('message' => 'Image removed successfully.'));
+    } else {
+        wp_send_json_error(array('message' => 'Gallery record not found.'));
+    }
+}
+add_action('wp_ajax_ovarias_admin_delete_donor_gallery_image', 'ovarias_admin_ajax_delete_donor_gallery_image');
+
+/**
  * AJAX Handler: Delete a Parent or Donor User permanently
  */
 function ovarias_admin_ajax_delete_user() {

@@ -376,10 +376,12 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                                     <?php 
                                     $gallery_ids = get_user_meta($d_id, 'profile_images_gallery', true) ?: array();
                                     $full_urls = array();
+                                    $gallery_items = array();
                                     foreach ($gallery_ids as $att_id) {
                                         $url = wp_get_attachment_url($att_id);
                                         if ($url) {
                                             $full_urls[] = $url;
+                                            $gallery_items[] = array('id' => (int)$att_id, 'url' => $url);
                                         }
                                     }
                                     $avatar_id = get_user_meta($d_id, 'profile_image', true);
@@ -425,6 +427,7 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                                         'why_donate' => get_user_meta($d_id, 'why_donate', true) ?: '',
                                         'avatar' => $avatar_url ?: (OVARIAS_ADMIN_URL . 'assets/css/placeholder.png'),
                                         'gallery' => $full_urls,
+                                        'gallery_items' => $gallery_items,
                                         
                                         // New PDF fields
                                         'ethnic_origin' => get_user_meta($d_id, 'ethnic_origin', true) ?: '',
@@ -1052,10 +1055,13 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Primary Profile Picture</label>
                         <input type="file" id="new-donor-profile-image" name="profile_image" accept="image/*" style="width: 100%; box-sizing: border-box; font-size: 12px;">
+                        <div id="new-donor-avatar-preview" style="margin-top: 8px; display: none;"></div>
                     </div>
                     <div style="margin-bottom: 15px;">
-                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Additional Gallery Photos (Multiple)</label>
+                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Additional Gallery Photos (Multiple Allowed)</label>
                         <input type="file" id="new-donor-gallery" name="donor_gallery[]" accept="image/*" multiple style="width: 100%; box-sizing: border-box; font-size: 12px;">
+                        <span style="display: block; font-size: 11px; color: #2e7d32; font-weight: bold; margin-top: 4px;">You can select multiple photos at one time (hold Ctrl/Cmd to pick several)</span>
+                        <div id="new-donor-gallery-preview" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
                     </div>
                 </div>
                 
@@ -1268,10 +1274,13 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                             <span style="display: block; font-size: 11px; color: #777; margin-top: 4px;">Choose a file to replace the main profile photo</span>
                         </div>
                         <div>
-                            <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Additional Gallery Photos (Multiple)</label>
-                            <div id="edit-gallery-preview" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; min-height: 24px; align-items: center;"></div>
+                            <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Existing Gallery Photos (Click &times; to remove)</label>
+                            <div id="edit-gallery-existing" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; min-height: 24px; align-items: center;"></div>
+                            
+                            <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #555A4E;">Add More Gallery Photos (Multiple Allowed)</label>
                             <input type="file" id="edit-donor-gallery" name="donor_gallery[]" multiple accept="image/*" class="table-inline-input" style="width: 100%; box-sizing: border-box; padding: 6px; font-size: 12px; background: #fff;">
                             <span style="display: block; font-size: 11px; color: #2e7d32; font-weight: bold; margin-top: 4px;">You can select multiple photos at one time (hold Ctrl/Cmd to select several)</span>
+                            <div id="edit-gallery-new-preview" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
                         </div>
                     </div>
                 </div>

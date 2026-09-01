@@ -74,8 +74,15 @@ jQuery(document).ready(function($) {
         modal.css('display', 'flex');
     });
 
+    var newDonorGalleryFiles = [];
+
     function closeModal() {
         $('#ovarias-create-user-modal').hide();
+        newDonorGalleryFiles = [];
+        $('#new-donor-gallery-preview').empty();
+        $('#new-donor-avatar-preview').empty().hide();
+        $('#new-donor-profile-image').val('');
+        $('#new-donor-gallery').val('');
     }
 
     $('.btn-close-modal-x, .btn-close-modal-cancel').on('click', function(e) {
@@ -87,6 +94,63 @@ jQuery(document).ready(function($) {
         if ($(e.target).is('#ovarias-create-user-modal')) {
             closeModal();
         }
+    });
+
+    // Add Donor Avatar file preview
+    $('#new-donor-profile-image').on('change', function() {
+        var file = this.files[0];
+        var preview = $('#new-donor-avatar-preview');
+        preview.empty();
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.html('<div style="display: flex; align-items: center; gap: 8px;"><img src="' + e.target.result + '" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid #ccc;"><span style="font-size: 11px; color: #555;">' + file.name + '</span><button type="button" class="btn-remove-new-avatar" style="border: none; background: #c62828; color: #fff; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; padding: 0;">&times;</button></div>').show();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.hide();
+        }
+    });
+
+    $(document).on('click', '.btn-remove-new-avatar', function(e) {
+        e.preventDefault();
+        $('#new-donor-profile-image').val('');
+        $('#new-donor-avatar-preview').empty().hide();
+    });
+
+    // Add Donor Gallery multi-file selection with previews & remove
+    $('#new-donor-gallery').on('change', function() {
+        var files = this.files;
+        if (files && files.length > 0) {
+            for (var i = 0; i < files.length; i++) {
+                newDonorGalleryFiles.push(files[i]);
+            }
+            renderNewDonorGalleryPreview();
+        }
+        $(this).val('');
+    });
+
+    function renderNewDonorGalleryPreview() {
+        var container = $('#new-donor-gallery-preview');
+        container.empty();
+        newDonorGalleryFiles.forEach(function(file, idx) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var thumb = $('<div class="new-gallery-thumb" style="position: relative; display: inline-block;">' +
+                    '<img src="' + e.target.result + '" style="width: 44px; height: 44px; object-fit: cover; border-radius: 4px; border: 1px solid #2e7d32; display: block;">' +
+                    '<span class="btn-remove-new-gallery-file" data-index="' + idx + '" title="Remove" style="position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; border-radius: 50%; background: #c62828; color: #fff; font-size: 12px; font-weight: bold; line-height: 18px; text-align: center; cursor: pointer; border: 1px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">&times;</span>' +
+                '</div>');
+                container.append(thumb);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    $(document).on('click', '.btn-remove-new-gallery-file', function(e) {
+        e.preventDefault();
+        var idx = parseInt($(this).data('index'), 10);
+        newDonorGalleryFiles.splice(idx, 1);
+        renderNewDonorGalleryPreview();
     });
 
     // AJAX: Create User Form Submit
@@ -191,10 +255,9 @@ jQuery(document).ready(function($) {
             }
             
             // Append Gallery Photos files
-            var galleryFiles = $('#new-donor-gallery')[0].files;
-            if (galleryFiles && galleryFiles.length > 0) {
-                for (var i = 0; i < galleryFiles.length; i++) {
-                    formData.append('donor_gallery[]', galleryFiles[i]);
+            if (newDonorGalleryFiles.length > 0) {
+                for (var i = 0; i < newDonorGalleryFiles.length; i++) {
+                    formData.append('donor_gallery[]', newDonorGalleryFiles[i]);
                 }
             }
         } else {
@@ -911,11 +974,13 @@ jQuery(document).ready(function($) {
             }
         }
 
-        // Reset file inputs
+        // Reset file inputs and arrays
         $('#edit-donor-avatar').val('');
         $('#edit-donor-gallery').val('');
+        editDonorNewGalleryFiles = [];
+        $('#edit-gallery-new-preview').empty();
 
-        // Populate Avatar & Gallery preview
+        // Populate Avatar preview
         if (donor.avatar && donor.avatar !== '' && donor.avatar.indexOf('placeholder.png') === -1) {
             $('#edit-avatar-preview').attr('src', donor.avatar).show();
             $('#edit-avatar-note').text('Current photo loaded');
@@ -924,16 +989,105 @@ jQuery(document).ready(function($) {
             $('#edit-avatar-note').text('No custom photo set');
         }
 
-        var galleryContainer = $('#edit-gallery-preview');
-        galleryContainer.empty();
-        if (donor.gallery && Array.isArray(donor.gallery) && donor.gallery.length > 0) {
-            donor.gallery.forEach(function(imgUrl) {
-                galleryContainer.append('<img src="' + imgUrl + '" style="width: 38px; height: 38px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;" title="Gallery photo">');
+        // Populate Existing Gallery with Delete/Cut button
+        var existingContainer = $('#edit-gallery-existing');
+        existingContainer.empty();
+        if (donor.gallery_items && Array.isArray(donor.gallery_items) && donor.gallery_items.length > 0) {
+            donor.gallery_items.forEach(function(item) {
+                var thumb = $('<div class="existing-gallery-item" data-att-id="' + item.id + '" style="position: relative; display: inline-block;">' +
+                    '<img src="' + item.url + '" style="width: 44px; height: 44px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc; display: block;">' +
+                    '<span class="btn-delete-existing-gallery-img" data-user-id="' + donor.user_id + '" data-att-id="' + item.id + '" title="Delete photo from gallery" style="position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; border-radius: 50%; background: #c62828; color: #fff; font-size: 12px; font-weight: bold; line-height: 18px; text-align: center; cursor: pointer; border: 1px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">&times;</span>' +
+                '</div>');
+                existingContainer.append(thumb);
             });
         } else {
-            galleryContainer.html('<span style="font-size: 11px; color: #888; font-style: italic;">No gallery photos uploaded yet</span>');
+            existingContainer.html('<span style="font-size: 11px; color: #888; font-style: italic;">No gallery photos uploaded yet</span>');
         }
     }
+
+    var editDonorNewGalleryFiles = [];
+
+    // Delete existing gallery image from donor profile via AJAX
+    $(document).on('click', '.btn-delete-existing-gallery-img', function(e) {
+        e.preventDefault();
+        var btn = $(this);
+        var userId = btn.data('user-id');
+        var attId = btn.data('att-id');
+        var itemWrapper = btn.closest('.existing-gallery-item');
+
+        if (!confirm('Are you sure you want to remove this image from the gallery?')) {
+            return;
+        }
+
+        btn.text('..');
+
+        $.ajax({
+            url: ovariasAdminParams.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'ovarias_admin_delete_donor_gallery_image',
+                user_id: userId,
+                attachment_id: attId,
+                nonce: ovariasAdminParams.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    itemWrapper.fadeOut(200, function() {
+                        $(this).remove();
+                        if ($('#edit-gallery-existing').children('.existing-gallery-item').length === 0) {
+                            $('#edit-gallery-existing').html('<span style="font-size: 11px; color: #888; font-style: italic;">No gallery photos uploaded yet</span>');
+                        }
+                    });
+                    if (currentViewedDonor && currentViewedDonor.gallery_items) {
+                        currentViewedDonor.gallery_items = currentViewedDonor.gallery_items.filter(function(i) { return i.id != attId; });
+                        currentViewedDonor.gallery = currentViewedDonor.gallery_items.map(function(i) { return i.url; });
+                    }
+                } else {
+                    alert(response.data ? response.data.message : 'Error removing image.');
+                    btn.text('×');
+                }
+            },
+            error: function() {
+                alert('Connection error. Could not delete image.');
+                btn.text('×');
+            }
+        });
+    });
+
+    // Selecting new gallery images in Edit mode: multiple files + preview with remove
+    $('#edit-donor-gallery').on('change', function() {
+        var files = this.files;
+        if (files && files.length > 0) {
+            for (var i = 0; i < files.length; i++) {
+                editDonorNewGalleryFiles.push(files[i]);
+            }
+            renderEditDonorNewGalleryPreview();
+        }
+        $(this).val('');
+    });
+
+    function renderEditDonorNewGalleryPreview() {
+        var container = $('#edit-gallery-new-preview');
+        container.empty();
+        editDonorNewGalleryFiles.forEach(function(file, idx) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var thumb = $('<div class="new-gallery-thumb" style="position: relative; display: inline-block;">' +
+                    '<img src="' + e.target.result + '" style="width: 44px; height: 44px; object-fit: cover; border-radius: 4px; border: 1px solid #2e7d32; display: block;">' +
+                    '<span class="btn-remove-edit-gallery-file" data-index="' + idx + '" title="Remove" style="position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; border-radius: 50%; background: #c62828; color: #fff; font-size: 12px; font-weight: bold; line-height: 18px; text-align: center; cursor: pointer; border: 1px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">&times;</span>' +
+                '</div>');
+                container.append(thumb);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    $(document).on('click', '.btn-remove-edit-gallery-file', function(e) {
+        e.preventDefault();
+        var idx = parseInt($(this).data('index'), 10);
+        editDonorNewGalleryFiles.splice(idx, 1);
+        renderEditDonorNewGalleryPreview();
+    });
 
     // Save Full Donor Profile AJAX
     $('#ovarias-edit-donor-form').on('submit', function(e) {
@@ -945,6 +1099,13 @@ jQuery(document).ready(function($) {
         var formData = new FormData(formElement);
         formData.append('action', 'ovarias_admin_save_donor_full_profile');
         formData.append('nonce', ovariasAdminParams.nonce);
+
+        // Append new gallery files
+        if (editDonorNewGalleryFiles.length > 0) {
+            for (var i = 0; i < editDonorNewGalleryFiles.length; i++) {
+                formData.append('donor_gallery[]', editDonorNewGalleryFiles[i]);
+            }
+        }
 
         $.ajax({
             url: ovariasAdminParams.ajaxurl,
