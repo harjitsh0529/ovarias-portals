@@ -477,11 +477,7 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                                         <?php echo esc_html(trim($f_name . ' ' . $l_name) ?: ($donor_unique_id ?: ('Donor #' . $d_id))); ?>
                                     </strong><br>
                                     <span style="font-size: 11px; color: #8A9181;">Completion: <strong><?php echo $pct; ?></strong></span>
-                                    <div style="margin-top: 5px; display: flex; gap: 8px; align-items: center;">
-                                        <span class="btn-view-admin-donor-profile" style="font-size: 11px; color: #2e7d32; cursor: pointer; font-weight: bold;" data-donor="<?php echo esc_attr(wp_json_encode($detail_data)); ?>">👁 View Profile</span>
-                                        <span style="color: #ccc;">|</span>
-                                        <span class="btn-edit-admin-donor-profile" style="font-size: 11px; color: #555A4E; cursor: pointer; font-weight: bold;" data-donor="<?php echo esc_attr(wp_json_encode($detail_data)); ?>">✏️ Edit Profile</span>
-                                    </div>
+                                    <br><span class="btn-view-admin-donor-profile" style="font-size: 11px; color: #2e7d32; cursor: pointer; font-weight: bold; display: inline-block; margin-top: 4px;" data-donor="<?php echo esc_attr(wp_json_encode($detail_data)); ?>">👁 View Profile</span>
                                 </td>
                                 <td>
                                     <input type="text" class="table-inline-input donor-id-val" value="<?php echo esc_attr($donor_unique_id); ?>" style="width: 100px;">
@@ -511,7 +507,6 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                                     <span class="stock-n-a" style="<?php echo ($egg_type === 'Fresh') ? 'display: inline;' : 'display: none;'; ?>; color: #aaa;">—</span>
                                 </td>
                                 <td style="text-align: right; white-space: nowrap;">
-                                    <button class="action-btn btn-edit-admin-donor-profile" data-donor="<?php echo esc_attr(wp_json_encode($detail_data)); ?>" style="margin-right: 5px; background: #555A4E;">Edit Profile</button>
                                     <button class="action-btn btn-save-donor" style="margin-right: 5px;">Save</button>
                                     <button class="action-btn btn-delete-user" data-user-id="<?php echo $d_id; ?>" style="background: #c62828;">Delete</button>
                                 </td>
@@ -1096,7 +1091,16 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
         <button class="ovarias-modal-close" style="position: absolute; top: 24px; right: 24px; background: #FAFBF9; border: 1px solid var(--border-color); color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
-        <div class="ovarias-modal-content">
+
+        <!-- Mode Switcher Tabs inside the single modal -->
+        <div style="display: flex; gap: 8px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eee; margin-right: 45px;">
+            <button type="button" id="donor-modal-tab-view" class="action-btn" style="background: #555A4E; color: #fff; border: none; padding: 7px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px;">👁 View Profile</button>
+            <button type="button" id="donor-modal-tab-edit" class="action-btn" style="background: #f0f0f0; color: #444; border: 1px solid #ccc; padding: 7px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px;">✏️ Edit Profile</button>
+        </div>
+
+        <!-- View Mode Panel -->
+        <div id="donor-modal-view-panel">
+            <div class="ovarias-modal-content">
             <div class="ovarias-modal-header-layout" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; align-items: center; width: 100%; border-bottom: 1px solid var(--border-color); padding-bottom: 20px;">
                 <div class="ovarias-modal-image-wrapper" style="width: 100%; max-height: 450px; overflow: hidden; border-radius: 8px; border: 1px solid var(--border-color); background: #fcfcfc; display: flex; align-items: center; justify-content: center; position: relative;">
                     <img src="" alt="Donor Photo" class="ovarias-modal-avatar" id="modal-avatar" style="max-height: 450px; max-width: 100%; width: auto; height: auto; object-fit: contain; border-radius: 0; border: none; margin: 0 auto; display: block;">
@@ -1241,19 +1245,17 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
             </div>
             
             <div style="margin-top: 35px; display: flex; justify-content: flex-end; gap: 10px;">
-                <button type="button" class="action-btn btn-trigger-edit-from-view" style="background: #2e7d32; color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">✏️ Edit This Profile</button>
+                <button type="button" class="action-btn btn-trigger-edit-from-view" style="background: #2e7d32; color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">✏️ Edit Profile</button>
                 <button type="button" class="action-btn btn-close-donor-modal" style="background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">Close Profile</button>
             </div>
         </div>
-    </div>
-</div>
+    </div> <!-- end donor-modal-view-panel -->
 
-<div id="ovarias-edit-donor-modal" class="ovarias-admin-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 10000; font-family: sans-serif;">
-    <div class="ovarias-admin-modal-box" style="background: #fff; border-radius: 8px; max-width: 680px; width: 90%; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; box-sizing: border-box;">
-        <h3 id="edit-modal-title" style="margin-top: 0; color: #555A4E; font-size: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+    <!-- Edit Mode Panel inside the single modal -->
+    <div id="donor-modal-edit-panel" style="display: none;">
+        <h3 style="margin-top: 0; color: #555A4E; font-size: 20px; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
             <span>✏️ Edit Donor Profile</span>
         </h3>
-        <span class="btn-close-edit-modal-x" style="position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; line-height: 1;">&times;</span>
         
         <form id="ovarias-edit-donor-form" enctype="multipart/form-data">
             <input type="hidden" id="edit-donor-user-id" name="user_id" value="">
@@ -1607,9 +1609,10 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eee; padding-top: 15px;">
-                <button type="button" class="action-btn btn-close-edit-modal" style="background: #888; color: #fff; padding: 10px 20px; font-weight: bold; border-radius: 6px; font-size: 13px; border: none; cursor: pointer;">Cancel</button>
+                <button type="button" class="action-btn btn-cancel-edit-to-view" style="background: #888; color: #fff; padding: 10px 20px; font-weight: bold; border-radius: 6px; font-size: 13px; border: none; cursor: pointer;">Cancel</button>
                 <button type="submit" id="btn-submit-edit-donor" class="action-btn" style="background: #2e7d32; color: #fff; padding: 10px 24px; font-weight: bold; border-radius: 6px; font-size: 13px; border: none; cursor: pointer;">Save Profile Changes</button>
             </div>
         </form>
-    </div>
-</div>
+    </div> <!-- end donor-modal-edit-panel -->
+</div> <!-- end ovarias-modal-container -->
+</div> <!-- end donor-detail-modal -->

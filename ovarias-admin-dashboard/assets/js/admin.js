@@ -771,6 +771,8 @@ jQuery(document).ready(function($) {
             }
             
             currentViewedDonor = donor;
+            populateEditDonorForm(donor);
+            switchToViewMode();
             $('#donor-detail-modal').css('display', 'flex');
         } catch(err) {
             console.error('Error parsing donor data:', err);
@@ -783,34 +785,47 @@ jQuery(document).ready(function($) {
         $('#donor-detail-modal').hide();
     }
 
+    function switchToViewMode() {
+        $('#donor-modal-edit-panel').hide();
+        $('#donor-modal-view-panel').show();
+        $('#donor-modal-tab-view').css({ 'background': '#555A4E', 'color': '#fff', 'border': 'none' });
+        $('#donor-modal-tab-edit').css({ 'background': '#f0f0f0', 'color': '#444', 'border': '1px solid #ccc' });
+        $('#donor-detail-modal .ovarias-modal-container').scrollTop(0);
+    }
+
+    function switchToEditMode() {
+        if (currentViewedDonor) {
+            populateEditDonorForm(currentViewedDonor);
+        }
+        $('#donor-modal-view-panel').hide();
+        $('#donor-modal-edit-panel').show();
+        $('#donor-modal-tab-edit').css({ 'background': '#2e7d32', 'color': '#fff', 'border': 'none' });
+        $('#donor-modal-tab-view').css({ 'background': '#f0f0f0', 'color': '#444', 'border': '1px solid #ccc' });
+        $('#donor-detail-modal .ovarias-modal-container').scrollTop(0);
+    }
+
+    // Modal Tabs and Action Buttons
+    $(document).on('click', '#donor-modal-tab-view', function(e) {
+        e.preventDefault();
+        switchToViewMode();
+    });
+
+    $(document).on('click', '#donor-modal-tab-edit, .btn-trigger-edit-from-view', function(e) {
+        e.preventDefault();
+        switchToEditMode();
+    });
+
+    $(document).on('click', '.btn-cancel-edit-to-view', function(e) {
+        e.preventDefault();
+        switchToViewMode();
+    });
+
     $(document).on('click', '.ovarias-modal-close, .btn-close-donor-modal', function(e) {
         e.preventDefault();
         closeDonorModal();
     });
 
-    // Trigger edit from inside view profile modal
-    $(document).on('click', '.btn-trigger-edit-from-view', function(e) {
-        e.preventDefault();
-        closeDonorModal();
-        if (currentViewedDonor) {
-            openEditDonorModal(currentViewedDonor);
-        }
-    });
-
-    // Edit Donor Button in Table Row
-    $(document).on('click', '.btn-edit-admin-donor-profile', function(e) {
-        e.preventDefault();
-        var donorStr = $(this).attr('data-donor');
-        if (!donorStr) return;
-        try {
-            var donor = JSON.parse(donorStr);
-            openEditDonorModal(donor);
-        } catch(err) {
-            console.error('Error parsing donor edit data:', err);
-        }
-    });
-
-    function openEditDonorModal(donor) {
+    function populateEditDonorForm(donor) {
         if (!donor) return;
 
         $('#edit-donor-user-id').val(donor.user_id || '');
@@ -898,8 +913,6 @@ jQuery(document).ready(function($) {
         // Reset file inputs
         $('#edit-donor-avatar').val('');
         $('#edit-donor-gallery').val('');
-
-        $('#ovarias-edit-donor-modal').css('display', 'flex');
     }
 
     // Save Full Donor Profile AJAX
@@ -924,7 +937,7 @@ jQuery(document).ready(function($) {
                     submitBtn.text('Profile Saved ✔').css('background', '#2e7d32');
                     setTimeout(function() {
                         location.reload();
-                    }, 800);
+                    }, 600);
                 } else {
                     alert('Error: ' + (response.data ? response.data.message : 'Could not save profile.'));
                     submitBtn.prop('disabled', false).text('Save Profile Changes');
@@ -937,17 +950,9 @@ jQuery(document).ready(function($) {
         });
     });
 
-    $(document).on('click', '.btn-close-edit-modal, .btn-close-edit-modal-x', function(e) {
-        e.preventDefault();
-        $('#ovarias-edit-donor-modal').hide();
-    });
-
     $(window).on('click', function(e) {
-        if ($(e.target).is('#donor-detail-modal')) {
+        if ($(e.target).is('#donor-detail-modal') || $(e.target).is('.ovarias-modal-overlay')) {
             closeDonorModal();
-        }
-        if ($(e.target).is('#ovarias-edit-donor-modal')) {
-            $('#ovarias-edit-donor-modal').hide();
         }
     });
 
