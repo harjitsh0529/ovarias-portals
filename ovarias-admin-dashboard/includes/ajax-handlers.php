@@ -337,25 +337,76 @@ function ovarias_public_ajax_submit_inquiry() {
     $inquiries[] = $new_inquiry;
     update_option('ovarias_general_inquiries', $inquiries);
 
-    // Send notification to Admin (Section 10 / 15)
+    // Prepare email headers
+    $site_name = get_bloginfo('name') ?: 'Ovarias';
     $admin_email = get_option('admin_email');
-    $admin_subject = "New " . $type . " - Ovarias Website";
-    $admin_body = "A new inquiry was submitted on the website:\r\n\r\n";
-    $admin_body .= "Inquiry Type: " . $type . "\r\n";
-    $admin_body .= "Name: " . ($name ?: 'Not set') . "\r\n";
-    $admin_body .= "Email: " . $email . "\r\n";
-    $admin_body .= "Phone: " . ($phone ?: 'Not set') . "\r\n";
-    $admin_body .= "Date Submitted: " . $pay_date . "\r\n\r\n";
-    $admin_body .= "Message:\r\n" . $message . "\r\n";
-    wp_mail($admin_email, $admin_subject, $admin_body);
+    $from_email = 'no-reply@' . preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME'] ?? 'ovarias.com'));
 
-    // Send confirmation receipt to visitor (Section 10 / 16)
-    $visitor_subject = "We have received your Ovarias inquiry!";
-    $visitor_body = "Hi " . ($name ?: 'there') . ",\r\n\r\n";
-    $visitor_body .= "Thank you for contacting Ovarias. We have received your inquiry regarding: '" . $type . "'.\r\n";
-    $visitor_body .= "Our coordination team is reviewing your details and will get in touch with you shortly.\r\n\r\n";
-    $visitor_body .= "Best regards,\r\nOvarias Coordination Team";
-    wp_mail($email, $visitor_subject, $visitor_body);
+    $headers_admin = array(
+        'Content-Type: text/html; charset=UTF-8',
+        'From: ' . $site_name . ' <' . $from_email . '>',
+        'Reply-To: ' . ($name ? $name . ' ' : '') . '<' . $email . '>'
+    );
+
+    // Beautiful HTML email body for Admin
+    $admin_subject = "New " . esc_html($type) . " received - " . $site_name;
+    $admin_body = '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">';
+    $admin_body .= '<div style="background: #555A4E; padding: 20px 24px; text-align: center; color: #ffffff;">';
+    $admin_body .= '<h2 style="margin: 0; font-size: 20px; font-weight: bold; letter-spacing: 0.5px;">New Website Inquiry</h2>';
+    $admin_body .= '<p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.9;">' . esc_html($type) . '</p>';
+    $admin_body .= '</div>';
+    $admin_body .= '<div style="padding: 24px;">';
+    $admin_body .= '<table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #333333;">';
+    $admin_body .= '<tr style="border-bottom: 1px solid #f0f0f0;"><td style="padding: 10px 0; font-weight: bold; width: 30%; color: #666;">Inquiry Type:</td><td style="padding: 10px 0; font-weight: 600; color: #2e7d32;">' . esc_html($type) . '</td></tr>';
+    $admin_body .= '<tr style="border-bottom: 1px solid #f0f0f0;"><td style="padding: 10px 0; font-weight: bold; color: #666;">Full Name:</td><td style="padding: 10px 0;">' . esc_html($name ?: 'Not provided') . '</td></tr>';
+    $admin_body .= '<tr style="border-bottom: 1px solid #f0f0f0;"><td style="padding: 10px 0; font-weight: bold; color: #666;">Email:</td><td style="padding: 10px 0;"><a href="mailto:' . esc_attr($email) . '" style="color: #2e7d32; text-decoration: none; font-weight: bold;">' . esc_html($email) . '</a></td></tr>';
+    $admin_body .= '<tr style="border-bottom: 1px solid #f0f0f0;"><td style="padding: 10px 0; font-weight: bold; color: #666;">Phone:</td><td style="padding: 10px 0;">' . esc_html($phone ?: 'Not provided') . '</td></tr>';
+    $admin_body .= '<tr style="border-bottom: 1px solid #f0f0f0;"><td style="padding: 10px 0; font-weight: bold; color: #666;">Date:</td><td style="padding: 10px 0;">' . esc_html($pay_date) . '</td></tr>';
+    $admin_body .= '</table>';
+    $admin_body .= '<div style="margin-top: 20px; padding: 16px; background: #fafbf9; border-radius: 6px; border-left: 4px solid #555A4E;">';
+    $admin_body .= '<p style="margin: 0 0 6px 0; font-weight: bold; font-size: 13px; color: #555A4E;">Message / Details:</p>';
+    $admin_body .= '<p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444; white-space: pre-wrap;">' . esc_html($message ?: 'No message text provided.') . '</p>';
+    $admin_body .= '</div>';
+    $admin_body .= '<div style="margin-top: 24px; text-align: center;">';
+    $admin_body .= '<a href="mailto:' . esc_attr($email) . '" style="display: inline-block; background: #555A4E; color: #ffffff; padding: 10px 22px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 13px;">Reply to ' . esc_html($name ?: $email) . '</a>';
+    $admin_body .= '</div>';
+    $admin_body .= '</div>';
+    $admin_body .= '<div style="background: #f7f7f7; padding: 12px 24px; text-align: center; font-size: 12px; color: #999;">This inquiry was recorded in your Ovarias Admin Dashboard.</div>';
+    $admin_body .= '</div>';
+
+    // Dispatch Admin Notification
+    wp_mail($admin_email, $admin_subject, $admin_body, $headers_admin);
+
+    // Send confirmation receipt to visitor
+    if (!empty($email)) {
+        $headers_visitor = array(
+            'Content-Type: text/html; charset=UTF-8',
+            'From: ' . $site_name . ' <' . $from_email . '>'
+        );
+
+        $visitor_subject = "We have received your inquiry - " . $site_name;
+        $visitor_body = '<div style="font-family: Arial, sans-serif; max-width: 550px; margin: 0 auto; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">';
+        $visitor_body .= '<div style="background: #555A4E; padding: 20px 24px; text-align: center; color: #ffffff;">';
+        $visitor_body .= '<h2 style="margin: 0; font-size: 20px; font-weight: bold;">Thank You for Contacting Us</h2>';
+        $visitor_body .= '</div>';
+        $visitor_body .= '<div style="padding: 24px; font-size: 14px; color: #444; line-height: 1.6;">';
+        $visitor_body .= '<p>Hi <strong>' . esc_html($name ?: 'there') . '</strong>,</p>';
+        $visitor_body .= '<p>Thank you for reaching out to <strong>' . esc_html($site_name) . '</strong>. We have received your inquiry regarding <em>"' . esc_html($type) . '"</em>.</p>';
+        $visitor_body .= '<p>Our coordination team is currently reviewing your details and will get in touch with you shortly.</p>';
+        $visitor_body .= '<div style="margin: 20px 0; padding: 14px; background: #fbfcf9; border-left: 3px solid #7E8372; font-size: 13px;">';
+        $visitor_body .= '<strong>Your Inquiry Summary:</strong><br>';
+        $visitor_body .= 'Type: ' . esc_html($type) . '<br>';
+        if ($phone) {
+            $visitor_body .= 'Phone: ' . esc_html($phone) . '<br>';
+        }
+        $visitor_body .= 'Date: ' . esc_html($pay_date) . '';
+        $visitor_body .= '</div>';
+        $visitor_body .= '<p style="margin-bottom: 0;">Warm regards,<br><strong>' . esc_html($site_name) . ' Coordination Team</strong></p>';
+        $visitor_body .= '</div>';
+        $visitor_body .= '</div>';
+
+        wp_mail($email, $visitor_subject, $visitor_body, $headers_visitor);
+    }
 
     wp_send_json_success(array('message' => 'Thank you! Your inquiry was submitted successfully.'));
 }
