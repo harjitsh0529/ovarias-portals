@@ -1088,9 +1088,6 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
 <div class="ovarias-parent-modal" id="donor-detail-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 99999; font-family: sans-serif;">
     <div class="ovarias-modal-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
     <div class="ovarias-modal-container" style="position: relative; background: #fff; width: 92%; max-width: 650px; max-height: 85vh; border-radius: 12px; overflow-y: auto; z-index: 10; padding: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid var(--border-color); box-sizing: border-box;">
-        <button class="ovarias-modal-close" style="position: absolute; top: 24px; right: 24px; background: #FAFBF9; border: 1px solid var(--border-color); color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
 
         <!-- View Mode Panel -->
         <div id="donor-modal-view-panel">
@@ -1257,6 +1254,28 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
             <input type="hidden" id="edit-donor-user-id" name="user_id" value="">
             
             <div style="max-height: 65vh; overflow-y: auto; padding-right: 12px; margin-bottom: 20px;">
+                <!-- Prominent Photos Section -->
+                <div style="background: #FAFBF9; border: 1px solid #c2c7bd; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 12px 0; color: #555A4E; font-size: 14px; font-weight: bold; border-bottom: 1px solid #e0e4dc; padding-bottom: 6px;">Profile & Gallery Photos</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Primary Profile Picture</label>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <img id="edit-avatar-preview" src="" style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%; border: 1px solid #bbb; display: none;">
+                                <span id="edit-avatar-note" style="font-size: 11px; color: #666;">Current photo</span>
+                            </div>
+                            <input type="file" id="edit-donor-avatar" name="profile_image" accept="image/*" class="table-inline-input" style="width: 100%; box-sizing: border-box; padding: 6px; font-size: 12px; background: #fff;">
+                            <span style="display: block; font-size: 11px; color: #777; margin-top: 4px;">Choose a file to replace the main profile photo</span>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Additional Gallery Photos (Multiple)</label>
+                            <div id="edit-gallery-preview" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; min-height: 24px; align-items: center;"></div>
+                            <input type="file" id="edit-donor-gallery" name="donor_gallery[]" multiple accept="image/*" class="table-inline-input" style="width: 100%; box-sizing: border-box; padding: 6px; font-size: 12px; background: #fff;">
+                            <span style="display: block; font-size: 11px; color: #2e7d32; font-weight: bold; margin-top: 4px;">You can select multiple photos at one time (hold Ctrl/Cmd to select several)</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                     <div>
                         <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">First Name</label>
@@ -1577,19 +1596,6 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Why I Want to Donate</label>
                     <textarea id="edit-donor-why" name="why_donate" class="table-inline-input" style="width: 100%; height: 70px; box-sizing: border-box;"></textarea>
-                </div>
-
-                <!-- Photos Upload -->
-                <h4 style="margin: 20px 0 10px 0; color: #555A4E; font-size: 14px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Photos</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                    <div>
-                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Update Profile Avatar</label>
-                        <input type="file" id="edit-donor-avatar" name="profile_image" accept="image/*" class="table-inline-input" style="width: 100%; box-sizing: border-box; padding: 6px;">
-                    </div>
-                    <div>
-                        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Add Gallery Photos</label>
-                        <input type="file" id="edit-donor-gallery" name="donor_gallery[]" multiple accept="image/*" class="table-inline-input" style="width: 100%; box-sizing: border-box; padding: 6px;">
-                    </div>
                 </div>
 
                 <!-- Medical History Checklist -->

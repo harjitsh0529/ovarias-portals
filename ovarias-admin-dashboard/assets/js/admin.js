@@ -914,6 +914,25 @@ jQuery(document).ready(function($) {
         // Reset file inputs
         $('#edit-donor-avatar').val('');
         $('#edit-donor-gallery').val('');
+
+        // Populate Avatar & Gallery preview
+        if (donor.avatar && donor.avatar !== '' && donor.avatar.indexOf('placeholder.png') === -1) {
+            $('#edit-avatar-preview').attr('src', donor.avatar).show();
+            $('#edit-avatar-note').text('Current photo loaded');
+        } else {
+            $('#edit-avatar-preview').hide();
+            $('#edit-avatar-note').text('No custom photo set');
+        }
+
+        var galleryContainer = $('#edit-gallery-preview');
+        galleryContainer.empty();
+        if (donor.gallery && Array.isArray(donor.gallery) && donor.gallery.length > 0) {
+            donor.gallery.forEach(function(imgUrl) {
+                galleryContainer.append('<img src="' + imgUrl + '" style="width: 38px; height: 38px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;" title="Gallery photo">');
+            });
+        } else {
+            galleryContainer.html('<span style="font-size: 11px; color: #888; font-style: italic;">No gallery photos uploaded yet</span>');
+        }
     }
 
     // Save Full Donor Profile AJAX
