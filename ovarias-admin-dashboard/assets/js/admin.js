@@ -1258,9 +1258,9 @@ jQuery(document).ready(function($) {
 
         if (type === 'donor') {
             filename = 'ovarias_sample_donors_template.csv';
-            csvContent = 'donor_id,first_name,last_name,email,dob,nationality,blood_group,height,weight,eye_colour,hair_colour,education_level,field_of_study,occupation,languages_spoken,availability_status,egg_type,num_eggs,storage_country,about_me,hobbies,why_donate\n' +
-                         'ED101,Jane,Doe,jane.doe@example.com,1998-05-12,American,O+,168 cm,58 kg,Hazel,Brown,Bachelor,Biology,Graphic Designer,"English, Spanish",Available,Fresh,12,USA,"Healthy and energetic donor dedicated to helping families.","Reading, Swimming, Cooking","I want to help parents make their dreams come true."\n' +
-                         'ED102,Sophia,Miller,sophia.m@example.com,1999-11-20,Canadian,A+,172 cm,62 kg,Blue,Blonde,Master,Marketing,Project Manager,"English, French",Available,Frozen,8,Canada,"Empathetic and active individual with great health.","Yoga, Photography, Hiking","Bringing joy to intended parents is a privilege."';
+            csvContent = 'donor_id,first_name,last_name,email,dob,nationality,blood_group,height,weight,eye_colour,hair_colour,education_level,field_of_study,occupation,languages_spoken,availability_status,egg_type,num_eggs,storage_country,about_me,hobbies,why_donate,avatar_url,gallery_urls\n' +
+                         'ED101,Jane,Doe,jane.doe@example.com,1998-05-12,American,O+,168 cm,58 kg,Hazel,Brown,Bachelor,Biology,Graphic Designer,"English, Spanish",Available,Fresh,12,USA,"Healthy and energetic donor dedicated to helping families.","Reading, Swimming, Cooking","I want to help parents make their dreams come true.",https://images.unsplash.com/photo-1544005313-94ddf0286df2,"https://images.unsplash.com/photo-1534528741775-53994a69daeb,https://images.unsplash.com/photo-1517841905240-472988babdf9"\n' +
+                         'ED102,Sophia,Miller,sophia.m@example.com,1999-11-20,Canadian,A+,172 cm,62 kg,Blue,Blonde,Master,Marketing,Project Manager,"English, French",Available,Frozen,8,Canada,"Empathetic and active individual with great health.","Yoga, Photography, Hiking","Bringing joy to intended parents is a privilege.",https://images.unsplash.com/photo-1494790108377-be9c29b29330,"https://images.unsplash.com/photo-1524504388940-b1c1722653e1"';
         } else {
             filename = 'ovarias_sample_clients_template.csv';
             csvContent = 'first_name,last_name,email,country,parent_preferences,parent_notes,is_premium\n' +

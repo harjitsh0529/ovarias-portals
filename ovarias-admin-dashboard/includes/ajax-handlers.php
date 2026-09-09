@@ -940,6 +940,63 @@ function ovarias_admin_ajax_import_csv() {
                 update_user_meta($user_id, 'donor_id', sanitize_text_field($donor_id));
             }
 
+            // Handle Photo URLs from CSV (avatar and gallery)
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+            // 1. Avatar URL
+            $avatar_url = '';
+            if (!empty($data['avatar_url'])) {
+                $avatar_url = trim($data['avatar_url']);
+            } elseif (!empty($data['profile_image_url'])) {
+                $avatar_url = trim($data['profile_image_url']);
+            } elseif (!empty($data['photo_url'])) {
+                $avatar_url = trim($data['photo_url']);
+            } elseif (!empty($data['image_url'])) {
+                $avatar_url = trim($data['image_url']);
+            }
+
+            if (!empty($avatar_url)) {
+                if (filter_var($avatar_url, FILTER_VALIDATE_URL)) {
+                    $att_id = media_sideload_image($avatar_url, 0, null, 'id');
+                    if (!is_wp_error($att_id)) {
+                        update_user_meta($user_id, 'profile_image', (int)$att_id);
+                    }
+                } elseif (is_numeric($avatar_url)) {
+                    update_user_meta($user_id, 'profile_image', (int)$avatar_url);
+                }
+            }
+
+            // 2. Gallery URLs (separated by comma, semicolon, or pipe)
+            $gallery_str = '';
+            if (!empty($data['gallery_urls'])) {
+                $gallery_str = $data['gallery_urls'];
+            } elseif (!empty($data['gallery_images'])) {
+                $gallery_str = $data['gallery_images'];
+            } elseif (!empty($data['gallery'])) {
+                $gallery_str = $data['gallery'];
+            }
+
+            if (!empty($gallery_str)) {
+                $gallery_urls = preg_split('/[,;|]/', $gallery_str);
+                $existing_gallery = get_user_meta($user_id, 'profile_images_gallery', true) ?: array();
+                foreach ($gallery_urls as $g_url) {
+                    $g_url = trim($g_url);
+                    if (filter_var($g_url, FILTER_VALIDATE_URL)) {
+                        $g_att_id = media_sideload_image($g_url, 0, null, 'id');
+                        if (!is_wp_error($g_att_id)) {
+                            $existing_gallery[] = (int)$g_att_id;
+                        }
+                    } elseif (is_numeric($g_url)) {
+                        $existing_gallery[] = (int)$g_url;
+                    }
+                }
+                if (!empty($existing_gallery)) {
+                    update_user_meta($user_id, 'profile_images_gallery', array_unique($existing_gallery));
+                }
+            }
+
         } else {
             // Intended Parent
             $first_name = !empty($data['first_name']) ? $data['first_name'] : (!empty($data['name']) ? $data['name'] : '');
