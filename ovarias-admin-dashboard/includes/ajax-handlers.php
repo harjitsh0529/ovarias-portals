@@ -705,4 +705,346 @@ function ovarias_admin_ajax_delete_inquiry() {
 }
 add_action('wp_ajax_ovarias_admin_delete_inquiry', 'ovarias_admin_ajax_delete_inquiry');
 
+/**
+ * AJAX Handler: Save/Update Intended Parent Profile from Admin
+ */
+function ovarias_admin_ajax_save_parent_profile() {
+    check_ajax_referer('ovarias_admin_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => 'Unauthorized action.'));
+    }
+
+    $user_id = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
+    if (!$user_id) {
+        wp_send_json_error(array('message' => 'Invalid user ID.'));
+    }
+
+    $first_name = isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '';
+    $last_name = isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '';
+    $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+    $country = isset($_POST['country']) ? sanitize_text_field($_POST['country']) : '';
+    $preferences = isset($_POST['parent_preferences']) ? sanitize_textarea_field($_POST['parent_preferences']) : '';
+    $notes = isset($_POST['parent_notes']) ? sanitize_textarea_field($_POST['parent_notes']) : '';
+    $is_premium = isset($_POST['is_premium_parent']) ? sanitize_text_field($_POST['is_premium_parent']) : '0';
+
+    // Update WP User data
+    $user_data = array(
+        'ID' => $user_id,
+        'first_name' => $first_name,
+        'last_name' => $last_name,
+        'display_name' => trim($first_name . ' ' . $last_name) ?: 'Client #' . $user_id,
+    );
+    if (!empty($email) && is_email($email)) {
+        $existing_user = get_user_by('email', $email);
+        if ($existing_user && (int)$existing_user->ID !== $user_id) {
+            wp_send_json_error(array('message' => 'This email address is already registered to another account.'));
+        }
+        $user_data['user_email'] = $email;
+    }
+    wp_update_user($user_data);
+
+    // Update user meta
+    update_user_meta($user_id, 'first_name', $first_name);
+    update_user_meta($user_id, 'last_name', $last_name);
+    update_user_meta($user_id, 'country', $country);
+    update_user_meta($user_id, 'parent_preferences', $preferences);
+    update_user_meta($user_id, 'parent_notes', $notes);
+    update_user_meta($user_id, 'is_premium_parent', $is_premium === '1' ? '1' : '0');
+
+    if ($is_premium === '1') {
+        if (!get_user_meta($user_id, 'ovarias_payment_date', true)) {
+            update_user_meta($user_id, 'ovarias_payment_date', current_time('mysql'));
+        }
+    }
+
+    wp_send_json_success(array('message' => 'Client profile updated successfully!'));
+}
+add_action('wp_ajax_ovarias_admin_save_parent_profile', 'ovarias_admin_ajax_save_parent_profile');
+
+/**
+ * AJAX Handler: Bulk Import Users from CSV (Donors or Intended Parents)
+ */
+function ovarias_admin_ajax_import_csv() {
+    check_ajax_referer('ovarias_admin_nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => 'Unauthorized action.'));
+    }
+
+    $type = isset($_POST['import_type']) ? sanitize_text_field($_POST['import_type']) : 'donor';
+    if (!in_array($type, array('donor', 'parent'))) {
+        wp_send_json_error(array('message' => 'Invalid import type.'));
+    }
+
+    if (empty($_FILES['csv_file']['tmp_name'])) {
+        wp_send_json_error(array('message' => 'Please select a valid CSV file to upload.'));
+    }
+
+    $file_path = $_FILES['csv_file']['tmp_name'];
+    $handle = fopen($file_path, 'r');
+    if (!$handle) {
+        wp_send_json_error(array('message' => 'Unable to read the uploaded CSV file.'));
+    }
+
+    // Auto-detect delimiter (, or ;)
+    $first_line = fgets($handle);
+    rewind($handle);
+    $delimiter = (strpos($first_line, ';') !== false && strpos($first_line, ',') === false) ? ';' : ',';
+
+    // Read header row
+    $raw_header = fgetcsv($handle, 0, $delimiter);
+    if (!$raw_header || empty($raw_header)) {
+        fclose($handle);
+        wp_send_json_error(array('message' => 'CSV file is empty or missing headers.'));
+    }
+
+    // Normalize headers: lowercase, remove non-alphanumeric except underscore, trim
+    $headers = array();
+    foreach ($raw_header as $idx => $h) {
+        $clean = strtolower(trim($h));
+        $clean = str_replace(array(' ', '-', '/'), '_', $clean);
+        $clean = preg_replace('/[^a-z0-9_]/', '', $clean);
+        $headers[$idx] = $clean;
+    }
+
+    $created_count = 0;
+    $updated_count = 0;
+    $errors = array();
+    $row_num = 1; // 1 is header
+
+    while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+        $row_num++;
+        // Skip empty rows
+        if (empty(array_filter($row))) {
+            continue;
+        }
+
+        // Map row to associative array
+        $data = array();
+        foreach ($headers as $idx => $header_key) {
+            $data[$header_key] = isset($row[$idx]) ? trim($row[$idx]) : '';
+        }
+
+        if ($type === 'donor') {
+            $donor_id = !empty($data['donor_id']) ? $data['donor_id'] : '';
+            $first_name = !empty($data['first_name']) ? $data['first_name'] : (!empty($data['name']) ? $data['name'] : '');
+            $last_name = !empty($data['last_name']) ? $data['last_name'] : '';
+            $email = !empty($data['email']) ? sanitize_email($data['email']) : '';
+            
+            // Generate email if blank
+            if (empty($email)) {
+                $identifier = $donor_id ? sanitize_title($donor_id) : 'donor_' . $row_num . '_' . wp_rand(100, 999);
+                $email = $identifier . '@ovarias-donor.local';
+            }
+
+            // Check if donor exists by email or donor_id meta
+            $user_id = 0;
+            if (is_email($email)) {
+                $existing = get_user_by('email', $email);
+                if ($existing) {
+                    $user_id = $existing->ID;
+                }
+            }
+            if (!$user_id && !empty($donor_id)) {
+                $matching_users = get_users(array(
+                    'meta_key' => 'donor_id',
+                    'meta_value' => $donor_id,
+                    'number' => 1,
+                    'fields' => 'ID'
+                ));
+                if (!empty($matching_users)) {
+                    $user_id = $matching_users[0];
+                }
+            }
+
+            if ($user_id) {
+                // Update existing
+                wp_update_user(array(
+                    'ID' => $user_id,
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'display_name' => trim($first_name . ' ' . $last_name) ?: ($donor_id ?: 'Donor #' . $user_id),
+                ));
+                $updated_count++;
+            } else {
+                // Create new donor
+                $username = !empty($data['username']) ? sanitize_user($data['username']) : ($donor_id ? sanitize_user($donor_id) : 'donor_' . $row_num . '_' . wp_rand(100, 999));
+                if (username_exists($username)) {
+                    $username .= '_' . wp_rand(10, 99);
+                }
+                $password = !empty($data['password']) ? $data['password'] : wp_generate_password(12, true);
+
+                $user_id = wp_insert_user(array(
+                    'user_login' => $username,
+                    'user_pass' => $password,
+                    'user_email' => $email,
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'display_name' => trim($first_name . ' ' . $last_name) ?: ($donor_id ?: 'Donor #' . $username),
+                    'role' => 'um_donor'
+                ));
+
+                if (is_wp_error($user_id)) {
+                    $errors[] = 'Row ' . $row_num . ': ' . $user_id->get_error_message();
+                    continue;
+                }
+                $created_count++;
+            }
+
+            // Set role and community role
+            $u = new WP_User($user_id);
+            $u->set_role('um_donor');
+            update_user_meta($user_id, 'role', 'um_donor');
+            update_user_meta($user_id, 'community_role', 'um_donor');
+
+            // Save all standard donor meta fields
+            $donor_fields = array(
+                'donor_id', 'dob', 'nationality', 'blood_group', 'height', 'weight',
+                'eye_colour', 'hair_colour', 'education_level', 'field_of_study',
+                'occupation', 'languages_spoken', 'availability_status', 'egg_type',
+                'num_eggs', 'storage_country', 'about_me', 'hobbies', 'why_donate',
+                'ethnic_origin', 'race', 'ethnicity', 'body_type', 'face_shape',
+                'nose_shape', 'lips_shape', 'hair_type', 'skin_tone', 'freckles',
+                'proven_fertility', 'hearing', 'vision', 'wearing_glasses', 'wearing_lenses',
+                'surgeries', 'allergies', 'dental_history', 'twins_history',
+                'alcohol_use', 'smoking_tobacco', 'vaping', 'drug_use', 'medications',
+                'zodiac_sign', 'fav_colour', 'fav_dish', 'fav_season', 'fav_holiday',
+                'fav_sport', 'fav_music', 'childhood_dream', 'fav_author', 'fav_movie',
+                'countries_visited', 'goals_in_life', 'idols_heroes', 'personality_words',
+                'strong_side', 'weak_side'
+            );
+
+            // Aliases mapping for common column names in client CSVs
+            $alias_map = array(
+                'education' => 'education_level',
+                'study' => 'field_of_study',
+                'languages' => 'languages_spoken',
+                'availability' => 'availability_status',
+                'eggs' => 'num_eggs',
+                'storage' => 'storage_country',
+                'eyes' => 'eye_colour',
+                'hair' => 'hair_colour',
+                'blood' => 'blood_group',
+            );
+
+            foreach ($data as $col => $val) {
+                if ($val === '') continue;
+                $target_key = isset($alias_map[$col]) ? $alias_map[$col] : $col;
+                if (in_array($target_key, $donor_fields)) {
+                    update_user_meta($user_id, $target_key, sanitize_textarea_field($val));
+                }
+            }
+
+            if (!empty($donor_id)) {
+                update_user_meta($user_id, 'donor_id', sanitize_text_field($donor_id));
+            }
+
+        } else {
+            // Intended Parent
+            $first_name = !empty($data['first_name']) ? $data['first_name'] : (!empty($data['name']) ? $data['name'] : '');
+            $last_name = !empty($data['last_name']) ? $data['last_name'] : '';
+            $email = !empty($data['email']) ? sanitize_email($data['email']) : '';
+
+            if (empty($email) || !is_email($email)) {
+                $errors[] = 'Row ' . $row_num . ': Skipped (Valid email is required for Intended Parents).';
+                continue;
+            }
+
+            $user_id = 0;
+            $existing = get_user_by('email', $email);
+            if ($existing) {
+                $user_id = $existing->ID;
+            }
+
+            if ($user_id) {
+                wp_update_user(array(
+                    'ID' => $user_id,
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'display_name' => trim($first_name . ' ' . $last_name) ?: 'Client #' . $user_id,
+                ));
+                $updated_count++;
+            } else {
+                $username = !empty($data['username']) ? sanitize_user($data['username']) : sanitize_user(strstr($email, '@', true));
+                if (username_exists($username)) {
+                    $username .= '_' . wp_rand(10, 99);
+                }
+                $password = !empty($data['password']) ? $data['password'] : wp_generate_password(12, true);
+
+                $user_id = wp_insert_user(array(
+                    'user_login' => $username,
+                    'user_pass' => $password,
+                    'user_email' => $email,
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'display_name' => trim($first_name . ' ' . $last_name) ?: 'Client #' . $username,
+                    'role' => 'um_intended_parent'
+                ));
+
+                if (is_wp_error($user_id)) {
+                    $errors[] = 'Row ' . $row_num . ': ' . $user_id->get_error_message();
+                    continue;
+                }
+                $created_count++;
+            }
+
+            $u = new WP_User($user_id);
+            $u->set_role('um_intended_parent');
+            update_user_meta($user_id, 'role', 'um_intended_parent');
+            update_user_meta($user_id, 'community_role', 'um_intended_parent');
+
+            // Save IP metadata
+            if (isset($data['country']) && $data['country'] !== '') {
+                update_user_meta($user_id, 'country', sanitize_text_field($data['country']));
+            }
+            if (isset($data['parent_preferences']) && $data['parent_preferences'] !== '') {
+                update_user_meta($user_id, 'parent_preferences', sanitize_textarea_field($data['parent_preferences']));
+            } elseif (isset($data['preferences']) && $data['preferences'] !== '') {
+                update_user_meta($user_id, 'parent_preferences', sanitize_textarea_field($data['preferences']));
+            }
+            if (isset($data['parent_notes']) && $data['parent_notes'] !== '') {
+                update_user_meta($user_id, 'parent_notes', sanitize_textarea_field($data['parent_notes']));
+            } elseif (isset($data['notes']) && $data['notes'] !== '') {
+                update_user_meta($user_id, 'parent_notes', sanitize_textarea_field($data['notes']));
+            }
+
+            // Membership status
+            $is_prem = '0';
+            if (isset($data['is_premium']) && in_array(strtolower($data['is_premium']), array('1', 'true', 'yes', 'paid'))) {
+                $is_prem = '1';
+            } elseif (isset($data['is_premium_parent']) && in_array(strtolower($data['is_premium_parent']), array('1', 'true', 'yes', 'paid'))) {
+                $is_prem = '1';
+            }
+            update_user_meta($user_id, 'is_premium_parent', $is_prem);
+            if ($is_prem === '1') {
+                if (!get_user_meta($user_id, 'ovarias_payment_date', true)) {
+                    update_user_meta($user_id, 'ovarias_payment_date', current_time('mysql'));
+                }
+            }
+        }
+    }
+
+    fclose($handle);
+
+    $msg = "Import completed successfully!\n" .
+           "- Created: {$created_count} new accounts\n" .
+           "- Updated: {$updated_count} existing accounts";
+
+    if (!empty($errors)) {
+        $msg .= "\n\nWarnings/Errors (" . count($errors) . "):\n" . implode("\n", array_slice($errors, 0, 10));
+        if (count($errors) > 10) {
+            $msg .= "\n...and " . (count($errors) - 10) . " more.";
+        }
+    }
+
+    wp_send_json_success(array(
+        'message' => $msg,
+        'created' => $created_count,
+        'updated' => $updated_count,
+        'errors'  => $errors
+    ));
+}
+add_action('wp_ajax_ovarias_admin_import_csv', 'ovarias_admin_ajax_import_csv');
+
 

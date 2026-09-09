@@ -1135,6 +1135,196 @@ jQuery(document).ready(function($) {
         if ($(e.target).is('#donor-detail-modal') || $(e.target).is('.ovarias-modal-overlay')) {
             closeDonorModal();
         }
+        if ($(e.target).is('#ovarias-edit-parent-modal')) {
+            closeParentModal();
+        }
+        if ($(e.target).is('#ovarias-csv-import-modal')) {
+            closeCsvModal();
+        }
+    });
+
+    // -------------------------------------------------------------
+    // Edit Intended Parent (Client) Profile Logic
+    // -------------------------------------------------------------
+    $(document).on('click', '.btn-edit-parent', function(e) {
+        e.preventDefault();
+        var btn = $(this);
+        var userId = btn.data('user-id');
+        var firstName = btn.data('first-name') || '';
+        var lastName = btn.data('last-name') || '';
+        var email = btn.data('email') || '';
+        var country = btn.data('country') || '';
+        var prefs = btn.data('preferences') || '';
+        var notes = btn.data('notes') || '';
+        var isPrem = btn.data('is-premium') !== undefined ? btn.data('is-premium') : '0';
+
+        $('#edit-parent-user-id').val(userId);
+        $('#edit-parent-first-name').val(firstName);
+        $('#edit-parent-last-name').val(lastName);
+        $('#edit-parent-email').val(email);
+        $('#edit-parent-country-input').val(country);
+        $('#edit-parent-status').val(isPrem);
+        $('#edit-parent-prefs').val(prefs);
+        $('#edit-parent-notes-input').val(notes);
+
+        $('#ovarias-edit-parent-modal').css('display', 'flex');
+    });
+
+    function closeParentModal() {
+        $('#ovarias-edit-parent-modal').hide();
+    }
+
+    $(document).on('click', '.btn-close-parent-modal', function(e) {
+        e.preventDefault();
+        closeParentModal();
+    });
+
+    $('#ovarias-edit-parent-form').on('submit', function(e) {
+        e.preventDefault();
+        var submitBtn = $('#btn-submit-edit-parent');
+        submitBtn.prop('disabled', true).text('Saving Changes...');
+
+        var formData = new FormData(this);
+        formData.append('action', 'ovarias_admin_save_parent_profile');
+        formData.append('nonce', ovariasAdminParams.nonce);
+
+        $.ajax({
+            url: ovariasAdminParams.ajaxurl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    submitBtn.text('Saved!').css('background', '#2e7d32');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 600);
+                } else {
+                    alert('Error: ' + (response.data ? response.data.message : 'Could not save client changes.'));
+                    submitBtn.prop('disabled', false).text('Save Client Changes');
+                }
+            },
+            error: function() {
+                alert('Connection error. Please try again.');
+                submitBtn.prop('disabled', false).text('Save Client Changes');
+            }
+        });
+    });
+
+    // -------------------------------------------------------------
+    // Bulk CSV Import Modal Logic
+    // -------------------------------------------------------------
+    $(document).on('click', '.btn-open-csv-modal', function(e) {
+        e.preventDefault();
+        var type = $(this).data('csv-type') || 'donor';
+        $('#csv-import-type').val(type);
+        if (type === 'donor') {
+            $('#csv-import-modal-title').text('Bulk Import Donors (CSV)');
+        } else {
+            $('#csv-import-modal-title').text('Bulk Import Clients (CSV)');
+        }
+        $('#csv-file-input').val('');
+        $('#csv-selected-file-info').text('');
+        $('#csv-import-progress').hide().text('');
+        $('#btn-submit-csv-import').prop('disabled', false).text('Start Import');
+        $('#ovarias-csv-import-modal').css('display', 'flex');
+    });
+
+    function closeCsvModal() {
+        $('#ovarias-csv-import-modal').hide();
+    }
+
+    $(document).on('click', '.btn-close-csv-modal', function(e) {
+        e.preventDefault();
+        closeCsvModal();
+    });
+
+    $('#csv-file-input').on('change', function() {
+        var file = this.files[0];
+        if (file) {
+            $('#csv-selected-file-info').text('Selected: ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB)');
+        } else {
+            $('#csv-selected-file-info').text('');
+        }
+    });
+
+    // Download Sample CSV Template
+    $(document).on('click', '#btn-download-sample-csv', function(e) {
+        e.preventDefault();
+        var type = $('#csv-import-type').val();
+        var csvContent = '';
+        var filename = '';
+
+        if (type === 'donor') {
+            filename = 'ovarias_sample_donors_template.csv';
+            csvContent = 'donor_id,first_name,last_name,email,dob,nationality,blood_group,height,weight,eye_colour,hair_colour,education_level,field_of_study,occupation,languages_spoken,availability_status,egg_type,num_eggs,storage_country,about_me,hobbies,why_donate\n' +
+                         'ED101,Jane,Doe,jane.doe@example.com,1998-05-12,American,O+,168 cm,58 kg,Hazel,Brown,Bachelor,Biology,Graphic Designer,"English, Spanish",Available,Fresh,12,USA,"Healthy and energetic donor dedicated to helping families.","Reading, Swimming, Cooking","I want to help parents make their dreams come true."\n' +
+                         'ED102,Sophia,Miller,sophia.m@example.com,1999-11-20,Canadian,A+,172 cm,62 kg,Blue,Blonde,Master,Marketing,Project Manager,"English, French",Available,Frozen,8,Canada,"Empathetic and active individual with great health.","Yoga, Photography, Hiking","Bringing joy to intended parents is a privilege."';
+        } else {
+            filename = 'ovarias_sample_clients_template.csv';
+            csvContent = 'first_name,last_name,email,country,parent_preferences,parent_notes,is_premium\n' +
+                         'John,Smith,john.smith@example.com,United Kingdom,"Looking for proven donor with hazel/blue eyes and high education level.","Consultation completed with Dr. Roberts.",1\n' +
+                         'Emily,Davis,emily.d@example.com,Australia,"Interested in fresh egg donor cycles in Europe.","Requested clinic partner recommendations.",0';
+        }
+
+        var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        var url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    // Handle CSV Submit
+    $('#ovarias-csv-import-form').on('submit', function(e) {
+        e.preventDefault();
+        var fileInput = $('#csv-file-input')[0];
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert('Please select a CSV file to upload.');
+            return;
+        }
+
+        var submitBtn = $('#btn-submit-csv-import');
+        submitBtn.prop('disabled', true).text('Importing data... Please wait');
+
+        var progressBox = $('#csv-import-progress');
+        progressBox.show().css({ 'background': '#e8f5e9', 'border-color': '#c8e6c9', 'color': '#2e7d32' })
+                   .text('Uploading file and creating database records...');
+
+        var formData = new FormData(this);
+        formData.append('action', 'ovarias_admin_import_csv');
+        formData.append('nonce', ovariasAdminParams.nonce);
+
+        $.ajax({
+            url: ovariasAdminParams.ajaxurl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    progressBox.css({ 'background': '#e8f5e9', 'border-color': '#c8e6c9', 'color': '#2e7d32' })
+                               .text(response.data.message);
+                    submitBtn.text('Import Complete!').css('background', '#2e7d32');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2500);
+                } else {
+                    progressBox.css({ 'background': '#ffebee', 'border-color': '#ffcdd2', 'color': '#c62828' })
+                               .text('Error: ' + (response.data ? response.data.message : 'Import failed.'));
+                    submitBtn.prop('disabled', false).text('Start Import');
+                }
+            },
+            error: function() {
+                progressBox.css({ 'background': '#ffebee', 'border-color': '#ffcdd2', 'color': '#c62828' })
+                           .text('Server communication error. Please check your file format.');
+                submitBtn.prop('disabled', false).text('Start Import');
+            }
+        });
     });
 
 });

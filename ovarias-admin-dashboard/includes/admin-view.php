@@ -256,7 +256,10 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
     <div class="ovarias-admin-tab-content <?php echo $active_tab === 'parents' ? 'active' : ''; ?>" id="tab-parents">
         <div class="ovarias-admin-table-container">
             <div class="table-header-toolbar">
-                <button class="action-btn btn-open-modal" data-modal-type="parent" style="background: #2e7d32;">+ Add New Client</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="action-btn btn-open-modal" data-modal-type="parent" style="background: #2e7d32;">+ Add New Client</button>
+                    <button class="action-btn btn-open-csv-modal" data-csv-type="parent" style="background: #555A4E; color: #fff;">Import Clients (CSV)</button>
+                </div>
                 <input type="text" class="search-filter-input" id="search-parents" placeholder="Search parents by name or email...">
             </div>
             <table class="ovarias-admin-table" id="parents-table">
@@ -303,16 +306,28 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                                 <td><?php echo $is_prem ? '$199.00' : '—'; ?></td>
                                 <td>
                                     <?php 
-                                    if ($is_prem) {
-                                        echo 'TXN_' . substr(md5($p_id . $pay_date), 0, 10);
-                                    } else {
-                                        echo '—';
-                                    }
+                                     if ($is_prem) {
+                                         echo 'TXN_' . substr(md5($p_id . $pay_date), 0, 10);
+                                     } else {
+                                         echo '—';
+                                     }
                                     ?>
                                 </td>
                                 <td><?php echo $pay_date ? date('Y-m-d H:i', strtotime($pay_date)) : '—'; ?></td>
                                 <td><?php echo esc_html($days_rem); ?></td>
                                 <td style="text-align: right; white-space: nowrap;">
+                                    <button class="action-btn btn-edit-parent" 
+                                        data-user-id="<?php echo $p_id; ?>" 
+                                        data-first-name="<?php echo esc_attr($f_name); ?>" 
+                                        data-last-name="<?php echo esc_attr($l_name); ?>" 
+                                        data-email="<?php echo esc_attr($p->user_email); ?>" 
+                                        data-country="<?php echo esc_attr(get_user_meta($p_id, 'country', true)); ?>" 
+                                        data-preferences="<?php echo esc_attr(get_user_meta($p_id, 'parent_preferences', true)); ?>" 
+                                        data-notes="<?php echo esc_attr(get_user_meta($p_id, 'parent_notes', true)); ?>" 
+                                        data-is-premium="<?php echo $is_prem ? '1' : '0'; ?>"
+                                        style="background: #555A4E; color: #fff; margin-right: 5px;">
+                                        Edit
+                                    </button>
                                     <button class="action-btn btn-toggle-premium" data-user-id="<?php echo $p_id; ?>" data-status="<?php echo $is_prem ? '1' : '0'; ?>" style="margin-right: 5px;">
                                         <?php echo $is_prem ? 'Revoke Access' : 'Grant Access'; ?>
                                     </button>
@@ -334,7 +349,10 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
     <div class="ovarias-admin-tab-content <?php echo $active_tab === 'donors' ? 'active' : ''; ?>" id="tab-donors">
         <div class="ovarias-admin-table-container">
             <div class="table-header-toolbar">
-                <button class="action-btn btn-open-modal" data-modal-type="donor" style="background: #2e7d32;">+ Add New Donor</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="action-btn btn-open-modal" data-modal-type="donor" style="background: #2e7d32;">+ Add New Donor</button>
+                    <button class="action-btn btn-open-csv-modal" data-csv-type="donor" style="background: #555A4E; color: #fff;">Import Donors (CSV)</button>
+                </div>
                 <input type="text" class="search-filter-input" id="search-donors" placeholder="Search donors by ID or characteristics...">
             </div>
             <table class="ovarias-admin-table" id="donors-table">
@@ -1627,3 +1645,94 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
     </div> <!-- end donor-modal-edit-panel -->
 </div> <!-- end ovarias-modal-container -->
 </div> <!-- end donor-detail-modal -->
+
+<!-- Edit Intended Parent Modal -->
+<div class="ovarias-parent-modal" id="ovarias-edit-parent-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 99999; font-family: sans-serif;">
+    <div class="ovarias-modal-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+    <div class="ovarias-modal-container" style="position: relative; background: #fff; width: 92%; max-width: 550px; max-height: 85vh; border-radius: 12px; overflow-y: auto; z-index: 10; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid var(--border-color); box-sizing: border-box;">
+        <h3 style="margin-top: 0; margin-bottom: 20px; color: #555A4E; font-size: 20px; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 12px;">Edit Intended Parent Profile</h3>
+        
+        <form id="ovarias-edit-parent-form">
+            <input type="hidden" id="edit-parent-user-id" name="user_id" value="">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">First Name</label>
+                    <input type="text" id="edit-parent-first-name" name="first_name" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Last Name</label>
+                    <input type="text" id="edit-parent-last-name" name="last_name" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Email Address</label>
+                    <input type="email" id="edit-parent-email" name="email" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Country</label>
+                    <input type="text" id="edit-parent-country-input" name="country" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Membership Access Status</label>
+                <select id="edit-parent-status" name="is_premium_parent" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    <option value="0">Restricted (Unpaid)</option>
+                    <option value="1">Paid Access (Full Premium)</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Preferences & Requirements</label>
+                <textarea id="edit-parent-prefs" name="parent_preferences" class="table-inline-input" style="width: 100%; height: 75px; box-sizing: border-box;"></textarea>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Internal Notes / History</label>
+                <textarea id="edit-parent-notes-input" name="parent_notes" class="table-inline-input" style="width: 100%; height: 75px; box-sizing: border-box;"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eee; padding-top: 15px;">
+                <button type="button" class="action-btn btn-close-parent-modal" style="background: #888; color: #fff; padding: 9px 20px; font-weight: bold; border-radius: 6px; font-size: 13px; border: none; cursor: pointer;">Cancel</button>
+                <button type="submit" id="btn-submit-edit-parent" class="action-btn" style="background: #2e7d32; color: #fff; padding: 9px 24px; font-weight: bold; border-radius: 6px; font-size: 13px; border: none; cursor: pointer;">Save Client Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bulk CSV Import Modal -->
+<div class="ovarias-parent-modal" id="ovarias-csv-import-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 99999; font-family: sans-serif;">
+    <div class="ovarias-modal-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+    <div class="ovarias-modal-container" style="position: relative; background: #fff; width: 92%; max-width: 580px; max-height: 85vh; border-radius: 12px; overflow-y: auto; z-index: 10; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid var(--border-color); box-sizing: border-box;">
+        <h3 id="csv-import-modal-title" style="margin-top: 0; margin-bottom: 15px; color: #555A4E; font-size: 20px; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 10px;">Bulk Import from CSV</h3>
+        
+        <form id="ovarias-csv-import-form" enctype="multipart/form-data">
+            <input type="hidden" id="csv-import-type" name="import_type" value="donor">
+            
+            <div style="background: #FAFBF9; border: 1px solid #c2c7bd; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                <p style="margin: 0 0 10px 0; font-size: 13px; color: #444; line-height: 1.5;">
+                    Upload a <strong>.csv</strong> file to automatically create or update accounts. Columns will be automatically matched to profile attributes.
+                </p>
+                <button type="button" id="btn-download-sample-csv" class="action-btn" style="background: #fff; color: #555A4E; border: 1px solid #c2c7bd; font-size: 12px; font-weight: bold; padding: 6px 14px; border-radius: 4px; cursor: pointer;">
+                    Download Sample CSV Template
+                </button>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #555A4E;">Select CSV File</label>
+                <input type="file" id="csv-file-input" name="csv_file" accept=".csv, text/csv, application/vnd.ms-excel" required style="width: 100%; box-sizing: border-box; padding: 10px; border: 1px dashed #aaa; border-radius: 6px; background: #fff; font-size: 13px;">
+                <span id="csv-selected-file-info" style="display: block; font-size: 12px; color: #2e7d32; margin-top: 6px; font-weight: bold;"></span>
+            </div>
+
+            <div id="csv-import-progress" style="display: none; margin-bottom: 15px; padding: 12px; border-radius: 6px; background: #e8f5e9; border: 1px solid #c8e6c9; font-size: 13px; color: #2e7d32; line-height: 1.5; white-space: pre-wrap;"></div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eee; padding-top: 15px;">
+                <button type="button" class="action-btn btn-close-csv-modal" style="background: #888; color: #fff; padding: 9px 20px; font-weight: bold; border-radius: 6px; font-size: 13px; border: none; cursor: pointer;">Cancel</button>
+                <button type="submit" id="btn-submit-csv-import" class="action-btn" style="background: #2e7d32; color: #fff; padding: 9px 24px; font-weight: bold; border-radius: 6px; font-size: 13px; border: none; cursor: pointer;">Start Import</button>
+            </div>
+        </form>
+    </div>
+</div>
