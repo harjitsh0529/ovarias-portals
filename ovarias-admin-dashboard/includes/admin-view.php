@@ -12,18 +12,18 @@ if (!in_array($active_tab, $valid_tabs)) {
 }
 
 // Fetch all parents using our metadata filter
-$parents = get_users(array(
+$raw_parents = get_users(array(
     'number' => -1,
     'meta_query' => array(
         'relation' => 'OR',
         array(
             'key' => 'role',
-            'value' => array('um_intended-parent', 'um_intended_parent', 'intended_parent'),
+            'value' => array('um_intended-parent', 'um_intended_parent', 'intended_parent', 'intended-parent', 'client'),
             'compare' => 'IN'
         ),
         array(
             'key' => 'community_role',
-            'value' => array('um_intended-parent', 'um_intended_parent', 'intended_parent'),
+            'value' => array('um_intended-parent', 'um_intended_parent', 'intended_parent', 'intended-parent', 'client'),
             'compare' => 'IN'
         ),
         array(
@@ -35,23 +35,42 @@ $parents = get_users(array(
             'key' => 'wp_capabilities',
             'value' => 'intended_parent',
             'compare' => 'LIKE'
+        ),
+        array(
+            'key' => 'wp_capabilities',
+            'value' => 'client',
+            'compare' => 'LIKE'
+        ),
+        array(
+            'key' => 'is_premium_parent',
+            'compare' => 'EXISTS'
         )
     )
 ));
 
-// Fetch all donors using our metadata filter
-$donors = get_users(array(
+// Deduplicate parents
+$parents = array();
+$seen_parent_ids = array();
+foreach ($raw_parents as $p) {
+    if (!in_array($p->ID, $seen_parent_ids)) {
+        $seen_parent_ids[] = $p->ID;
+        $parents[] = $p;
+    }
+}
+
+// Fetch all donors using our broadened metadata and role filter
+$raw_donors = get_users(array(
     'number' => -1,
     'meta_query' => array(
         'relation' => 'OR',
         array(
             'key' => 'role',
-            'value' => array('um_egg-donor', 'um_egg_donor', 'egg_donor'),
+            'value' => array('um_egg-donor', 'um_egg_donor', 'egg_donor', 'um_donor', 'donor'),
             'compare' => 'IN'
         ),
         array(
             'key' => 'community_role',
-            'value' => array('um_egg-donor', 'um_egg_donor', 'egg_donor'),
+            'value' => array('um_egg-donor', 'um_egg_donor', 'egg_donor', 'um_donor', 'donor'),
             'compare' => 'IN'
         ),
         array(
@@ -63,9 +82,37 @@ $donors = get_users(array(
             'key' => 'wp_capabilities',
             'value' => 'egg_donor',
             'compare' => 'LIKE'
+        ),
+        array(
+            'key' => 'wp_capabilities',
+            'value' => 'donor',
+            'compare' => 'LIKE'
+        ),
+        array(
+            'key' => 'donor_id',
+            'value' => '',
+            'compare' => '!='
         )
     )
 ));
+
+// Deduplicate and auto-repair any imported donor roles
+$donors = array();
+$seen_donor_ids = array();
+foreach ($raw_donors as $d) {
+    if (!in_array($d->ID, $seen_donor_ids)) {
+        $seen_donor_ids[] = $d->ID;
+        // Auto-repair role if needed so it works everywhere in the ecosystem
+        $stored_role = get_user_meta($d->ID, 'role', true);
+        if ($stored_role === 'um_donor' || !in_array('um_egg-donor', (array)$d->roles)) {
+            $d->add_role('um_egg-donor');
+            $d->add_role('egg_donor');
+            update_user_meta($d->ID, 'role', 'um_egg-donor');
+            update_user_meta($d->ID, 'community_role', 'um_egg-donor');
+        }
+        $donors[] = $d;
+    }
+}
 
 // Fetch client match inquiries across all parents
 $all_match_inquiries = array();

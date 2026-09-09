@@ -763,9 +763,83 @@ function ovarias_admin_ajax_save_parent_profile() {
 add_action('wp_ajax_ovarias_admin_save_parent_profile', 'ovarias_admin_ajax_save_parent_profile');
 
 /**
+ * Helper function: Safely download and sideload an image from a URL into the WP Media Library
+ */
+if (!function_exists('ovarias_admin_sideload_image_from_url')) {
+    function ovarias_admin_sideload_image_from_url($url) {
+        $url = trim($url);
+        if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+        // Short timeout (10 seconds) so images don't block import
+        $filter_timeout = function() { return 10; };
+        add_filter('http_request_timeout', $filter_timeout);
+
+        try {
+            $temp_file = @download_url($url, 10);
+            remove_filter('http_request_timeout', $filter_timeout);
+
+            if (is_wp_error($temp_file)) {
+                return false;
+            }
+
+            // Determine mime type and extension safely
+            $file_info = wp_check_filetype(basename(parse_url($url, PHP_URL_PATH)));
+            $mime = $file_info['type'];
+            $ext = $file_info['ext'];
+
+            if (!$ext || !$mime) {
+                $size_info = @getimagesize($temp_file);
+                if ($size_info && isset($size_info['mime'])) {
+                    $mime = $size_info['mime'];
+                    $map = array(
+                        'image/jpeg' => 'jpg',
+                        'image/jpg'  => 'jpg',
+                        'image/png'  => 'png',
+                        'image/gif'  => 'gif',
+                        'image/webp' => 'webp',
+                        'image/bmp'  => 'bmp'
+                    );
+                    $ext = isset($map[$mime]) ? $map[$mime] : 'jpg';
+                } else {
+                    $ext = 'jpg';
+                    $mime = 'image/jpeg';
+                }
+            }
+
+            $filename = 'donor_img_' . wp_generate_password(8, false, false) . '.' . $ext;
+            $file_array = array(
+                'name'     => $filename,
+                'tmp_name' => $temp_file,
+                'type'     => $mime
+            );
+
+            $att_id = @media_handle_sideload($file_array, 0);
+            if (is_wp_error($att_id)) {
+                @unlink($temp_file);
+                return false;
+            }
+
+            return (int)$att_id;
+        } catch (Exception $e) {
+            remove_filter('http_request_timeout', $filter_timeout);
+            return false;
+        }
+    }
+}
+
+/**
  * AJAX Handler: Bulk Import Users from CSV (Donors or Intended Parents)
  */
 function ovarias_admin_ajax_import_csv() {
+    @set_time_limit(300);
+    @ini_set('memory_limit', '256M');
+
     check_ajax_referer('ovarias_admin_nonce', 'nonce');
 
     if (!current_user_can('manage_options')) {
@@ -882,7 +956,7 @@ function ovarias_admin_ajax_import_csv() {
                     'first_name' => $first_name,
                     'last_name' => $last_name,
                     'display_name' => trim($first_name . ' ' . $last_name) ?: ($donor_id ?: 'Donor #' . $username),
-                    'role' => 'um_donor'
+                    'role' => 'um_egg-donor'
                 ));
 
                 if (is_wp_error($user_id)) {
@@ -894,9 +968,10 @@ function ovarias_admin_ajax_import_csv() {
 
             // Set role and community role
             $u = new WP_User($user_id);
-            $u->set_role('um_donor');
-            update_user_meta($user_id, 'role', 'um_donor');
-            update_user_meta($user_id, 'community_role', 'um_donor');
+            $u->set_role('um_egg-donor');
+            $u->add_role('egg_donor');
+            update_user_meta($user_id, 'role', 'um_egg-donor');
+            update_user_meta($user_id, 'community_role', 'um_egg-donor');
 
             // Save all standard donor meta fields
             $donor_fields = array(
@@ -941,10 +1016,6 @@ function ovarias_admin_ajax_import_csv() {
             }
 
             // Handle Photo URLs from CSV (avatar and gallery)
-            require_once(ABSPATH . 'wp-admin/includes/media.php');
-            require_once(ABSPATH . 'wp-admin/includes/file.php');
-            require_once(ABSPATH . 'wp-admin/includes/image.php');
-
             // 1. Avatar URL
             $avatar_url = '';
             if (!empty($data['avatar_url'])) {
@@ -959,8 +1030,8 @@ function ovarias_admin_ajax_import_csv() {
 
             if (!empty($avatar_url)) {
                 if (filter_var($avatar_url, FILTER_VALIDATE_URL)) {
-                    $att_id = media_sideload_image($avatar_url, 0, null, 'id');
-                    if (!is_wp_error($att_id)) {
+                    $att_id = ovarias_admin_sideload_image_from_url($avatar_url);
+                    if ($att_id) {
                         update_user_meta($user_id, 'profile_image', (int)$att_id);
                     }
                 } elseif (is_numeric($avatar_url)) {
@@ -984,8 +1055,8 @@ function ovarias_admin_ajax_import_csv() {
                 foreach ($gallery_urls as $g_url) {
                     $g_url = trim($g_url);
                     if (filter_var($g_url, FILTER_VALIDATE_URL)) {
-                        $g_att_id = media_sideload_image($g_url, 0, null, 'id');
-                        if (!is_wp_error($g_att_id)) {
+                        $g_att_id = ovarias_admin_sideload_image_from_url($g_url);
+                        if ($g_att_id) {
                             $existing_gallery[] = (int)$g_att_id;
                         }
                     } elseif (is_numeric($g_url)) {
@@ -1048,6 +1119,8 @@ function ovarias_admin_ajax_import_csv() {
 
             $u = new WP_User($user_id);
             $u->set_role('um_intended_parent');
+            $u->add_role('um_intended-parent');
+            $u->add_role('intended_parent');
             update_user_meta($user_id, 'role', 'um_intended_parent');
             update_user_meta($user_id, 'community_role', 'um_intended_parent');
 

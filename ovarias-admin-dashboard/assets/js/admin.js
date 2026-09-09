@@ -1311,8 +1311,9 @@ jQuery(document).ready(function($) {
                                .text(response.data.message);
                     submitBtn.text('Import Complete!').css('background', '#2e7d32');
                     setTimeout(function() {
+                        alert(response.data.message);
                         location.reload();
-                    }, 2500);
+                    }, 400);
                 } else {
                     progressBox.css({ 'background': '#ffebee', 'border-color': '#ffcdd2', 'color': '#c62828' })
                                .text('Error: ' + (response.data ? response.data.message : 'Import failed.'));
