@@ -996,6 +996,7 @@ function ovarias_admin_ajax_import_csv() {
             $u->add_role('egg_donor');
             update_user_meta($user_id, 'role', 'um_egg-donor');
             update_user_meta($user_id, 'community_role', 'um_egg-donor');
+            update_user_meta($user_id, 'account_status', 'approved');
 
             // Save all standard donor meta fields
             $donor_fields = array(

@@ -19,6 +19,27 @@ define('OVARIAS_ADMIN_URL', plugin_dir_url(__FILE__));
 require_once OVARIAS_ADMIN_PATH . 'includes/ajax-handlers.php';
 
 /**
+ * Auto-clean placeholder emails for donors across the database on admin load
+ * Also auto-approves egg donors in Ultimate Member so they don't say "Waiting email confirmation"
+ */
+if (!function_exists('ovarias_admin_clean_placeholder_donor_emails')) {
+    function ovarias_admin_clean_placeholder_donor_emails() {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+        global $wpdb;
+        // Wipe placeholder emails
+        $wpdb->query("UPDATE {$wpdb->users} SET user_email = '' WHERE user_email LIKE '%@ovarias-donor.local' OR user_email LIKE '%@ovarias.temp' OR user_email LIKE '%@temp.local'");
+
+        // Auto-approve donor accounts in Ultimate Member
+        $wpdb->query("UPDATE {$wpdb->usermeta} SET meta_value = 'approved' WHERE meta_key = 'account_status' AND user_id IN (
+            SELECT user_id FROM (SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = 'role' AND meta_value = 'um_egg-donor') AS tmp
+        )");
+    }
+    add_action('admin_init', 'ovarias_admin_clean_placeholder_donor_emails');
+}
+
+/**
  * Enqueue scripts and styles for Ovarias Admin page
  */
 if (!function_exists('ovarias_admin_enqueue_assets')) {
