@@ -110,6 +110,18 @@ foreach ($raw_donors as $d) {
             update_user_meta($d->ID, 'role', 'um_egg-donor');
             update_user_meta($d->ID, 'community_role', 'um_egg-donor');
         }
+
+        // Clean any auto-generated placeholder emails so donor emails stay completely blank
+        if (!empty($d->user_email) && (
+            strpos($d->user_email, '@ovarias-donor.local') !== false ||
+            strpos($d->user_email, '@ovarias.temp') !== false ||
+            strpos($d->user_email, '@temp.local') !== false
+        )) {
+            global $wpdb;
+            $wpdb->update($wpdb->users, array('user_email' => ''), array('ID' => $d->ID));
+            clean_user_cache($d->ID);
+            $d->user_email = '';
+        }
         $donors[] = $d;
     }
 }

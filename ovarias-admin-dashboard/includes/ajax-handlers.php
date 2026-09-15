@@ -158,12 +158,20 @@ function ovarias_admin_ajax_create_user() {
         $password = 'Ovarias!' . wp_rand(1000, 9999);
     }
 
-    $email = $username . '@ovarias.temp';
+    $raw_email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+    $insert_email = !empty($raw_email) ? $raw_email : ('temp_' . wp_generate_password(12, false, false) . '@temp.local');
 
     // Create the WordPress User
-    $user_id = wp_create_user($username, $password, $email);
+    $user_id = wp_create_user($username, $password, $insert_email);
     if (is_wp_error($user_id)) {
         wp_send_json_error(array('message' => $user_id->get_error_message()));
+    }
+
+    // If no email was provided, wipe it so user_email remains completely blank in the database
+    if (empty($raw_email)) {
+        global $wpdb;
+        $wpdb->update($wpdb->users, array('user_email' => ''), array('ID' => $user_id));
+        clean_user_cache($user_id);
     }
 
     // Save Names
@@ -904,23 +912,11 @@ function ovarias_admin_ajax_import_csv() {
             $donor_id = !empty($data['donor_id']) ? $data['donor_id'] : '';
             $first_name = !empty($data['first_name']) ? $data['first_name'] : (!empty($data['name']) ? $data['name'] : '');
             $last_name = !empty($data['last_name']) ? $data['last_name'] : '';
-            $email = !empty($data['email']) ? sanitize_email($data['email']) : '';
-            
-            // Generate email if blank
-            if (empty($email)) {
-                $identifier = $donor_id ? sanitize_title($donor_id) : 'donor_' . $row_num . '_' . wp_rand(100, 999);
-                $email = $identifier . '@ovarias-donor.local';
-            }
+            $raw_email = !empty($data['email']) ? sanitize_email($data['email']) : '';
 
-            // Check if donor exists by email or donor_id meta
+            // Check if donor exists by donor_id meta first, then by email (if provided)
             $user_id = 0;
-            if (is_email($email)) {
-                $existing = get_user_by('email', $email);
-                if ($existing) {
-                    $user_id = $existing->ID;
-                }
-            }
-            if (!$user_id && !empty($donor_id)) {
+            if (!empty($donor_id)) {
                 $matching_users = get_users(array(
                     'meta_key' => 'donor_id',
                     'meta_value' => $donor_id,
@@ -931,15 +927,32 @@ function ovarias_admin_ajax_import_csv() {
                     $user_id = $matching_users[0];
                 }
             }
+            if (!$user_id && !empty($raw_email) && is_email($raw_email)) {
+                $existing = get_user_by('email', $raw_email);
+                if ($existing) {
+                    $user_id = $existing->ID;
+                }
+            }
 
             if ($user_id) {
                 // Update existing
-                wp_update_user(array(
+                $update_args = array(
                     'ID' => $user_id,
                     'first_name' => $first_name,
                     'last_name' => $last_name,
                     'display_name' => trim($first_name . ' ' . $last_name) ?: ($donor_id ?: 'Donor #' . $user_id),
-                ));
+                );
+                if (!empty($raw_email)) {
+                    $update_args['user_email'] = $raw_email;
+                }
+                wp_update_user($update_args);
+
+                // If email was left blank, ensure it is completely empty in the database
+                if (empty($raw_email)) {
+                    global $wpdb;
+                    $wpdb->update($wpdb->users, array('user_email' => ''), array('ID' => $user_id));
+                    clean_user_cache($user_id);
+                }
                 $updated_count++;
             } else {
                 // Create new donor
@@ -949,10 +962,13 @@ function ovarias_admin_ajax_import_csv() {
                 }
                 $password = !empty($data['password']) ? $data['password'] : wp_generate_password(12, true);
 
+                // If email is empty, use a temporary unique string to pass wp_insert_user, then wipe it immediately
+                $insert_email = !empty($raw_email) ? $raw_email : ('temp_' . wp_generate_password(12, false, false) . '@temp.local');
+
                 $user_id = wp_insert_user(array(
                     'user_login' => $username,
                     'user_pass' => $password,
-                    'user_email' => $email,
+                    'user_email' => $insert_email,
                     'first_name' => $first_name,
                     'last_name' => $last_name,
                     'display_name' => trim($first_name . ' ' . $last_name) ?: ($donor_id ?: 'Donor #' . $username),
@@ -963,6 +979,14 @@ function ovarias_admin_ajax_import_csv() {
                     $errors[] = 'Row ' . $row_num . ': ' . $user_id->get_error_message();
                     continue;
                 }
+
+                // If no email was provided in the CSV, clear user_email in the database so it remains 100% blank
+                if (empty($raw_email)) {
+                    global $wpdb;
+                    $wpdb->update($wpdb->users, array('user_email' => ''), array('ID' => $user_id));
+                    clean_user_cache($user_id);
+                }
+
                 $created_count++;
             }
 
