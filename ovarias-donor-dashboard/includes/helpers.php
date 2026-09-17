@@ -39,13 +39,10 @@ function ovarias_profile_completion_percentage($user_id) {
     $completed = 0;
 
     foreach ($fields as $field) {
-
-        if (!empty(get_user_meta($user_id, $field, true))) {
-
+        $val = get_user_meta($user_id, $field, true);
+        if ($val !== '' && $val !== null && $val !== false) {
             $completed++;
-
         }
-
     }
 
     return round(

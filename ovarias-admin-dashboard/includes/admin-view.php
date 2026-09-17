@@ -4,6 +4,31 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+if (!function_exists('ovarias_admin_calculate_donor_completion')) {
+    function ovarias_admin_calculate_donor_completion($user_id) {
+        $fields = array(
+            'dob', 'nationality', 'height', 'weight', 'blood_group', 'eye_colour',
+            'hair_colour', 'education_level', 'field_of_study', 'occupation',
+            'languages_spoken', 'donation_type', 'travel_available', 'passport_available',
+            'about_me', 'hobbies', 'why_donate', 'donor_id', 'availability_status',
+            'egg_type', 'num_donations'
+        );
+        $egg_type = get_user_meta($user_id, 'egg_type', true);
+        if ($egg_type === 'Frozen') {
+            $fields[] = 'num_eggs';
+            $fields[] = 'storage_country';
+        }
+        $completed = 0;
+        foreach ($fields as $field) {
+            $val = get_user_meta($user_id, $field, true);
+            if ($val !== '' && $val !== null && $val !== false) {
+                $completed++;
+            }
+        }
+        return round(($completed / count($fields)) * 100);
+    }
+}
+
 // Determine active tab
 $active_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'overview';
 $valid_tabs = array('overview', 'parents', 'donors', 'inquiries', 'general-inquiries');
@@ -450,10 +475,7 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                             $num_eggs = get_user_meta($d_id, 'num_eggs', true) ?: '0';
                             $storage_country = get_user_meta($d_id, 'storage_country', true) ?: 'N/A';
                             
-                            $pct = '0%';
-                            if (function_exists('ovarias_profile_completion_percentage')) {
-                                $pct = ovarias_profile_completion_percentage($d_id) . '%';
-                            }
+                            $pct = ovarias_admin_calculate_donor_completion($d_id) . '%';
                         ?>
                             <tr class="donor-row" data-user-id="<?php echo $d_id; ?>">
                                 <td>
