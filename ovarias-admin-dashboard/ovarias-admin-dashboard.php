@@ -31,9 +31,9 @@ if (!function_exists('ovarias_admin_clean_placeholder_donor_emails')) {
         // Wipe placeholder emails
         $wpdb->query("UPDATE {$wpdb->users} SET user_email = '' WHERE user_email LIKE '%@ovarias-donor.local' OR user_email LIKE '%@ovarias.temp' OR user_email LIKE '%@temp.local'");
 
-        // Auto-approve donor accounts in Ultimate Member
+        // Auto-approve donor and parent accounts in Ultimate Member
         $wpdb->query("UPDATE {$wpdb->usermeta} SET meta_value = 'approved' WHERE meta_key = 'account_status' AND user_id IN (
-            SELECT user_id FROM (SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = 'role' AND meta_value = 'um_egg-donor') AS tmp
+            SELECT user_id FROM (SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = 'role' AND (meta_value = 'um_egg-donor' OR meta_value = 'um_intended_parent' OR meta_value = 'um_intended-parent')) AS tmp
         )");
     }
     add_action('admin_init', 'ovarias_admin_clean_placeholder_donor_emails');

@@ -736,6 +736,7 @@ function ovarias_admin_ajax_save_parent_profile() {
     $last_name = isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '';
     $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
     $country = isset($_POST['country']) ? sanitize_text_field($_POST['country']) : '';
+    $phone = isset($_POST['phone_number']) ? sanitize_text_field($_POST['phone_number']) : (isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '');
     $preferences = isset($_POST['parent_preferences']) ? sanitize_textarea_field($_POST['parent_preferences']) : '';
     $notes = isset($_POST['parent_notes']) ? sanitize_textarea_field($_POST['parent_notes']) : '';
     $is_premium = isset($_POST['is_premium_parent']) ? sanitize_text_field($_POST['is_premium_parent']) : '0';
@@ -760,9 +761,13 @@ function ovarias_admin_ajax_save_parent_profile() {
     update_user_meta($user_id, 'first_name', $first_name);
     update_user_meta($user_id, 'last_name', $last_name);
     update_user_meta($user_id, 'country', $country);
+    if (!empty($phone)) {
+        update_user_meta($user_id, 'phone_number', $phone);
+    }
     update_user_meta($user_id, 'parent_preferences', $preferences);
     update_user_meta($user_id, 'parent_notes', $notes);
     update_user_meta($user_id, 'is_premium_parent', $is_premium === '1' ? '1' : '0');
+    update_user_meta($user_id, 'account_status', 'approved');
 
     if ($is_premium === '1') {
         if (!get_user_meta($user_id, 'ovarias_payment_date', true)) {
@@ -1197,6 +1202,10 @@ function ovarias_admin_ajax_import_csv() {
             update_user_meta($user_id, 'community_role', 'um_intended_parent');
 
             // Save IP metadata
+            $phone = !empty($data['phone_number']) ? $data['phone_number'] : (!empty($data['phone']) ? $data['phone'] : (!empty($data['mobile']) ? $data['mobile'] : ''));
+            if (!empty($phone)) {
+                update_user_meta($user_id, 'phone_number', sanitize_text_field($phone));
+            }
             if (isset($data['country']) && $data['country'] !== '') {
                 update_user_meta($user_id, 'country', sanitize_text_field($data['country']));
             }
@@ -1219,11 +1228,20 @@ function ovarias_admin_ajax_import_csv() {
                 $is_prem = '1';
             }
             update_user_meta($user_id, 'is_premium_parent', $is_prem);
-            if ($is_prem === '1') {
+            
+            // Payment date
+            if (!empty($data['payment_date'])) {
+                update_user_meta($user_id, 'ovarias_payment_date', sanitize_text_field($data['payment_date']));
+            } elseif (!empty($data['ovarias_payment_date'])) {
+                update_user_meta($user_id, 'ovarias_payment_date', sanitize_text_field($data['ovarias_payment_date']));
+            } elseif ($is_prem === '1') {
                 if (!get_user_meta($user_id, 'ovarias_payment_date', true)) {
                     update_user_meta($user_id, 'ovarias_payment_date', current_time('mysql'));
                 }
             }
+
+            // Auto-approve account status in Ultimate Member
+            update_user_meta($user_id, 'account_status', 'approved');
         }
     }
 

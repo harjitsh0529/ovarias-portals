@@ -380,6 +380,7 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                                         data-first-name="<?php echo esc_attr($f_name); ?>" 
                                         data-last-name="<?php echo esc_attr($l_name); ?>" 
                                         data-email="<?php echo esc_attr($p->user_email); ?>" 
+                                        data-phone="<?php echo esc_attr(get_user_meta($p_id, 'phone_number', true)); ?>" 
                                         data-country="<?php echo esc_attr(get_user_meta($p_id, 'country', true)); ?>" 
                                         data-preferences="<?php echo esc_attr(get_user_meta($p_id, 'parent_preferences', true)); ?>" 
                                         data-notes="<?php echo esc_attr(get_user_meta($p_id, 'parent_notes', true)); ?>" 
@@ -1737,17 +1738,23 @@ function ovarias_admin_render_pagination($total_items, $items_per_page, $current
                     <input type="email" id="edit-parent-email" name="email" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
                 </div>
                 <div>
-                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Country</label>
-                    <input type="text" id="edit-parent-country-input" name="country" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Phone / Mobile</label>
+                    <input type="text" id="edit-parent-phone" name="phone_number" class="table-inline-input" style="width: 100%; box-sizing: border-box;" placeholder="+1 (555) 000-0000">
                 </div>
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Membership Access Status</label>
-                <select id="edit-parent-status" name="is_premium_parent" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
-                    <option value="0">Restricted (Unpaid)</option>
-                    <option value="1">Paid Access (Full Premium)</option>
-                </select>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Country</label>
+                    <input type="text" id="edit-parent-country-input" name="country" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555A4E;">Membership Access Status</label>
+                    <select id="edit-parent-status" name="is_premium_parent" class="table-inline-input" style="width: 100%; box-sizing: border-box;">
+                        <option value="0">Restricted (Unpaid)</option>
+                        <option value="1">Paid Access (Full Premium)</option>
+                    </select>
+                </div>
             </div>
 
             <div style="margin-bottom: 15px;">

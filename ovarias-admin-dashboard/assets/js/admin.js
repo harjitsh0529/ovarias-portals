@@ -1160,6 +1160,7 @@ jQuery(document).ready(function($) {
         var lastName = btn.data('last-name') || '';
         var email = btn.data('email') || '';
         var country = btn.data('country') || '';
+        var phone = btn.data('phone') || '';
         var prefs = btn.data('preferences') || '';
         var notes = btn.data('notes') || '';
         var isPrem = btn.data('is-premium') !== undefined ? btn.data('is-premium') : '0';
@@ -1168,6 +1169,7 @@ jQuery(document).ready(function($) {
         $('#edit-parent-first-name').val(firstName);
         $('#edit-parent-last-name').val(lastName);
         $('#edit-parent-email').val(email);
+        $('#edit-parent-phone').val(phone);
         $('#edit-parent-country-input').val(country);
         $('#edit-parent-status').val(isPrem);
         $('#edit-parent-prefs').val(prefs);
