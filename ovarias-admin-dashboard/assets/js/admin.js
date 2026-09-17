@@ -701,8 +701,10 @@ jQuery(document).ready(function($) {
             $('#modal-donor-id').text(donor.donor_id);
             $('#modal-nationality').text(donor.nationality);
             $('#modal-education').text(donor.education);
-            $('#modal-height').text(donor.height ? donor.height + ' cm' : 'N/A');
-            $('#modal-weight').text(donor.weight ? donor.weight + ' kg' : 'N/A');
+            var cleanHeight = donor.height ? (donor.height.toString().replace(/\s*cm\s*/gi, '').trim() + ' cm') : 'N/A';
+            var cleanWeight = donor.weight ? (donor.weight.toString().replace(/\s*kg\s*/gi, '').trim() + ' kg') : 'N/A';
+            $('#modal-height').text(cleanHeight);
+            $('#modal-weight').text(cleanWeight);
             $('#modal-hair').text(donor.hair);
             $('#modal-eyes').text(donor.eyes);
             $('#modal-num-donations').text(donor.num_donations);

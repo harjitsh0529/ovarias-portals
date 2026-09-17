@@ -111,6 +111,12 @@ foreach ($raw_donors as $d) {
             update_user_meta($d->ID, 'community_role', 'um_egg-donor');
         }
 
+        // Auto-repair donor_id meta if missing so profile completion scores 100%
+        $stored_did = get_user_meta($d->ID, 'donor_id', true);
+        if (empty($stored_did)) {
+            update_user_meta($d->ID, 'donor_id', 'OVARIAS-' . $d->ID);
+        }
+
         // Clean any auto-generated placeholder emails so donor emails stay completely blank
         if (!empty($d->user_email) && (
             strpos($d->user_email, '@ovarias-donor.local') !== false ||

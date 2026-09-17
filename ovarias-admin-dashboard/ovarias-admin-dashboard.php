@@ -3,15 +3,15 @@
 Plugin Name: Ovarias Admin Dashboard
 Plugin URI: https://ovarias.com
 Description: Standalone administration panel for managing Ovarias parents, donors, and matching inquiries.
-Version: 1.4.0
-Author: Ovarias
-*/
+ * Version: 1.4.1
+ * Author: Ovarias
+ */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-define('OVARIAS_ADMIN_VERSION', '1.4.0');
+define('OVARIAS_ADMIN_VERSION', '1.4.1');
 define('OVARIAS_ADMIN_PATH', plugin_dir_path(__FILE__));
 define('OVARIAS_ADMIN_URL', plugin_dir_url(__FILE__));
 

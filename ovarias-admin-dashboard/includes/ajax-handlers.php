@@ -1069,7 +1069,17 @@ function ovarias_admin_ajax_import_csv() {
                 'passport' => 'passport_available',
                 'travel' => 'travel_available',
                 'anonymous' => 'decl_anonymous',
+                'anonymity' => 'decl_anonymous',
                 'genetic_test' => 'decl_genetic_tests',
+                'genetic_tests' => 'decl_genetic_tests',
+                'open_to_tests' => 'decl_genetic_tests',
+                'open_to_genetic_tests' => 'decl_genetic_tests',
+                'lessons' => 'favourite_lessons',
+                'subjects' => 'favourite_lessons',
+                'favorite_subject' => 'favourite_lessons',
+                'favourite_subject' => 'favourite_lessons',
+                'favorite_subjects' => 'favourite_lessons',
+                'favourite_subjects' => 'favourite_lessons',
                 'id' => 'donor_id',
                 'code' => 'donor_id',
                 'donor' => 'donor_id',
@@ -1082,6 +1092,11 @@ function ovarias_admin_ajax_import_csv() {
                 if ($val === '') continue;
                 $target_key = isset($alias_map[$col]) ? $alias_map[$col] : $col;
                 if (in_array($target_key, $donor_fields)) {
+                    if ($target_key === 'height') {
+                        $val = trim(preg_replace('/\s*cm\s*$/i', '', $val));
+                    } elseif ($target_key === 'weight') {
+                        $val = trim(preg_replace('/\s*kg\s*$/i', '', $val));
+                    }
                     update_user_meta($user_id, $target_key, sanitize_textarea_field($val));
                 }
             }
