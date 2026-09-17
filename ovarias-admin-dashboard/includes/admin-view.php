@@ -252,37 +252,39 @@ $general_inquiries_sliced = array_slice($general_inquiries, ($gi_page - 1) * $it
 /**
  * Pagination Render Helper
  */
-function ovarias_admin_render_pagination($total_items, $items_per_page, $current_page, $page_arg, $tab_name) {
-    $total_pages = ceil($total_items / $items_per_page);
-    if ($total_pages <= 1) {
-        return;
+if (!function_exists('ovarias_admin_render_pagination')) {
+    function ovarias_admin_render_pagination($total_items, $items_per_page, $current_page, $page_arg, $tab_name) {
+        $total_pages = ceil($total_items / $items_per_page);
+        if ($total_pages <= 1) {
+            return;
+        }
+        
+        echo '<div class="ovarias-admin-pagination" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border-color);">';
+        
+        // Previous Link
+        if ($current_page > 1) {
+            $prev_url = add_query_arg(array('tab' => $tab_name, $page_arg => $current_page - 1));
+            echo '<a href="' . esc_url($prev_url) . '" class="action-btn" style="background: #FAFBF9; color: var(--primary); border: 1px solid var(--border-color); padding: 6px 12px; text-decoration: none;">&laquo; Prev</a>';
+        }
+        
+        // Page Numbers
+        for ($i = 1; $i <= $total_pages; $i++) {
+            $page_url = add_query_arg(array('tab' => $tab_name, $page_arg => $i));
+            $is_active = ($i === $current_page);
+            $bg_color = $is_active ? 'var(--primary)' : '#FAFBF9';
+            $text_color = $is_active ? '#fff' : 'var(--text-dark)';
+            $border_color = $is_active ? 'var(--primary)' : 'var(--border-color)';
+            echo '<a href="' . esc_url($page_url) . '" class="action-btn" style="background: ' . $bg_color . '; color: ' . $text_color . '; border: 1px solid ' . $border_color . '; padding: 6px 12px; text-decoration: none; font-weight: bold;">' . $i . '</a>';
+        }
+        
+        // Next Link
+        if ($current_page < $total_pages) {
+            $next_url = add_query_arg(array('tab' => $tab_name, $page_arg => $current_page + 1));
+            echo '<a href="' . esc_url($next_url) . '" class="action-btn" style="background: #FAFBF9; color: var(--primary); border: 1px solid var(--border-color); padding: 6px 12px; text-decoration: none;">Next &raquo;</a>';
+        }
+        
+        echo '</div>';
     }
-    
-    echo '<div class="ovarias-admin-pagination" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border-color);">';
-    
-    // Previous Link
-    if ($current_page > 1) {
-        $prev_url = add_query_arg(array('tab' => $tab_name, $page_arg => $current_page - 1));
-        echo '<a href="' . esc_url($prev_url) . '" class="action-btn" style="background: #FAFBF9; color: var(--primary); border: 1px solid var(--border-color); padding: 6px 12px; text-decoration: none;">&laquo; Prev</a>';
-    }
-    
-    // Page Numbers
-    for ($i = 1; $i <= $total_pages; $i++) {
-        $page_url = add_query_arg(array('tab' => $tab_name, $page_arg => $i));
-        $is_active = ($i === $current_page);
-        $bg_color = $is_active ? 'var(--primary)' : '#FAFBF9';
-        $text_color = $is_active ? '#fff' : 'var(--text-dark)';
-        $border_color = $is_active ? 'var(--primary)' : 'var(--border-color)';
-        echo '<a href="' . esc_url($page_url) . '" class="action-btn" style="background: ' . $bg_color . '; color: ' . $text_color . '; border: 1px solid ' . $border_color . '; padding: 6px 12px; text-decoration: none; font-weight: bold;">' . $i . '</a>';
-    }
-    
-    // Next Link
-    if ($current_page < $total_pages) {
-        $next_url = add_query_arg(array('tab' => $tab_name, $page_arg => $current_page + 1));
-        echo '<a href="' . esc_url($next_url) . '" class="action-btn" style="background: #FAFBF9; color: var(--primary); border: 1px solid var(--border-color); padding: 6px 12px; text-decoration: none;">Next &raquo;</a>';
-    }
-    
-    echo '</div>';
 }
 ?>
 
