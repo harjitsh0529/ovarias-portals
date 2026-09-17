@@ -918,7 +918,22 @@ function ovarias_admin_ajax_import_csv() {
         }
 
         if ($type === 'donor') {
-            $donor_id = !empty($data['donor_id']) ? $data['donor_id'] : '';
+            $donor_id = '';
+            if (!empty($data['donor_id'])) {
+                $donor_id = trim($data['donor_id']);
+            } elseif (!empty($data['id'])) {
+                $donor_id = trim($data['id']);
+            } elseif (!empty($data['donor'])) {
+                $donor_id = trim($data['donor']);
+            } elseif (!empty($data['donor_code'])) {
+                $donor_id = trim($data['donor_code']);
+            } elseif (!empty($data['code'])) {
+                $donor_id = trim($data['code']);
+            } elseif (!empty($data['unique_id'])) {
+                $donor_id = trim($data['unique_id']);
+            } elseif (!empty($data['donorid'])) {
+                $donor_id = trim($data['donorid']);
+            }
             $first_name = !empty($data['first_name']) ? $data['first_name'] : (!empty($data['name']) ? $data['name'] : '');
             $last_name = !empty($data['last_name']) ? $data['last_name'] : '';
             $raw_email = !empty($data['email']) ? sanitize_email($data['email']) : '';
@@ -1054,7 +1069,13 @@ function ovarias_admin_ajax_import_csv() {
                 'passport' => 'passport_available',
                 'travel' => 'travel_available',
                 'anonymous' => 'decl_anonymous',
-                'genetic_test' => 'decl_genetic_tests'
+                'genetic_test' => 'decl_genetic_tests',
+                'id' => 'donor_id',
+                'code' => 'donor_id',
+                'donor' => 'donor_id',
+                'donor_code' => 'donor_id',
+                'unique_id' => 'donor_id',
+                'donorid' => 'donor_id'
             );
 
             foreach ($data as $col => $val) {
@@ -1067,6 +1088,11 @@ function ovarias_admin_ajax_import_csv() {
 
             if (!empty($donor_id)) {
                 update_user_meta($user_id, 'donor_id', sanitize_text_field($donor_id));
+            } else {
+                $existing_did = get_user_meta($user_id, 'donor_id', true);
+                if (empty($existing_did)) {
+                    update_user_meta($user_id, 'donor_id', 'OVARIAS-' . $user_id);
+                }
             }
 
             // Handle Medical History from CSV
