@@ -901,6 +901,12 @@ jQuery(document).ready(function($) {
         $('#edit-donor-study').val(donor.study !== 'N/A' ? donor.study : '');
         $('#edit-donor-occupation').val(donor.occupation !== 'N/A' ? donor.occupation : '');
         $('#edit-donor-languages').val(donor.languages !== 'N/A' ? donor.languages : '');
+        if ($('#edit-donor-num-donations').length) $('#edit-donor-num-donations').val(donor.num_donations || 0);
+        if ($('#edit-donor-donation-type').length) $('#edit-donor-donation-type').val(donor.donation_type || 'Anonymous Donor');
+        if ($('#edit-donor-travel').length) $('#edit-donor-travel').val(donor.travel_available || 'Yes');
+        if ($('#edit-donor-passport').length) $('#edit-donor-passport').val(donor.passport_available || 'Yes');
+        if ($('#edit-donor-phone').length) $('#edit-donor-phone').val(donor.phone || '');
+        if ($('#edit-donor-country').length) $('#edit-donor-country').val(donor.country || '');
 
         // Physical
         $('#edit-donor-ethnic-origin').val(donor.ethnic_origin !== 'N/A' ? donor.ethnic_origin : '');

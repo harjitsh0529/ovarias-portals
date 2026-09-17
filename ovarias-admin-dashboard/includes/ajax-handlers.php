@@ -205,7 +205,9 @@ function ovarias_admin_ajax_create_user() {
             'decl_anonymous', 'decl_genetic_tests', 'zodiac_sign',
             'fav_colour', 'fav_dish', 'fav_season', 'fav_holiday', 'fav_sport', 'fav_music',
             'childhood_dream', 'fav_author', 'fav_movie', 'countries_visited',
-            'goals_in_life', 'idols_heroes', 'personality_words', 'strong_side', 'weak_side'
+            'goals_in_life', 'idols_heroes', 'personality_words', 'strong_side', 'weak_side',
+            'donation_type', 'travel_available', 'passport_available', 'previous_donations',
+            'num_donations', 'phone_number', 'country'
         );
         foreach ($donor_meta_fields as $field) {
             if (isset($_POST[$field])) {
@@ -337,7 +339,9 @@ function ovarias_admin_ajax_save_donor_full_profile() {
         'decl_anonymous', 'decl_genetic_tests', 'zodiac_sign',
         'fav_colour', 'fav_dish', 'fav_season', 'fav_holiday', 'fav_sport', 'fav_music',
         'childhood_dream', 'fav_author', 'fav_movie', 'countries_visited',
-        'goals_in_life', 'idols_heroes', 'personality_words', 'strong_side', 'weak_side'
+        'goals_in_life', 'idols_heroes', 'personality_words', 'strong_side', 'weak_side',
+        'donation_type', 'travel_available', 'passport_available', 'previous_donations',
+        'num_donations', 'phone_number', 'country'
     );
     foreach ($donor_meta_fields as $field) {
         if (isset($_POST[$field])) {
@@ -1012,7 +1016,13 @@ function ovarias_admin_ajax_import_csv() {
                 'zodiac_sign', 'fav_colour', 'fav_dish', 'fav_season', 'fav_holiday',
                 'fav_sport', 'fav_music', 'childhood_dream', 'fav_author', 'fav_movie',
                 'countries_visited', 'goals_in_life', 'idols_heroes', 'personality_words',
-                'strong_side', 'weak_side'
+                'strong_side', 'weak_side',
+
+                // Additional Complete Donor Profile Fields
+                'donation_type', 'travel_available', 'passport_available',
+                'previous_donations', 'num_donations', 'favourite_lessons',
+                'decl_anonymous', 'decl_genetic_tests',
+                'phone_number', 'country'
             );
 
             // Aliases mapping for common column names in client CSVs
@@ -1026,6 +1036,20 @@ function ovarias_admin_ajax_import_csv() {
                 'eyes' => 'eye_colour',
                 'hair' => 'hair_colour',
                 'blood' => 'blood_group',
+                'phone' => 'phone_number',
+                'mobile' => 'phone_number',
+                'contact_number' => 'phone_number',
+                'telephone' => 'phone_number',
+                'phone_num' => 'phone_number',
+                'fav_lessons' => 'favourite_lessons',
+                'favorite_lessons' => 'favourite_lessons',
+                'donations' => 'num_donations',
+                'number_of_donations' => 'num_donations',
+                'previous_donation' => 'previous_donations',
+                'passport' => 'passport_available',
+                'travel' => 'travel_available',
+                'anonymous' => 'decl_anonymous',
+                'genetic_test' => 'decl_genetic_tests'
             );
 
             foreach ($data as $col => $val) {
@@ -1039,6 +1063,29 @@ function ovarias_admin_ajax_import_csv() {
             if (!empty($donor_id)) {
                 update_user_meta($user_id, 'donor_id', sanitize_text_field($donor_id));
             }
+
+            // Handle Medical History from CSV
+            if (isset($data['medical_history'])) {
+                $raw_med = trim($data['medical_history']);
+                if (empty($raw_med) || strtolower($raw_med) === 'none' || strtolower($raw_med) === 'no' || strtolower($raw_med) === 'clean') {
+                    update_user_meta($user_id, 'medical_history', array());
+                } else {
+                    $med_arr = get_user_meta($user_id, 'medical_history', true) ?: array();
+                    if (!is_array($med_arr)) { $med_arr = array(); }
+                    $conditions_list = preg_split('/[,;|]/', $raw_med);
+                    foreach ($conditions_list as $cond) {
+                        $cond = sanitize_key(trim($cond));
+                        if (!empty($cond)) {
+                            $med_arr[$cond] = 'Yes';
+                        }
+                    }
+                    update_user_meta($user_id, 'medical_history', $med_arr);
+                }
+            }
+
+            // Mark profile 100% complete and update timestamp
+            update_user_meta($user_id, 'profile_completed', '1');
+            update_user_meta($user_id, 'last_dashboard_update', current_time('mysql'));
 
             // Handle Photo URLs from CSV (avatar and gallery)
             // 1. Avatar URL
